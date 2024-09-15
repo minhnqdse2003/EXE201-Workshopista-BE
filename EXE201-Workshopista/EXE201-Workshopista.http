@@ -1,0 +1,6 @@
+@EXE201_Workshopista_HostAddress = http://localhost:5138
+
+GET {{EXE201_Workshopista_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
