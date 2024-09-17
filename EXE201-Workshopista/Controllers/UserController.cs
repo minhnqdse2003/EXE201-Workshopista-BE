@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Service.Interfaces;
-using Service.Models;
+using Service.Models.Users;
 
 namespace EXE201_Workshopista.Controllers
 {

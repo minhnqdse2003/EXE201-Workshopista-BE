@@ -2,14 +2,14 @@
 using Repository.Interfaces;
 using Repository.Models;
 using Service.Interfaces;
-using Service.Models;
+using Service.Models.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Service.Services
+namespace Service.Services.Users
 {
     public class UserService : IUserService
     {
@@ -48,6 +48,11 @@ namespace Service.Services
         public async Task DeleteUserAsync(Guid userId)
         {
             await _unitOfWork.Users.DeleteUserAsync(userId);
+        }
+
+        public async Task<User> GetUserByRefreshTokenAsync(string token)
+        {
+            return await _unitOfWork.Users.GetUserByRefreshToken(token);
         }
     }
 }

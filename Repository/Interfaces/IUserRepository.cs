@@ -11,6 +11,8 @@ namespace Repository.Interfaces
     {
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<User> GetUserByIdAsync(Guid userId);
+        Task<User?> GetUserByUserNameAsync(string userName);
+        Task<User?> GetUserByRefreshToken(string token);
         Task CreateUserAsync(User user);
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(Guid userId);

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Repository.Migrations
 {
     /// <inheritdoc />
@@ -91,7 +93,9 @@ namespace Repository.Migrations
                     email_verified = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
                     phone_verified = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -336,6 +340,16 @@ namespace Repository.Migrations
                         column: x => x.ticket_id,
                         principalTable: "Ticket",
                         principalColumn: "ticket_id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "User",
+                columns: new[] { "user_id", "email", "email_verified", "first_name", "last_name", "password_hash", "phone_number", "phone_verified", "profile_image_url", "RefreshToken", "RefreshTokenExpiryTime", "role" },
+                values: new object[,]
+                {
+                    { new Guid("88d9b72c-5387-4d0e-9051-9469e8c5f7b6"), "admin@gmail.com", true, "Alice", "Smith", "$2a$11$p8.zexmNkOK0t6Gw7Ocog.pDBfrxNngyyL6nx80i0WG7DSoCpjhbm", "1234567890", true, "https://example.com/profile_image_1.jpg", null, null, "admin" },
+                    { new Guid("9ad88b67-870d-4a64-a508-25cc917fc0aa"), "charlie@example.com", true, "Charlie", "Brown", "$2a$11$TmY5zpQNlwtRJ5fCzIxeZ.egap4mCu8rM8ohJKumg6LFSjRCPpmTS", "5551234567", true, "https://example.com/profile_image_3.jpg", null, null, "Organizer" },
+                    { new Guid("d572044d-25e0-4b06-9471-6f5f5b1789fa"), "org@gmail.com", true, "Bob", "Johnson", "$2a$11$s8JGyt8Uz/qvB71dZ/9NcO6OnsNb7Vawd3kCtjqsy4D/oZsSmNzeO", "9876543210", true, "https://example.com/profile_image_2.jpg", null, null, "Organizer" }
                 });
 
             migrationBuilder.CreateIndex(

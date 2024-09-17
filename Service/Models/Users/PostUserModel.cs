@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Service.Models
+namespace Service.Models.Users
 {
     public class PostUserModel
     {

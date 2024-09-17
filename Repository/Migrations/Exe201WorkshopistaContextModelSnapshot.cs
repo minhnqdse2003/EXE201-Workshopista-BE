@@ -656,6 +656,12 @@ namespace Repository.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("profile_image_url");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Role")
                         .HasMaxLength(50)
                         .IsUnicode(false)
@@ -676,6 +682,47 @@ namespace Repository.Migrations
                         .HasFilter("[email] IS NOT NULL");
 
                     b.ToTable("User", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("88d9b72c-5387-4d0e-9051-9469e8c5f7b6"),
+                            Email = "admin@gmail.com",
+                            EmailVerified = true,
+                            FirstName = "Alice",
+                            LastName = "Smith",
+                            PasswordHash = "$2a$11$p8.zexmNkOK0t6Gw7Ocog.pDBfrxNngyyL6nx80i0WG7DSoCpjhbm",
+                            PhoneNumber = "1234567890",
+                            PhoneVerified = true,
+                            ProfileImageUrl = "https://example.com/profile_image_1.jpg",
+                            Role = "admin"
+                        },
+                        new
+                        {
+                            UserId = new Guid("d572044d-25e0-4b06-9471-6f5f5b1789fa"),
+                            Email = "org@gmail.com",
+                            EmailVerified = true,
+                            FirstName = "Bob",
+                            LastName = "Johnson",
+                            PasswordHash = "$2a$11$s8JGyt8Uz/qvB71dZ/9NcO6OnsNb7Vawd3kCtjqsy4D/oZsSmNzeO",
+                            PhoneNumber = "9876543210",
+                            PhoneVerified = true,
+                            ProfileImageUrl = "https://example.com/profile_image_2.jpg",
+                            Role = "Organizer"
+                        },
+                        new
+                        {
+                            UserId = new Guid("9ad88b67-870d-4a64-a508-25cc917fc0aa"),
+                            Email = "charlie@example.com",
+                            EmailVerified = true,
+                            FirstName = "Charlie",
+                            LastName = "Brown",
+                            PasswordHash = "$2a$11$TmY5zpQNlwtRJ5fCzIxeZ.egap4mCu8rM8ohJKumg6LFSjRCPpmTS",
+                            PhoneNumber = "5551234567",
+                            PhoneVerified = true,
+                            ProfileImageUrl = "https://example.com/profile_image_3.jpg",
+                            Role = "Organizer"
+                        });
                 });
 
             modelBuilder.Entity("Repository.Models.Workshop", b =>

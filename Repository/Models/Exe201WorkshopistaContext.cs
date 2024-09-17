@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Repository.Extensions;
 
 namespace Repository.Models;
 
@@ -595,6 +596,8 @@ public partial class Exe201WorkshopistaContext : DbContext
                 .HasForeignKey(d => d.OrganizerId)
                 .HasConstraintName("FK__Workshop__organi__6FE99F9F");
         });
+
+        modelBuilder.SeedUsers();
 
         OnModelCreatingPartial(modelBuilder);
     }

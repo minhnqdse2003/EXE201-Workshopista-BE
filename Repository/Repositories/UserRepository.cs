@@ -46,5 +46,15 @@ namespace Repository.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<User?> GetUserByUserNameAsync(string userName)
+        {
+            return await _context.Users.FirstOrDefaultAsync(x => x.Email == userName);
+        }
+
+        public Task<User?> GetUserByRefreshToken(string token)
+        {
+            return _context.Users.FirstOrDefaultAsync(x => x.RefreshToken == token);
+        }
     }
 }

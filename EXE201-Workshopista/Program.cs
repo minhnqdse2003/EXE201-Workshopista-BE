@@ -3,13 +3,16 @@ using EXE201_Workshopista.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Repository.Helpers;
 using Repository.Interfaces;
 using Repository.Models;
 using Repository.Repositories;
 using Serilog;
 using Service.Interfaces;
 using Service.Mapping;
-using Service.Services;
+using Service.Services.Auth;
+using Service.Services.Users;
 using System.Text;
 
 namespace EXE201_Workshopista
@@ -31,13 +34,43 @@ namespace EXE201_Workshopista
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAuthService,AuthService>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                // Add JWT Authentication support
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter a valid JWT token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = JwtBearerDefaults.AuthenticationScheme
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
 
             builder.Services.AddAutoMapper(typeof(UserProfile));
 
             builder.Services.AddDbContext<Exe201WorkshopistaContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DBUtilsConnectionString")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DBUtilsConnectionString")));
 
             builder.Services.AddCors(options =>
             {
@@ -50,23 +83,24 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DBUtilsConnectio
                                   });
             });
 
-
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(option =>
-    {
-        option.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-           Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
-
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                };
+            });
 
             var app = builder.Build();
 
@@ -78,66 +112,18 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DBUtilsConnectio
             }
 
             app.UseHttpsRedirection();
-
             using (var scope = app.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<Exe201WorkshopistaContext>();
                 context.Database.Migrate();
-
-                if (context.Users != null && !context.Users.Any())
-                {
-                    context.Users.AddRange(
-                    // Sample User Account 1
-                    new User
-                    {
-                        UserId = Guid.NewGuid(),
-                        FirstName = "Alice",
-                        LastName = "Smith",
-                        Email = "alice@example.com",
-                        PasswordHash = "hashed_password_1",
-                        PhoneNumber = "1234567890",
-                        Role = "user",
-                        ProfileImageUrl = "https://example.com/profile_image_1.jpg",
-                        EmailVerified = true,
-                        PhoneVerified = true
-                    }
-
-                    // Sample User Account 2
-                    , new User
-                    {
-                        UserId = Guid.NewGuid(),
-                        FirstName = "Bob",
-                        LastName = "Johnson",
-                        Email = "bob@example.com",
-                        PasswordHash = "hashed_password_2",
-                        PhoneNumber = "9876543210",
-                        Role = "admin",
-                        ProfileImageUrl = "https://example.com/profile_image_2.jpg",
-                        EmailVerified = true,
-                        PhoneVerified = true
-                    }
-                    , new User
-                    {
-                        UserId = Guid.NewGuid(),
-                        FirstName = "Charlie",
-                        LastName = "Brown",
-                        Email = "charlie@example.com",
-                        PasswordHash = "hashed_password_3",
-                        PhoneNumber = "5551234567",
-                        Role = "user",
-                        ProfileImageUrl = "https://example.com/profile_image_3.jpg",
-                        EmailVerified = true,
-                        PhoneVerified = true
-                    });
-                    context.SaveChanges();
-                }
             }
 
-            app.UseAuthorization();
             app.UseCors("AllowAll");
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseSerilogRequestLogging();
+
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 
