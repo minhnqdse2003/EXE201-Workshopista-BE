@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Repository.Helpers;
 using Serilog;
 using Serilog.Context;
+using Service.Models;
 using System;
+using System.Net;
+using System.Text.Json.Serialization;
 
 namespace EXE201_Workshopista.Middlewares
 {
@@ -26,21 +30,13 @@ namespace EXE201_Workshopista.Middlewares
                 try
                 {
                     await _next.Invoke(httpContext);
-                    _logger.LogWarning($"{correlationId} processing.");
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(
-                    ex, "Exception occurred: {Message}", ex.Message);
+                    ex, "Exception occurred: {Message}", ex.Message.ToString());
 
-                    var problemDetails = new ProblemDetails
-                    {
-                        Status = StatusCodes.Status500InternalServerError,
-                        Title = "Server Error"
-                    };
-
-                    httpContext.Response.StatusCode =
-                        StatusCodes.Status500InternalServerError;
+                    await HandleExceptionAsync(httpContext, ex);
                 }
             }
         }
@@ -51,6 +47,19 @@ namespace EXE201_Workshopista.Middlewares
                 CorrelationIdHeaderName, out StringValues correlationId);
 
             return correlationId.FirstOrDefault() ?? context.TraceIdentifier;
+        }
+
+        private async static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            await context.Response.WriteAsJsonAsync(
+                ApiResponse<string>.ErrorResponse(
+                    ResponseMessage.InternalServerError, 
+                    new List<string> { exception.Message }
+                )
+            );
         }
     }
 

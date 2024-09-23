@@ -37,8 +37,6 @@ public partial class Workshop
 
     public int? Capacity { get; set; }
 
-    public string? ImageUrl { get; set; }
-
     public string? VideoUrl { get; set; }
 
     public string? Status { get; set; }
@@ -49,13 +47,19 @@ public partial class Workshop
 
     public virtual Category? Category { get; set; }
 
+    public virtual ICollection<Commission> Commissions { get; set; } = new List<Commission>();
+
     public virtual ICollection<EventAnalytic> EventAnalytics { get; set; } = new List<EventAnalytic>();
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual Organizer? Organizer { get; set; }
 
+    public virtual ICollection<Promotion> Promotions { get; set; } = new List<Promotion>();
+
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
+    public virtual ICollection<WorkshopImage> WorkshopImages { get; set; } = new List<WorkshopImage>();
 }

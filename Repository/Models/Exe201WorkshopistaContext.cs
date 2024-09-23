@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Repository.Extensions;
 
 namespace Repository.Models;
@@ -20,6 +21,8 @@ public partial class Exe201WorkshopistaContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
+    public virtual DbSet<Commission> Commissions { get; set; }
+
     public virtual DbSet<EventAnalytic> EventAnalytics { get; set; }
 
     public virtual DbSet<News> News { get; set; }
@@ -32,7 +35,11 @@ public partial class Exe201WorkshopistaContext : DbContext
 
     public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
 
+    public virtual DbSet<Promotion> Promotions { get; set; }
+
     public virtual DbSet<Review> Reviews { get; set; }
+
+    public virtual DbSet<Subscription> Subscriptions { get; set; }
 
     public virtual DbSet<Ticket> Tickets { get; set; }
 
@@ -41,11 +48,23 @@ public partial class Exe201WorkshopistaContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<Workshop> Workshops { get; set; }
+
+    public virtual DbSet<WorkshopImage> WorkshopImages { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+                => optionsBuilder.UseSqlServer(GetConnectionString());
+    private string? GetConnectionString()
+    {
+        IConfiguration configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, true).Build();
+        return configuration["ConnectionStrings:DBUtilsConnectionString"];
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AuditLog>(entity =>
         {
-            entity.HasKey(e => e.LogId).HasName("PK__AuditLog__9E2397E01111547E");
+            entity.HasKey(e => e.LogId).HasName("PK__AuditLog__9E2397E0775D0C7B");
 
             entity.ToTable("AuditLog");
 
@@ -70,13 +89,13 @@ public partial class Exe201WorkshopistaContext : DbContext
 
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Category__D54EE9B4DDFAF6E2");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Category__D54EE9B4999D4519");
 
             entity.ToTable("Category");
 
-            entity.HasIndex(e => e.Slug, "UQ__Category__32DD1E4C135F590A").IsUnique();
+            entity.HasIndex(e => e.Slug, "UQ__Category__32DD1E4CA9B28410").IsUnique();
 
-            entity.HasIndex(e => e.Name, "UQ__Category__72E12F1B3A211C2C").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__Category__72E12F1BF3C908B9").IsUnique();
 
             entity.Property(e => e.CategoryId)
                 .ValueGeneratedNever()
@@ -102,9 +121,39 @@ public partial class Exe201WorkshopistaContext : DbContext
                 .HasColumnName("updated_at");
         });
 
+        modelBuilder.Entity<Commission>(entity =>
+        {
+            entity.HasKey(e => e.CommissionId).HasName("PK__Commissi__D19D7CC994FB9C82");
+
+            entity.ToTable("Commission");
+
+            entity.Property(e => e.CommissionId)
+                .ValueGeneratedNever()
+                .HasColumnName("commission_id");
+            entity.Property(e => e.CommissionRate)
+                .HasColumnType("decimal(5, 2)")
+                .HasColumnName("commission_rate");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.TotalCommission)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("total_commission");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.WorkshopId).HasColumnName("workshop_id");
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.Commissions)
+                .HasForeignKey(d => d.WorkshopId)
+                .HasConstraintName("FK_Commission_Workshop");
+        });
+
         modelBuilder.Entity<EventAnalytic>(entity =>
         {
-            entity.HasKey(e => e.AnalyticsId).HasName("PK__EventAna__D5DC3DE1FAF3AB89");
+            entity.HasKey(e => e.AnalyticsId).HasName("PK__EventAna__D5DC3DE1137F8C0D");
 
             entity.Property(e => e.AnalyticsId)
                 .ValueGeneratedNever()
@@ -129,14 +178,14 @@ public partial class Exe201WorkshopistaContext : DbContext
 
             entity.HasOne(d => d.Workshop).WithMany(p => p.EventAnalytics)
                 .HasForeignKey(d => d.WorkshopId)
-                .HasConstraintName("FK__EventAnal__works__7C4F7684");
+                .HasConstraintName("FK_EventAnalytics_Workshop");
         });
 
         modelBuilder.Entity<News>(entity =>
         {
-            entity.HasKey(e => e.NewsId).HasName("PK__News__4C27CCD853583D15");
+            entity.HasKey(e => e.NewsId).HasName("PK__News__4C27CCD8F7E3AF43");
 
-            entity.HasIndex(e => e.Slug, "UQ__News__32DD1E4C151519C4").IsUnique();
+            entity.HasIndex(e => e.Slug, "UQ__News__32DD1E4C5A8B7C4F").IsUnique();
 
             entity.Property(e => e.NewsId)
                 .ValueGeneratedNever()
@@ -171,7 +220,7 @@ public partial class Exe201WorkshopistaContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Order__46596229690060C8");
+            entity.HasKey(e => e.OrderId).HasName("PK__Order__465962298BD6BFF4");
 
             entity.ToTable("Order");
 
@@ -204,12 +253,12 @@ public partial class Exe201WorkshopistaContext : DbContext
 
             entity.HasOne(d => d.Participant).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.ParticipantId)
-                .HasConstraintName("FK__Order__participa__787EE5A0");
+                .HasConstraintName("FK_Order_User");
         });
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => e.OrderDetailsId).HasName("PK__OrderDet__F6FB5AE40F937559");
+            entity.HasKey(e => e.OrderDetailsId).HasName("PK__OrderDet__F6FB5AE44C7C30C5");
 
             entity.Property(e => e.OrderDetailsId)
                 .ValueGeneratedNever()
@@ -241,20 +290,20 @@ public partial class Exe201WorkshopistaContext : DbContext
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__OrderDeta__order__797309D9");
+                .HasConstraintName("FK_OrderDetails_Order");
 
             entity.HasOne(d => d.Ticket).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.TicketId)
-                .HasConstraintName("FK__OrderDeta__ticke__7B5B524B");
+                .HasConstraintName("FK_OrderDetails_Ticket");
 
             entity.HasOne(d => d.Workshop).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.WorkshopId)
-                .HasConstraintName("FK__OrderDeta__works__7A672E12");
+                .HasConstraintName("FK_OrderDetails_Workshop");
         });
 
         modelBuilder.Entity<Organizer>(entity =>
         {
-            entity.HasKey(e => e.OrganizerId).HasName("PK__Organize__06347014926AE89D");
+            entity.HasKey(e => e.OrganizerId).HasName("PK__Organize__063470141F69041A");
 
             entity.ToTable("Organizer");
 
@@ -277,7 +326,9 @@ public partial class Exe201WorkshopistaContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("organization_name");
-            entity.Property(e => e.SocialLinks).HasColumnName("social_links");
+            entity.Property(e => e.SocialLinks)
+                .HasColumnType("text")
+                .HasColumnName("social_links");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
@@ -293,12 +344,12 @@ public partial class Exe201WorkshopistaContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Organizers)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Organizer__user___07C12930");
+                .HasConstraintName("FK_Organizer_User");
         });
 
         modelBuilder.Entity<PaymentMethod>(entity =>
         {
-            entity.HasKey(e => e.PaymentMethodId).HasName("PK__PaymentM__8A3EA9EBDDCC480A");
+            entity.HasKey(e => e.PaymentMethodId).HasName("PK__PaymentM__8A3EA9EBA7FDCED2");
 
             entity.ToTable("PaymentMethod");
 
@@ -322,9 +373,55 @@ public partial class Exe201WorkshopistaContext : DbContext
                 .HasColumnName("updated_at");
         });
 
+        modelBuilder.Entity<Promotion>(entity =>
+        {
+            entity.HasKey(e => e.PromotionId).HasName("PK__Promotio__2CB9556B2C8CD7C8");
+
+            entity.ToTable("Promotion");
+
+            entity.Property(e => e.PromotionId)
+                .ValueGeneratedNever()
+                .HasColumnName("promotion_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CurrencyCode)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .HasColumnName("currency_code");
+            entity.Property(e => e.EndDate)
+                .HasColumnType("datetime")
+                .HasColumnName("end_date");
+            entity.Property(e => e.OrganizerId).HasColumnName("organizer_id");
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("price");
+            entity.Property(e => e.PromotionType)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("promotion_type");
+            entity.Property(e => e.StartDate)
+                .HasColumnType("datetime")
+                .HasColumnName("start_date");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.WorkshopId).HasColumnName("workshop_id");
+
+            entity.HasOne(d => d.Organizer).WithMany(p => p.Promotions)
+                .HasForeignKey(d => d.OrganizerId)
+                .HasConstraintName("FK_Promotion_Organizer");
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.Promotions)
+                .HasForeignKey(d => d.WorkshopId)
+                .HasConstraintName("FK_Promotion_Workshop");
+        });
+
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.ReviewId).HasName("PK__Review__60883D90BBCF3137");
+            entity.HasKey(e => e.ReviewId).HasName("PK__Review__60883D90FB2B51AA");
 
             entity.ToTable("Review");
 
@@ -352,16 +449,52 @@ public partial class Exe201WorkshopistaContext : DbContext
 
             entity.HasOne(d => d.Participant).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.ParticipantId)
-                .HasConstraintName("FK__Review__particip__778AC167");
+                .HasConstraintName("FK_Review_Participant");
 
             entity.HasOne(d => d.Workshop).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.WorkshopId)
-                .HasConstraintName("FK__Review__workshop__76969D2E");
+                .HasConstraintName("FK_Review_Workshop");
+        });
+
+        modelBuilder.Entity<Subscription>(entity =>
+        {
+            entity.HasKey(e => e.SubscriptionId).HasName("PK__Subscrip__863A7EC1425E97CF");
+
+            entity.ToTable("Subscription");
+
+            entity.Property(e => e.SubscriptionId)
+                .ValueGeneratedNever()
+                .HasColumnName("subscription_id");
+            entity.Property(e => e.AutoRenew).HasColumnName("auto_renew");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.EndDate)
+                .HasColumnType("datetime")
+                .HasColumnName("end_date");
+            entity.Property(e => e.StartDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("start_date");
+            entity.Property(e => e.Tier)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("tier");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Subscriptions)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_Subscription_User");
         });
 
         modelBuilder.Entity<Ticket>(entity =>
         {
-            entity.HasKey(e => e.TicketId).HasName("PK__Ticket__D596F96BAA96C801");
+            entity.HasKey(e => e.TicketId).HasName("PK__Ticket__D596F96BCA20FFB1");
 
             entity.ToTable("Ticket");
 
@@ -395,20 +528,20 @@ public partial class Exe201WorkshopistaContext : DbContext
 
             entity.HasOne(d => d.Participant).WithMany(p => p.Tickets)
                 .HasForeignKey(d => d.ParticipantId)
-                .HasConstraintName("FK__Ticket__particip__72C60C4A");
+                .HasConstraintName("FK_Ticket_Participant");
 
             entity.HasOne(d => d.Workshop).WithMany(p => p.Tickets)
                 .HasForeignKey(d => d.WorkshopId)
-                .HasConstraintName("FK__Ticket__workshop__71D1E811");
+                .HasConstraintName("FK_Ticket_Workshop");
         });
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PK__Transact__85C600AFBDF9DFBF");
+            entity.HasKey(e => e.TransactionId).HasName("PK__Transact__85C600AFBC29D7EE");
 
             entity.ToTable("Transaction");
 
-            entity.HasIndex(e => e.TransactionReference, "UQ__Transact__F0DAF2E855072DED").IsUnique();
+            entity.HasIndex(e => e.TransactionReference, "UQ__Transact__F0DAF2E82F8DC13B").IsUnique();
 
             entity.Property(e => e.TransactionId)
                 .ValueGeneratedNever()
@@ -445,24 +578,24 @@ public partial class Exe201WorkshopistaContext : DbContext
 
             entity.HasOne(d => d.Participant).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.ParticipantId)
-                .HasConstraintName("FK__Transacti__parti__74AE54BC");
+                .HasConstraintName("FK_Transaction_Participant");
 
             entity.HasOne(d => d.PaymentMethod).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.PaymentMethodId)
-                .HasConstraintName("FK__Transacti__payme__75A278F5");
+                .HasConstraintName("FK_Transaction_PaymentMethod");
 
             entity.HasOne(d => d.Ticket).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.TicketId)
-                .HasConstraintName("FK__Transacti__ticke__73BA3083");
+                .HasConstraintName("FK_Transaction_Ticket");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__B9BE370FB245A9CC");
+            entity.HasKey(e => e.UserId).HasName("PK__User__B9BE370F02E16F77");
 
             entity.ToTable("User");
 
-            entity.HasIndex(e => e.Email, "UQ__User__AB6E61647CFB7D18").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__User__AB6E6164168C33A0").IsUnique();
 
             entity.Property(e => e.UserId)
                 .ValueGeneratedNever()
@@ -501,6 +634,12 @@ public partial class Exe201WorkshopistaContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("profile_image_url");
+            entity.Property(e => e.RefreshToken)
+                .HasColumnType("text")
+                .HasColumnName("refresh_token");
+            entity.Property(e => e.RefreshTokenExpiryTime)
+                .HasColumnType("datetime")
+                .HasColumnName("refresh_token_expiry_time");
             entity.Property(e => e.Role)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -513,11 +652,11 @@ public partial class Exe201WorkshopistaContext : DbContext
 
         modelBuilder.Entity<Workshop>(entity =>
         {
-            entity.HasKey(e => e.WorkshopId).HasName("PK__Workshop__EA6B05592F621DA2");
+            entity.HasKey(e => e.WorkshopId).HasName("PK__Workshop__EA6B0559AAAD1465");
 
             entity.ToTable("Workshop");
 
-            entity.HasIndex(e => e.Slug, "UQ__Workshop__32DD1E4C022E4DB2").IsUnique();
+            entity.HasIndex(e => e.Slug, "UQ__Workshop__32DD1E4C1ED9DC10").IsUnique();
 
             entity.Property(e => e.WorkshopId)
                 .ValueGeneratedNever()
@@ -538,10 +677,6 @@ public partial class Exe201WorkshopistaContext : DbContext
             entity.Property(e => e.EndTime)
                 .HasColumnType("datetime")
                 .HasColumnName("end_time");
-            entity.Property(e => e.ImageUrl)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("image_url");
             entity.Property(e => e.Latitude)
                 .HasColumnType("decimal(10, 8)")
                 .HasColumnName("latitude");
@@ -590,15 +725,40 @@ public partial class Exe201WorkshopistaContext : DbContext
 
             entity.HasOne(d => d.Category).WithMany(p => p.Workshops)
                 .HasForeignKey(d => d.CategoryId)
-                .HasConstraintName("FK__Workshop__catego__70DDC3D8");
+                .HasConstraintName("FK_Workshop_Category");
 
             entity.HasOne(d => d.Organizer).WithMany(p => p.Workshops)
                 .HasForeignKey(d => d.OrganizerId)
-                .HasConstraintName("FK__Workshop__organi__6FE99F9F");
+                .HasConstraintName("FK_Workshop_Organizer");
         });
 
-        modelBuilder.SeedUsers();
+        modelBuilder.Entity<WorkshopImage>(entity =>
+        {
+            entity.HasKey(e => e.ImageId).HasName("PK__Workshop__DC9AC95561A32F46");
 
+            entity.ToTable("WorkshopImage");
+
+            entity.Property(e => e.ImageId)
+                .ValueGeneratedNever()
+                .HasColumnName("image_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("image_url");
+            entity.Property(e => e.IsPrimary)
+                .HasDefaultValue(false)
+                .HasColumnName("is_primary");
+            entity.Property(e => e.WorkshopId).HasColumnName("workshop_id");
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.WorkshopImages)
+                .HasForeignKey(d => d.WorkshopId)
+                .HasConstraintName("FK_WorkshopImage_Workshop");
+        });
+        ModelBuilderExtensions.SeedUsers(modelBuilder);
         OnModelCreatingPartial(modelBuilder);
     }
 

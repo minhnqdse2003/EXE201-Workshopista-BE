@@ -25,6 +25,8 @@ public partial class Organizer
 
     public DateTime? UpdatedAt { get; set; }
 
+    public virtual ICollection<Promotion> Promotions { get; set; } = new List<Promotion>();
+
     public virtual User? User { get; set; }
 
     public virtual ICollection<Workshop> Workshops { get; set; } = new List<Workshop>();

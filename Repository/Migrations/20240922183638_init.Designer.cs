@@ -12,7 +12,7 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(Exe201WorkshopistaContext))]
-    [Migration("20240917190319_init")]
+    [Migration("20240922183638_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -58,7 +58,7 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("LogId")
-                        .HasName("PK__AuditLog__9E2397E01111547E");
+                        .HasName("PK__AuditLog__9E2397E0775D0C7B");
 
                     b.ToTable("AuditLog", (string)null);
                 });
@@ -98,17 +98,55 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("CategoryId")
-                        .HasName("PK__Category__D54EE9B4DDFAF6E2");
+                        .HasName("PK__Category__D54EE9B4999D4519");
 
-                    b.HasIndex(new[] { "Slug" }, "UQ__Category__32DD1E4C135F590A")
+                    b.HasIndex(new[] { "Slug" }, "UQ__Category__32DD1E4CA9B28410")
                         .IsUnique()
                         .HasFilter("[slug] IS NOT NULL");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__Category__72E12F1B3A211C2C")
+                    b.HasIndex(new[] { "Name" }, "UQ__Category__72E12F1BF3C908B9")
                         .IsUnique()
                         .HasFilter("[name] IS NOT NULL");
 
                     b.ToTable("Category", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.Commission", b =>
+                {
+                    b.Property<Guid>("CommissionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("commission_id");
+
+                    b.Property<decimal?>("CommissionRate")
+                        .HasColumnType("decimal(5, 2)")
+                        .HasColumnName("commission_rate");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<decimal?>("TotalCommission")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("total_commission");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("WorkshopId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("workshop_id");
+
+                    b.HasKey("CommissionId")
+                        .HasName("PK__Commissi__D19D7CC994FB9C82");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("Commission", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.EventAnalytic", b =>
@@ -150,7 +188,7 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("AnalyticsId")
-                        .HasName("PK__EventAna__D5DC3DE1FAF3AB89");
+                        .HasName("PK__EventAna__D5DC3DE1137F8C0D");
 
                     b.HasIndex("WorkshopId");
 
@@ -202,9 +240,9 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("NewsId")
-                        .HasName("PK__News__4C27CCD853583D15");
+                        .HasName("PK__News__4C27CCD8F7E3AF43");
 
-                    b.HasIndex(new[] { "Slug" }, "UQ__News__32DD1E4C151519C4")
+                    b.HasIndex(new[] { "Slug" }, "UQ__News__32DD1E4C5A8B7C4F")
                         .IsUnique()
                         .HasFilter("[slug] IS NOT NULL");
 
@@ -254,7 +292,7 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("OrderId")
-                        .HasName("PK__Order__46596229690060C8");
+                        .HasName("PK__Order__465962298BD6BFF4");
 
                     b.HasIndex("ParticipantId");
 
@@ -312,7 +350,7 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("OrderDetailsId")
-                        .HasName("PK__OrderDet__F6FB5AE40F937559");
+                        .HasName("PK__OrderDet__F6FB5AE44C7C30C5");
 
                     b.HasIndex("OrderId");
 
@@ -354,7 +392,7 @@ namespace Repository.Migrations
                         .HasColumnName("organization_name");
 
                     b.Property<string>("SocialLinks")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("social_links");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -380,7 +418,7 @@ namespace Repository.Migrations
                         .HasColumnName("website_url");
 
                     b.HasKey("OrganizerId")
-                        .HasName("PK__Organize__06347014926AE89D");
+                        .HasName("PK__Organize__063470141F69041A");
 
                     b.HasIndex("UserId");
 
@@ -416,9 +454,69 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("PaymentMethodId")
-                        .HasName("PK__PaymentM__8A3EA9EBDDCC480A");
+                        .HasName("PK__PaymentM__8A3EA9EBA7FDCED2");
 
                     b.ToTable("PaymentMethod", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.Promotion", b =>
+                {
+                    b.Property<Guid>("PromotionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("promotion_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("CurrencyCode")
+                        .HasMaxLength(3)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(3)")
+                        .HasColumnName("currency_code");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("end_date");
+
+                    b.Property<Guid?>("OrganizerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("organizer_id");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("price");
+
+                    b.Property<string>("PromotionType")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("promotion_type");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("start_date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("WorkshopId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("workshop_id");
+
+                    b.HasKey("PromotionId")
+                        .HasName("PK__Promotio__2CB9556B2C8CD7C8");
+
+                    b.HasIndex("OrganizerId");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("Promotion", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.Review", b =>
@@ -462,13 +560,63 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("ReviewId")
-                        .HasName("PK__Review__60883D90BBCF3137");
+                        .HasName("PK__Review__60883D90FB2B51AA");
 
                     b.HasIndex("ParticipantId");
 
                     b.HasIndex("WorkshopId");
 
                     b.ToTable("Review", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.Subscription", b =>
+                {
+                    b.Property<Guid>("SubscriptionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("subscription_id");
+
+                    b.Property<bool?>("AutoRenew")
+                        .HasColumnType("bit")
+                        .HasColumnName("auto_renew");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("end_date");
+
+                    b.Property<DateTime?>("StartDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("start_date")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("Tier")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("tier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("SubscriptionId")
+                        .HasName("PK__Subscrip__863A7EC1425E97CF");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Subscription", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.Ticket", b =>
@@ -518,7 +666,7 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("TicketId")
-                        .HasName("PK__Ticket__D596F96BAA96C801");
+                        .HasName("PK__Ticket__D596F96BCA20FFB1");
 
                     b.HasIndex("ParticipantId");
 
@@ -584,7 +732,7 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("TransactionId")
-                        .HasName("PK__Transact__85C600AFBDF9DFBF");
+                        .HasName("PK__Transact__85C600AFBC29D7EE");
 
                     b.HasIndex("ParticipantId");
 
@@ -592,7 +740,7 @@ namespace Repository.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.HasIndex(new[] { "TransactionReference" }, "UQ__Transact__F0DAF2E855072DED")
+                    b.HasIndex(new[] { "TransactionReference" }, "UQ__Transact__F0DAF2E82F8DC13B")
                         .IsUnique()
                         .HasFilter("[transaction_reference] IS NOT NULL");
 
@@ -660,10 +808,12 @@ namespace Repository.Migrations
                         .HasColumnName("profile_image_url");
 
                     b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text")
+                        .HasColumnName("refresh_token");
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime")
+                        .HasColumnName("refresh_token_expiry_time");
 
                     b.Property<string>("Role")
                         .HasMaxLength(50)
@@ -678,9 +828,9 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("UserId")
-                        .HasName("PK__User__B9BE370FB245A9CC");
+                        .HasName("PK__User__B9BE370F02E16F77");
 
-                    b.HasIndex(new[] { "Email" }, "UQ__User__AB6E61647CFB7D18")
+                    b.HasIndex(new[] { "Email" }, "UQ__User__AB6E6164168C33A0")
                         .IsUnique()
                         .HasFilter("[email] IS NOT NULL");
 
@@ -689,12 +839,12 @@ namespace Repository.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("88d9b72c-5387-4d0e-9051-9469e8c5f7b6"),
+                            UserId = new Guid("96173225-e65f-493a-a69a-eb3b688a581b"),
                             Email = "admin@gmail.com",
                             EmailVerified = true,
                             FirstName = "Alice",
                             LastName = "Smith",
-                            PasswordHash = "$2a$11$p8.zexmNkOK0t6Gw7Ocog.pDBfrxNngyyL6nx80i0WG7DSoCpjhbm",
+                            PasswordHash = "$2a$11$FR2Ki3YCqkFCsdULGZZPiOfOWzqWBy56BMuPz/MjqeyMOxDQ3xk8W",
                             PhoneNumber = "1234567890",
                             PhoneVerified = true,
                             ProfileImageUrl = "https://example.com/profile_image_1.jpg",
@@ -702,12 +852,12 @@ namespace Repository.Migrations
                         },
                         new
                         {
-                            UserId = new Guid("d572044d-25e0-4b06-9471-6f5f5b1789fa"),
+                            UserId = new Guid("45fe7490-9058-41ec-99c5-e3c806d8763c"),
                             Email = "org@gmail.com",
                             EmailVerified = true,
                             FirstName = "Bob",
                             LastName = "Johnson",
-                            PasswordHash = "$2a$11$s8JGyt8Uz/qvB71dZ/9NcO6OnsNb7Vawd3kCtjqsy4D/oZsSmNzeO",
+                            PasswordHash = "$2a$11$nRoy13hETCslCWMu/JJtWOXRyeXLU18ItxcQbDYuVAmmsIzczWTly",
                             PhoneNumber = "9876543210",
                             PhoneVerified = true,
                             ProfileImageUrl = "https://example.com/profile_image_2.jpg",
@@ -715,12 +865,12 @@ namespace Repository.Migrations
                         },
                         new
                         {
-                            UserId = new Guid("9ad88b67-870d-4a64-a508-25cc917fc0aa"),
+                            UserId = new Guid("4152f4cc-dba0-466b-84c4-30cc256f1c4f"),
                             Email = "charlie@example.com",
                             EmailVerified = true,
                             FirstName = "Charlie",
                             LastName = "Brown",
-                            PasswordHash = "$2a$11$TmY5zpQNlwtRJ5fCzIxeZ.egap4mCu8rM8ohJKumg6LFSjRCPpmTS",
+                            PasswordHash = "$2a$11$v9fBhxAbETNORWTAijyh6.b8d/7DWnhVGzLfpWHKcjZ/x7ehy2YTm",
                             PhoneNumber = "5551234567",
                             PhoneVerified = true,
                             ProfileImageUrl = "https://example.com/profile_image_3.jpg",
@@ -761,12 +911,6 @@ namespace Repository.Migrations
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("datetime")
                         .HasColumnName("end_time");
-
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("image_url");
 
                     b.Property<decimal?>("Latitude")
                         .HasColumnType("decimal(10, 8)")
@@ -837,17 +981,63 @@ namespace Repository.Migrations
                         .HasColumnName("video_url");
 
                     b.HasKey("WorkshopId")
-                        .HasName("PK__Workshop__EA6B05592F621DA2");
+                        .HasName("PK__Workshop__EA6B0559AAAD1465");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("OrganizerId");
 
-                    b.HasIndex(new[] { "Slug" }, "UQ__Workshop__32DD1E4C022E4DB2")
+                    b.HasIndex(new[] { "Slug" }, "UQ__Workshop__32DD1E4C1ED9DC10")
                         .IsUnique()
                         .HasFilter("[slug] IS NOT NULL");
 
                     b.ToTable("Workshop", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.WorkshopImage", b =>
+                {
+                    b.Property<Guid>("ImageId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("image_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("image_url");
+
+                    b.Property<bool?>("IsPrimary")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_primary");
+
+                    b.Property<Guid?>("WorkshopId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("workshop_id");
+
+                    b.HasKey("ImageId")
+                        .HasName("PK__Workshop__DC9AC95561A32F46");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("WorkshopImage", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.Commission", b =>
+                {
+                    b.HasOne("Repository.Models.Workshop", "Workshop")
+                        .WithMany("Commissions")
+                        .HasForeignKey("WorkshopId")
+                        .HasConstraintName("FK_Commission_Workshop");
+
+                    b.Navigation("Workshop");
                 });
 
             modelBuilder.Entity("Repository.Models.EventAnalytic", b =>
@@ -855,7 +1045,7 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Models.Workshop", "Workshop")
                         .WithMany("EventAnalytics")
                         .HasForeignKey("WorkshopId")
-                        .HasConstraintName("FK__EventAnal__works__7C4F7684");
+                        .HasConstraintName("FK_EventAnalytics_Workshop");
 
                     b.Navigation("Workshop");
                 });
@@ -865,7 +1055,7 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Models.User", "Participant")
                         .WithMany("Orders")
                         .HasForeignKey("ParticipantId")
-                        .HasConstraintName("FK__Order__participa__787EE5A0");
+                        .HasConstraintName("FK_Order_User");
 
                     b.Navigation("Participant");
                 });
@@ -875,17 +1065,17 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Models.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
-                        .HasConstraintName("FK__OrderDeta__order__797309D9");
+                        .HasConstraintName("FK_OrderDetails_Order");
 
                     b.HasOne("Repository.Models.Ticket", "Ticket")
                         .WithMany("OrderDetails")
                         .HasForeignKey("TicketId")
-                        .HasConstraintName("FK__OrderDeta__ticke__7B5B524B");
+                        .HasConstraintName("FK_OrderDetails_Ticket");
 
                     b.HasOne("Repository.Models.Workshop", "Workshop")
                         .WithMany("OrderDetails")
                         .HasForeignKey("WorkshopId")
-                        .HasConstraintName("FK__OrderDeta__works__7A672E12");
+                        .HasConstraintName("FK_OrderDetails_Workshop");
 
                     b.Navigation("Order");
 
@@ -899,9 +1089,26 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Models.User", "User")
                         .WithMany("Organizers")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("FK__Organizer__user___07C12930");
+                        .HasConstraintName("FK_Organizer_User");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Repository.Models.Promotion", b =>
+                {
+                    b.HasOne("Repository.Models.Organizer", "Organizer")
+                        .WithMany("Promotions")
+                        .HasForeignKey("OrganizerId")
+                        .HasConstraintName("FK_Promotion_Organizer");
+
+                    b.HasOne("Repository.Models.Workshop", "Workshop")
+                        .WithMany("Promotions")
+                        .HasForeignKey("WorkshopId")
+                        .HasConstraintName("FK_Promotion_Workshop");
+
+                    b.Navigation("Organizer");
+
+                    b.Navigation("Workshop");
                 });
 
             modelBuilder.Entity("Repository.Models.Review", b =>
@@ -909,16 +1116,26 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Models.User", "Participant")
                         .WithMany("Reviews")
                         .HasForeignKey("ParticipantId")
-                        .HasConstraintName("FK__Review__particip__778AC167");
+                        .HasConstraintName("FK_Review_Participant");
 
                     b.HasOne("Repository.Models.Workshop", "Workshop")
                         .WithMany("Reviews")
                         .HasForeignKey("WorkshopId")
-                        .HasConstraintName("FK__Review__workshop__76969D2E");
+                        .HasConstraintName("FK_Review_Workshop");
 
                     b.Navigation("Participant");
 
                     b.Navigation("Workshop");
+                });
+
+            modelBuilder.Entity("Repository.Models.Subscription", b =>
+                {
+                    b.HasOne("Repository.Models.User", "User")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_Subscription_User");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Repository.Models.Ticket", b =>
@@ -926,12 +1143,12 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Models.User", "Participant")
                         .WithMany("Tickets")
                         .HasForeignKey("ParticipantId")
-                        .HasConstraintName("FK__Ticket__particip__72C60C4A");
+                        .HasConstraintName("FK_Ticket_Participant");
 
                     b.HasOne("Repository.Models.Workshop", "Workshop")
                         .WithMany("Tickets")
                         .HasForeignKey("WorkshopId")
-                        .HasConstraintName("FK__Ticket__workshop__71D1E811");
+                        .HasConstraintName("FK_Ticket_Workshop");
 
                     b.Navigation("Participant");
 
@@ -943,17 +1160,17 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Models.User", "Participant")
                         .WithMany("Transactions")
                         .HasForeignKey("ParticipantId")
-                        .HasConstraintName("FK__Transacti__parti__74AE54BC");
+                        .HasConstraintName("FK_Transaction_Participant");
 
                     b.HasOne("Repository.Models.PaymentMethod", "PaymentMethod")
                         .WithMany("Transactions")
                         .HasForeignKey("PaymentMethodId")
-                        .HasConstraintName("FK__Transacti__payme__75A278F5");
+                        .HasConstraintName("FK_Transaction_PaymentMethod");
 
                     b.HasOne("Repository.Models.Ticket", "Ticket")
                         .WithMany("Transactions")
                         .HasForeignKey("TicketId")
-                        .HasConstraintName("FK__Transacti__ticke__73BA3083");
+                        .HasConstraintName("FK_Transaction_Ticket");
 
                     b.Navigation("Participant");
 
@@ -967,16 +1184,26 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Models.Category", "Category")
                         .WithMany("Workshops")
                         .HasForeignKey("CategoryId")
-                        .HasConstraintName("FK__Workshop__catego__70DDC3D8");
+                        .HasConstraintName("FK_Workshop_Category");
 
                     b.HasOne("Repository.Models.Organizer", "Organizer")
                         .WithMany("Workshops")
                         .HasForeignKey("OrganizerId")
-                        .HasConstraintName("FK__Workshop__organi__6FE99F9F");
+                        .HasConstraintName("FK_Workshop_Organizer");
 
                     b.Navigation("Category");
 
                     b.Navigation("Organizer");
+                });
+
+            modelBuilder.Entity("Repository.Models.WorkshopImage", b =>
+                {
+                    b.HasOne("Repository.Models.Workshop", "Workshop")
+                        .WithMany("WorkshopImages")
+                        .HasForeignKey("WorkshopId")
+                        .HasConstraintName("FK_WorkshopImage_Workshop");
+
+                    b.Navigation("Workshop");
                 });
 
             modelBuilder.Entity("Repository.Models.Category", b =>
@@ -991,6 +1218,8 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Repository.Models.Organizer", b =>
                 {
+                    b.Navigation("Promotions");
+
                     b.Navigation("Workshops");
                 });
 
@@ -1014,6 +1243,8 @@ namespace Repository.Migrations
 
                     b.Navigation("Reviews");
 
+                    b.Navigation("Subscriptions");
+
                     b.Navigation("Tickets");
 
                     b.Navigation("Transactions");
@@ -1021,13 +1252,19 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Repository.Models.Workshop", b =>
                 {
+                    b.Navigation("Commissions");
+
                     b.Navigation("EventAnalytics");
 
                     b.Navigation("OrderDetails");
 
+                    b.Navigation("Promotions");
+
                     b.Navigation("Reviews");
 
                     b.Navigation("Tickets");
+
+                    b.Navigation("WorkshopImages");
                 });
 #pragma warning restore 612, 618
         }

@@ -26,7 +26,7 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditLog__9E2397E01111547E", x => x.log_id);
+                    table.PrimaryKey("PK__AuditLog__9E2397E0775D0C7B", x => x.log_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -42,7 +42,7 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Category__D54EE9B4DDFAF6E2", x => x.category_id);
+                    table.PrimaryKey("PK__Category__D54EE9B4999D4519", x => x.category_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -60,7 +60,7 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__News__4C27CCD853583D15", x => x.news_id);
+                    table.PrimaryKey("PK__News__4C27CCD8F7E3AF43", x => x.news_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -75,7 +75,7 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__PaymentM__8A3EA9EBDDCC480A", x => x.payment_method_id);
+                    table.PrimaryKey("PK__PaymentM__8A3EA9EBA7FDCED2", x => x.payment_method_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -92,14 +92,14 @@ namespace Repository.Migrations
                     profile_image_url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     email_verified = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
                     phone_verified = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
+                    refresh_token = table.Column<string>(type: "text", nullable: true),
+                    refresh_token_expiry_time = table.Column<DateTime>(type: "datetime", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__User__B9BE370FB245A9CC", x => x.user_id);
+                    table.PrimaryKey("PK__User__B9BE370F02E16F77", x => x.user_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -117,9 +117,9 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Order__46596229690060C8", x => x.order_id);
+                    table.PrimaryKey("PK__Order__465962298BD6BFF4", x => x.order_id);
                     table.ForeignKey(
-                        name: "FK__Order__participa__787EE5A0",
+                        name: "FK_Order_User",
                         column: x => x.participant_id,
                         principalTable: "User",
                         principalColumn: "user_id");
@@ -135,16 +135,39 @@ namespace Repository.Migrations
                     contact_email = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     contact_phone = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true),
                     website_url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    social_links = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    social_links = table.Column<string>(type: "text", nullable: true),
                     verified = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Organize__06347014926AE89D", x => x.organizer_id);
+                    table.PrimaryKey("PK__Organize__063470141F69041A", x => x.organizer_id);
                     table.ForeignKey(
-                        name: "FK__Organizer__user___07C12930",
+                        name: "FK_Organizer_User",
+                        column: x => x.user_id,
+                        principalTable: "User",
+                        principalColumn: "user_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscription",
+                columns: table => new
+                {
+                    subscription_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    tier = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    start_date = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    end_date = table.Column<DateTime>(type: "datetime", nullable: true),
+                    auto_renew = table.Column<bool>(type: "bit", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Subscrip__863A7EC1425E97CF", x => x.subscription_id);
+                    table.ForeignKey(
+                        name: "FK_Subscription_User",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "user_id");
@@ -170,7 +193,6 @@ namespace Repository.Migrations
                     price = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
                     currency_code = table.Column<string>(type: "varchar(3)", unicode: false, maxLength: 3, nullable: true),
                     capacity = table.Column<int>(type: "int", nullable: true),
-                    image_url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     video_url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
@@ -178,17 +200,38 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Workshop__EA6B05592F621DA2", x => x.workshop_id);
+                    table.PrimaryKey("PK__Workshop__EA6B0559AAAD1465", x => x.workshop_id);
                     table.ForeignKey(
-                        name: "FK__Workshop__catego__70DDC3D8",
+                        name: "FK_Workshop_Category",
                         column: x => x.category_id,
                         principalTable: "Category",
                         principalColumn: "category_id");
                     table.ForeignKey(
-                        name: "FK__Workshop__organi__6FE99F9F",
+                        name: "FK_Workshop_Organizer",
                         column: x => x.organizer_id,
                         principalTable: "Organizer",
                         principalColumn: "organizer_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Commission",
+                columns: table => new
+                {
+                    commission_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    workshop_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    commission_rate = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
+                    total_commission = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Commissi__D19D7CC994FB9C82", x => x.commission_id);
+                    table.ForeignKey(
+                        name: "FK_Commission_Workshop",
+                        column: x => x.workshop_id,
+                        principalTable: "Workshop",
+                        principalColumn: "workshop_id");
                 });
 
             migrationBuilder.CreateTable(
@@ -206,9 +249,39 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__EventAna__D5DC3DE1FAF3AB89", x => x.analytics_id);
+                    table.PrimaryKey("PK__EventAna__D5DC3DE1137F8C0D", x => x.analytics_id);
                     table.ForeignKey(
-                        name: "FK__EventAnal__works__7C4F7684",
+                        name: "FK_EventAnalytics_Workshop",
+                        column: x => x.workshop_id,
+                        principalTable: "Workshop",
+                        principalColumn: "workshop_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Promotion",
+                columns: table => new
+                {
+                    promotion_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    organizer_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    workshop_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    promotion_type = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    start_date = table.Column<DateTime>(type: "datetime", nullable: true),
+                    end_date = table.Column<DateTime>(type: "datetime", nullable: true),
+                    price = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    currency_code = table.Column<string>(type: "varchar(3)", unicode: false, maxLength: 3, nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Promotio__2CB9556B2C8CD7C8", x => x.promotion_id);
+                    table.ForeignKey(
+                        name: "FK_Promotion_Organizer",
+                        column: x => x.organizer_id,
+                        principalTable: "Organizer",
+                        principalColumn: "organizer_id");
+                    table.ForeignKey(
+                        name: "FK_Promotion_Workshop",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -229,14 +302,14 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Review__60883D90BBCF3137", x => x.review_id);
+                    table.PrimaryKey("PK__Review__60883D90FB2B51AA", x => x.review_id);
                     table.ForeignKey(
-                        name: "FK__Review__particip__778AC167",
+                        name: "FK_Review_Participant",
                         column: x => x.participant_id,
                         principalTable: "User",
                         principalColumn: "user_id");
                     table.ForeignKey(
-                        name: "FK__Review__workshop__76969D2E",
+                        name: "FK_Review_Workshop",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -258,14 +331,34 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Ticket__D596F96BAA96C801", x => x.ticket_id);
+                    table.PrimaryKey("PK__Ticket__D596F96BCA20FFB1", x => x.ticket_id);
                     table.ForeignKey(
-                        name: "FK__Ticket__particip__72C60C4A",
+                        name: "FK_Ticket_Participant",
                         column: x => x.participant_id,
                         principalTable: "User",
                         principalColumn: "user_id");
                     table.ForeignKey(
-                        name: "FK__Ticket__workshop__71D1E811",
+                        name: "FK_Ticket_Workshop",
+                        column: x => x.workshop_id,
+                        principalTable: "Workshop",
+                        principalColumn: "workshop_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkshopImage",
+                columns: table => new
+                {
+                    image_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    workshop_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    image_url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    is_primary = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Workshop__DC9AC95561A32F46", x => x.image_id);
+                    table.ForeignKey(
+                        name: "FK_WorkshopImage_Workshop",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -288,19 +381,19 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__OrderDet__F6FB5AE40F937559", x => x.order_details_id);
+                    table.PrimaryKey("PK__OrderDet__F6FB5AE44C7C30C5", x => x.order_details_id);
                     table.ForeignKey(
-                        name: "FK__OrderDeta__order__797309D9",
+                        name: "FK_OrderDetails_Order",
                         column: x => x.order_id,
                         principalTable: "Order",
                         principalColumn: "order_id");
                     table.ForeignKey(
-                        name: "FK__OrderDeta__ticke__7B5B524B",
+                        name: "FK_OrderDetails_Ticket",
                         column: x => x.ticket_id,
                         principalTable: "Ticket",
                         principalColumn: "ticket_id");
                     table.ForeignKey(
-                        name: "FK__OrderDeta__works__7A672E12",
+                        name: "FK_OrderDetails_Workshop",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -324,19 +417,19 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Transact__85C600AFBDF9DFBF", x => x.transaction_id);
+                    table.PrimaryKey("PK__Transact__85C600AFBC29D7EE", x => x.transaction_id);
                     table.ForeignKey(
-                        name: "FK__Transacti__parti__74AE54BC",
+                        name: "FK_Transaction_Participant",
                         column: x => x.participant_id,
                         principalTable: "User",
                         principalColumn: "user_id");
                     table.ForeignKey(
-                        name: "FK__Transacti__payme__75A278F5",
+                        name: "FK_Transaction_PaymentMethod",
                         column: x => x.payment_method_id,
                         principalTable: "PaymentMethod",
                         principalColumn: "payment_method_id");
                     table.ForeignKey(
-                        name: "FK__Transacti__ticke__73BA3083",
+                        name: "FK_Transaction_Ticket",
                         column: x => x.ticket_id,
                         principalTable: "Ticket",
                         principalColumn: "ticket_id");
@@ -344,27 +437,32 @@ namespace Repository.Migrations
 
             migrationBuilder.InsertData(
                 table: "User",
-                columns: new[] { "user_id", "email", "email_verified", "first_name", "last_name", "password_hash", "phone_number", "phone_verified", "profile_image_url", "RefreshToken", "RefreshTokenExpiryTime", "role" },
+                columns: new[] { "user_id", "email", "email_verified", "first_name", "last_name", "password_hash", "phone_number", "phone_verified", "profile_image_url", "refresh_token", "refresh_token_expiry_time", "role" },
                 values: new object[,]
                 {
-                    { new Guid("88d9b72c-5387-4d0e-9051-9469e8c5f7b6"), "admin@gmail.com", true, "Alice", "Smith", "$2a$11$p8.zexmNkOK0t6Gw7Ocog.pDBfrxNngyyL6nx80i0WG7DSoCpjhbm", "1234567890", true, "https://example.com/profile_image_1.jpg", null, null, "admin" },
-                    { new Guid("9ad88b67-870d-4a64-a508-25cc917fc0aa"), "charlie@example.com", true, "Charlie", "Brown", "$2a$11$TmY5zpQNlwtRJ5fCzIxeZ.egap4mCu8rM8ohJKumg6LFSjRCPpmTS", "5551234567", true, "https://example.com/profile_image_3.jpg", null, null, "Organizer" },
-                    { new Guid("d572044d-25e0-4b06-9471-6f5f5b1789fa"), "org@gmail.com", true, "Bob", "Johnson", "$2a$11$s8JGyt8Uz/qvB71dZ/9NcO6OnsNb7Vawd3kCtjqsy4D/oZsSmNzeO", "9876543210", true, "https://example.com/profile_image_2.jpg", null, null, "Organizer" }
+                    { new Guid("4152f4cc-dba0-466b-84c4-30cc256f1c4f"), "charlie@example.com", true, "Charlie", "Brown", "$2a$11$v9fBhxAbETNORWTAijyh6.b8d/7DWnhVGzLfpWHKcjZ/x7ehy2YTm", "5551234567", true, "https://example.com/profile_image_3.jpg", null, null, "Organizer" },
+                    { new Guid("45fe7490-9058-41ec-99c5-e3c806d8763c"), "org@gmail.com", true, "Bob", "Johnson", "$2a$11$nRoy13hETCslCWMu/JJtWOXRyeXLU18ItxcQbDYuVAmmsIzczWTly", "9876543210", true, "https://example.com/profile_image_2.jpg", null, null, "Organizer" },
+                    { new Guid("96173225-e65f-493a-a69a-eb3b688a581b"), "admin@gmail.com", true, "Alice", "Smith", "$2a$11$FR2Ki3YCqkFCsdULGZZPiOfOWzqWBy56BMuPz/MjqeyMOxDQ3xk8W", "1234567890", true, "https://example.com/profile_image_1.jpg", null, null, "admin" }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Category__32DD1E4C135F590A",
+                name: "UQ__Category__32DD1E4CA9B28410",
                 table: "Category",
                 column: "slug",
                 unique: true,
                 filter: "[slug] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Category__72E12F1B3A211C2C",
+                name: "UQ__Category__72E12F1BF3C908B9",
                 table: "Category",
                 column: "name",
                 unique: true,
                 filter: "[name] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Commission_workshop_id",
+                table: "Commission",
+                column: "workshop_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EventAnalytics_workshop_id",
@@ -372,7 +470,7 @@ namespace Repository.Migrations
                 column: "workshop_id");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__News__32DD1E4C151519C4",
+                name: "UQ__News__32DD1E4C5A8B7C4F",
                 table: "News",
                 column: "slug",
                 unique: true,
@@ -404,6 +502,16 @@ namespace Repository.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Promotion_organizer_id",
+                table: "Promotion",
+                column: "organizer_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Promotion_workshop_id",
+                table: "Promotion",
+                column: "workshop_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Review_participant_id",
                 table: "Review",
                 column: "participant_id");
@@ -412,6 +520,11 @@ namespace Repository.Migrations
                 name: "IX_Review_workshop_id",
                 table: "Review",
                 column: "workshop_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscription_user_id",
+                table: "Subscription",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ticket_participant_id",
@@ -439,14 +552,14 @@ namespace Repository.Migrations
                 column: "ticket_id");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Transact__F0DAF2E855072DED",
+                name: "UQ__Transact__F0DAF2E82F8DC13B",
                 table: "Transaction",
                 column: "transaction_reference",
                 unique: true,
                 filter: "[transaction_reference] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__User__AB6E61647CFB7D18",
+                name: "UQ__User__AB6E6164168C33A0",
                 table: "User",
                 column: "email",
                 unique: true,
@@ -463,11 +576,16 @@ namespace Repository.Migrations
                 column: "organizer_id");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Workshop__32DD1E4C022E4DB2",
+                name: "UQ__Workshop__32DD1E4C1ED9DC10",
                 table: "Workshop",
                 column: "slug",
                 unique: true,
                 filter: "[slug] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkshopImage_workshop_id",
+                table: "WorkshopImage",
+                column: "workshop_id");
         }
 
         /// <inheritdoc />
@@ -475,6 +593,9 @@ namespace Repository.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AuditLog");
+
+            migrationBuilder.DropTable(
+                name: "Commission");
 
             migrationBuilder.DropTable(
                 name: "EventAnalytics");
@@ -486,10 +607,19 @@ namespace Repository.Migrations
                 name: "OrderDetails");
 
             migrationBuilder.DropTable(
+                name: "Promotion");
+
+            migrationBuilder.DropTable(
                 name: "Review");
 
             migrationBuilder.DropTable(
+                name: "Subscription");
+
+            migrationBuilder.DropTable(
                 name: "Transaction");
+
+            migrationBuilder.DropTable(
+                name: "WorkshopImage");
 
             migrationBuilder.DropTable(
                 name: "Order");
