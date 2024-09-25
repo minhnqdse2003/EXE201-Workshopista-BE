@@ -10,6 +10,6 @@ namespace Repository.Helpers
     {
         public const string Organizer = "Organizer";
         public const string Participant = "Participant";
-        public const string Admin = "admin";
+        public const string Admin = "Admin";
     }
 }

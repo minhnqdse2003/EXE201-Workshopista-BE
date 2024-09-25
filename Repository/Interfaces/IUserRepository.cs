@@ -10,11 +10,19 @@ namespace Repository.Interfaces
     public interface IUserRepository
     {
         Task<IEnumerable<User>> GetAllUsersAsync();
+
         Task<User> GetUserByIdAsync(Guid userId);
+
         Task<User?> GetUserByUserNameAsync(string userName);
+
         Task<User?> GetUserByRefreshToken(string token);
+
         Task CreateUserAsync(User user);
+
         Task UpdateUserAsync(User user);
+
         Task DeleteUserAsync(Guid userId);
+
+        Task<User?> GetUserByEmail(string email);
     }
 }

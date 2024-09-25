@@ -8,7 +8,6 @@ using Repository.Models;
 using Service.Interfaces;
 using Service.Models;
 using Service.Models.Auth;
-using Service.Services.Users;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,7 +17,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Service.Services.Auth
+namespace Service.Services
 {
     public class AuthService : IAuthService
     {
@@ -70,6 +69,13 @@ namespace Service.Services.Auth
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public string DecodeToken(string token, string nameClaim)
+        {
+            var _tokenHandler = new JwtSecurityTokenHandler();
+            Claim? claim = _tokenHandler.ReadJwtToken(token).Claims.FirstOrDefault(t => t.Type.ToString().Equals(nameClaim));
+            return claim != null ? claim.Value : "Error!";
+        }
+
         public string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
@@ -79,7 +85,7 @@ namespace Service.Services.Auth
                 return Convert.ToBase64String(randomNumber);
             }
         }
-    
+
         public async Task<ApiResponse<TokenModel>> Login(LoginModel loginReq)
         {
             var auth = await Authenticate(loginReq.Username, loginReq.Password);
@@ -96,14 +102,14 @@ namespace Service.Services.Auth
             await _userService.UpdateUserAsync(auth.Data);
 
             return ApiResponse<TokenModel>.SuccessResponse(
-                new TokenModel { Token = token, RefreshToken = refreshToken }, 
+                new TokenModel { Token = token, RefreshToken = refreshToken },
                 ResponseMessage.LoginSuccess);
         }
 
         public async Task<ApiResponse<TokenModel>> RefreshToken(string token)
         {
             var user = await _userService.GetUserByRefreshTokenAsync(token);
-            if(user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
             {
                 return ApiResponse<TokenModel>.ErrorResponse(ResponseMessage.Unauthorized);
             }
@@ -117,7 +123,7 @@ namespace Service.Services.Auth
             await _userService.UpdateUserAsync(user);
 
             return ApiResponse<TokenModel>.SuccessResponse(
-                new TokenModel { Token = jwtToken, RefreshToken = newRefreshToken},
+                new TokenModel { Token = jwtToken, RefreshToken = newRefreshToken },
                 ResponseMessage.TokenRefreshed);
         }
     }
