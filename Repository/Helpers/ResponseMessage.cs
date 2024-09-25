@@ -20,6 +20,23 @@ namespace Repository.Helpers
         public const string TokenExpired = "Token has expired.";
         public const string Unauthorized = "Unauthorized access.";
 
+        //Success message for Organizer
+        public const string OrganizerCreateSuccess = "Organizer successfully create.";
+
+        //Error message for Organizer
+        public const string OrganizerCreateFail = "Organizer fail to create.";
+        public const string OrganizerNotFound = "Organizer not found.";
+
+        //Error message for Category
+        public const string CategoryNotFound = "Category not found.";
+
+        //Success message for ticket rank initialize
+        public const string TicketRankCreateSuccess = "Ticket rank successfully create.";
+
+        //Fail message for ticket rank initialize
+        public const string TicketRankCreateFail = "Ticket rank fail to create";
+        public const string TicketRankEmpty = "Ticket rank empty.";
+
         // Validation messages
         public const string InvalidInput = "One or more fields are invalid.";
         public const string MissingRequiredFields = "Required fields are missing.";
@@ -33,6 +50,7 @@ namespace Repository.Helpers
         public const string UpdateSuccess = "Item successfully updated.";
         public const string DeleteSuccess = "Item successfully deleted.";
 
+
         // Error messages for CRUD operations
         public const string CreateFail = "Failed to create the item.";
         public const string ReadFail = "Failed to retrieve the item.";
@@ -45,5 +63,9 @@ namespace Repository.Helpers
         // Validation messages for CRUD
         public const string InvalidCreateRequest = "The create request contains invalid data.";
         public const string InvalidUpdateRequest = "The update request contains invalid data.";
+
+        //Destinition message
+        public const string FromTokenClaims = "[From token claims]";
+        public const string FromRequestModel = "[From request model]";
     }
 }
