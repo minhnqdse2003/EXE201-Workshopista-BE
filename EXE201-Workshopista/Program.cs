@@ -12,7 +12,11 @@ using Serilog;
 using Service.Interfaces;
 using Service.Mapping;
 using Service.Services;
+
+using Service.Services.Workshops;
+
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace EXE201_Workshopista
 {
@@ -23,6 +27,8 @@ namespace EXE201_Workshopista
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.UseSerilog((context, loggerConfig) =>
                  loggerConfig.ReadFrom.Configuration(context.Configuration));
+            builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
             // Add services to the container.
 
@@ -37,8 +43,12 @@ namespace EXE201_Workshopista
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IAuthService,AuthService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IOrganizerService, OrganizerService>();
+            builder.Services.AddScoped<IWorkshopRepository, WorkshopRepository>();
+            builder.Services.AddScoped<IWorkshopService, WorkshopService>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

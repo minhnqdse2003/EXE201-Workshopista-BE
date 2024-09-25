@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Repository.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ namespace Repository.Interfaces
 
         IOrganizerRepository Organizers { get; }
 
+        IWorkshopRepository Workshops { get; }
+        ICategoryRepository Categories { get; }
         int Complete();
     }
 }

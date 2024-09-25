@@ -21,5 +21,7 @@ public partial class Subscription
 
     public DateTime? UpdatedAt { get; set; }
 
+    public virtual ICollection<SubscriptionTransaction> SubscriptionTransactions { get; set; } = new List<SubscriptionTransaction>();
+
     public virtual User? User { get; set; }
 }

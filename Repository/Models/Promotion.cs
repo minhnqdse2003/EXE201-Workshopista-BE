@@ -27,5 +27,7 @@ public partial class Promotion
 
     public virtual Organizer? Organizer { get; set; }
 
+    public virtual ICollection<PromotionTransaction> PromotionTransactions { get; set; } = new List<PromotionTransaction>();
+
     public virtual Workshop? Workshop { get; set; }
 }

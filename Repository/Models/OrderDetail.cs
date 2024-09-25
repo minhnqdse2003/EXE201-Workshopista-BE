@@ -29,5 +29,7 @@ public partial class OrderDetail
 
     public virtual Ticket? Ticket { get; set; }
 
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
     public virtual Workshop? Workshop { get; set; }
 }

@@ -47,6 +47,8 @@ public partial class Workshop
 
     public virtual Category? Category { get; set; }
 
+    public virtual ICollection<CommissionTransaction> CommissionTransactions { get; set; } = new List<CommissionTransaction>();
+
     public virtual ICollection<Commission> Commissions { get; set; } = new List<Commission>();
 
     public virtual ICollection<EventAnalytic> EventAnalytics { get; set; } = new List<EventAnalytic>();
@@ -55,9 +57,13 @@ public partial class Workshop
 
     public virtual Organizer? Organizer { get; set; }
 
+    public virtual ICollection<PromotionTransaction> PromotionTransactions { get; set; } = new List<PromotionTransaction>();
+
     public virtual ICollection<Promotion> Promotions { get; set; } = new List<Promotion>();
 
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+    public virtual ICollection<TicketRank> TicketRanks { get; set; } = new List<TicketRank>();
 
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
