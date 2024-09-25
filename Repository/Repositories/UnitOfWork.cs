@@ -23,7 +23,6 @@ namespace Repository.Repositories
         public IWorkshopRepository Workshops { get; private set; }
         public IOrganizerRepository Organizers { get; private set; }
         public ICategoryRepository Categories { get; private set; }
-
         public int Complete()
         {
             return _context.SaveChanges();
