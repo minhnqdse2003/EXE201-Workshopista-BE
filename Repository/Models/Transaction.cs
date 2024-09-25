@@ -7,29 +7,27 @@ public partial class Transaction
 {
     public Guid TransactionId { get; set; }
 
-    public Guid? TicketId { get; set; }
-
-    public Guid? ParticipantId { get; set; }
-
     public Guid? PaymentMethodId { get; set; }
 
-    public string? TransactionStatus { get; set; }
+    public Guid? UserId { get; set; }
+
+    public string? TransactionType { get; set; }
 
     public decimal? Amount { get; set; }
 
     public string? CurrencyCode { get; set; }
 
-    public string? TransactionReference { get; set; }
-
-    public DateTime? TransactionTime { get; set; }
-
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual User? Participant { get; set; }
+    public virtual ICollection<CommissionTransaction> CommissionTransactions { get; set; } = new List<CommissionTransaction>();
 
     public virtual PaymentMethod? PaymentMethod { get; set; }
 
-    public virtual Ticket? Ticket { get; set; }
+    public virtual ICollection<PromotionTransaction> PromotionTransactions { get; set; } = new List<PromotionTransaction>();
+
+    public virtual ICollection<SubscriptionTransaction> SubscriptionTransactions { get; set; } = new List<SubscriptionTransaction>();
+
+    public virtual User? User { get; set; }
 }

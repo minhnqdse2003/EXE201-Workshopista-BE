@@ -41,7 +41,5 @@ public partial class User
 
     public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
-    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

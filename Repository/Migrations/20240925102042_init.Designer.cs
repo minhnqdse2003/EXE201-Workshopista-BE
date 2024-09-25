@@ -12,7 +12,7 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(Exe201WorkshopistaContext))]
-    [Migration("20240922183638_init")]
+    [Migration("20240925102042_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -33,14 +33,12 @@ namespace Repository.Migrations
 
                     b.Property<string>("Action")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("action");
 
                     b.Property<string>("Entity")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("entity");
 
                     b.Property<Guid?>("EntityId")
@@ -58,7 +56,7 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("LogId")
-                        .HasName("PK__AuditLog__9E2397E0775D0C7B");
+                        .HasName("PK__AuditLog__9E2397E040AF3E39");
 
                     b.ToTable("AuditLog", (string)null);
                 });
@@ -81,14 +79,12 @@ namespace Repository.Migrations
 
                     b.Property<string>("Name")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("name");
 
                     b.Property<string>("Slug")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("slug");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -98,17 +94,64 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("CategoryId")
-                        .HasName("PK__Category__D54EE9B4999D4519");
+                        .HasName("PK__Category__D54EE9B420B124AB");
 
-                    b.HasIndex(new[] { "Slug" }, "UQ__Category__32DD1E4CA9B28410")
+                    b.HasIndex(new[] { "Slug" }, "UQ__Category__32DD1E4C475F73D5")
                         .IsUnique()
                         .HasFilter("[slug] IS NOT NULL");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__Category__72E12F1BF3C908B9")
+                    b.HasIndex(new[] { "Name" }, "UQ__Category__72E12F1B8F3F9A5C")
                         .IsUnique()
                         .HasFilter("[name] IS NOT NULL");
 
                     b.ToTable("Category", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = new Guid("6e9307e9-c73f-47ea-a5f5-0cc7644b332b"),
+                            CreatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9714),
+                            Description = "Workshops focused on business skills, entrepreneurship, and management.",
+                            Name = "Business",
+                            Slug = "business",
+                            UpdatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9723)
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("7172cb37-9eae-48bb-9941-be02ab50cc0e"),
+                            CreatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9728),
+                            Description = "Workshops on software development, AI, cloud computing, and emerging technologies.",
+                            Name = "Technology",
+                            Slug = "technology",
+                            UpdatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9729)
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("0c1b0bee-ec61-4ee9-bb57-b46409b897fb"),
+                            CreatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9733),
+                            Description = "Creative workshops covering arts, crafts, and design.",
+                            Name = "Arts & Crafts",
+                            Slug = "arts-and-crafts",
+                            UpdatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9733)
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("ff79edde-9cda-42b1-8532-6c087ad61d19"),
+                            CreatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9736),
+                            Description = "Workshops focused on fitness, mental health, and overall well-being.",
+                            Name = "Health & Wellness",
+                            Slug = "health-wellness",
+                            UpdatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9736)
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("bc4d26a5-2ebb-4bff-8069-692c6ee30ddc"),
+                            CreatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9739),
+                            Description = "Workshops aimed at personal growth, leadership, and career development.",
+                            Name = "Personal Development",
+                            Slug = "personal-development",
+                            UpdatedAt = new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9739)
+                        });
                 });
 
             modelBuilder.Entity("Repository.Models.Commission", b =>
@@ -128,7 +171,7 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.Property<decimal?>("TotalCommission")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal(18, 2)")
                         .HasColumnName("total_commission");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -142,11 +185,51 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("CommissionId")
-                        .HasName("PK__Commissi__D19D7CC994FB9C82");
+                        .HasName("PK__Commissi__D19D7CC90A4035D4");
 
                     b.HasIndex("WorkshopId");
 
                     b.ToTable("Commission", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.CommissionTransaction", b =>
+                {
+                    b.Property<Guid>("CommissionTransactionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("commission_transaction_id");
+
+                    b.Property<decimal?>("CommissionRate")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("commission_rate");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("TransactionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("transaction_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("WorkshopId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("workshop_id");
+
+                    b.HasKey("CommissionTransactionId")
+                        .HasName("PK__Commissi__32A99DDF3CA1F70E");
+
+                    b.HasIndex("TransactionId");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("CommissionTransaction", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.EventAnalytic", b =>
@@ -166,7 +249,7 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.Property<decimal?>("TotalRevenue")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal(18, 2)")
                         .HasColumnName("total_revenue");
 
                     b.Property<int?>("TotalReviews")
@@ -188,7 +271,7 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("AnalyticsId")
-                        .HasName("PK__EventAna__D5DC3DE1137F8C0D");
+                        .HasName("PK__EventAna__D5DC3DE1912B45AA");
 
                     b.HasIndex("WorkshopId");
 
@@ -213,8 +296,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("image_url");
 
                     b.Property<DateTime?>("PublishedAt")
@@ -223,14 +305,12 @@ namespace Repository.Migrations
 
                     b.Property<string>("Slug")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("slug");
 
                     b.Property<string>("Title")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("title");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -240,9 +320,9 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("NewsId")
-                        .HasName("PK__News__4C27CCD8F7E3AF43");
+                        .HasName("PK__News__4C27CCD8D61AD16C");
 
-                    b.HasIndex(new[] { "Slug" }, "UQ__News__32DD1E4C5A8B7C4F")
+                    b.HasIndex(new[] { "Slug" }, "UQ__News__32DD1E4CEEFB436D")
                         .IsUnique()
                         .HasFilter("[slug] IS NOT NULL");
 
@@ -263,8 +343,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("CurrencyCode")
                         .HasMaxLength(3)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(3)")
+                        .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
 
                     b.Property<Guid?>("ParticipantId")
@@ -273,8 +352,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("PaymentStatus")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("payment_status");
 
                     b.Property<DateTime?>("PaymentTime")
@@ -282,7 +360,7 @@ namespace Repository.Migrations
                         .HasColumnName("payment_time");
 
                     b.Property<decimal?>("TotalAmount")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal(18, 2)")
                         .HasColumnName("total_amount");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -292,7 +370,7 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("OrderId")
-                        .HasName("PK__Order__465962298BD6BFF4");
+                        .HasName("PK__Order__46596229D5600F2F");
 
                     b.HasIndex("ParticipantId");
 
@@ -313,8 +391,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("CurrencyCode")
                         .HasMaxLength(3)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(3)")
+                        .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
 
                     b.Property<Guid?>("OrderId")
@@ -322,7 +399,7 @@ namespace Repository.Migrations
                         .HasColumnName("order_id");
 
                     b.Property<decimal?>("Price")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal(18, 2)")
                         .HasColumnName("price");
 
                     b.Property<int?>("Quantity")
@@ -336,7 +413,7 @@ namespace Repository.Migrations
                         .HasColumnName("ticket_id");
 
                     b.Property<decimal?>("TotalPrice")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal(18, 2)")
                         .HasColumnName("total_price");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -350,7 +427,7 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("OrderDetailsId")
-                        .HasName("PK__OrderDet__F6FB5AE44C7C30C5");
+                        .HasName("PK__OrderDet__F6FB5AE4C762AF40");
 
                     b.HasIndex("OrderId");
 
@@ -369,14 +446,12 @@ namespace Repository.Migrations
 
                     b.Property<string>("ContactEmail")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("contact_email");
 
                     b.Property<string>("ContactPhone")
                         .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("contact_phone");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -387,8 +462,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("OrganizationName")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("organization_name");
 
                     b.Property<string>("SocialLinks")
@@ -413,12 +487,11 @@ namespace Repository.Migrations
 
                     b.Property<string>("WebsiteUrl")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("website_url");
 
                     b.HasKey("OrganizerId")
-                        .HasName("PK__Organize__063470141F69041A");
+                        .HasName("PK__Organize__06347014B8E42884");
 
                     b.HasIndex("UserId");
 
@@ -443,8 +516,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("MethodName")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("method_name");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -454,7 +526,7 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("PaymentMethodId")
-                        .HasName("PK__PaymentM__8A3EA9EBA7FDCED2");
+                        .HasName("PK__PaymentM__8A3EA9EBF19ACE4A");
 
                     b.ToTable("PaymentMethod", (string)null);
                 });
@@ -473,8 +545,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("CurrencyCode")
                         .HasMaxLength(3)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(3)")
+                        .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
 
                     b.Property<DateTime?>("EndDate")
@@ -486,13 +557,12 @@ namespace Repository.Migrations
                         .HasColumnName("organizer_id");
 
                     b.Property<decimal?>("Price")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal(18, 2)")
                         .HasColumnName("price");
 
                     b.Property<string>("PromotionType")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("promotion_type");
 
                     b.Property<DateTime?>("StartDate")
@@ -510,13 +580,55 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("PromotionId")
-                        .HasName("PK__Promotio__2CB9556B2C8CD7C8");
+                        .HasName("PK__Promotio__2CB9556B36D75614");
 
                     b.HasIndex("OrganizerId");
 
                     b.HasIndex("WorkshopId");
 
                     b.ToTable("Promotion", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.PromotionTransaction", b =>
+                {
+                    b.Property<Guid>("PromotionTransactionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("promotion_transaction_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("PromotionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("promotion_id");
+
+                    b.Property<Guid?>("TransactionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("transaction_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("WorkshopId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("workshop_id");
+
+                    b.HasKey("PromotionTransactionId")
+                        .HasName("PK__Promotio__A5C4F6151910D125");
+
+                    b.HasIndex("PromotionId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("PromotionTransaction", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.Review", b =>
@@ -545,8 +657,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("ReviewStatus")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("review_status");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -560,7 +671,7 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("ReviewId")
-                        .HasName("PK__Review__60883D90FB2B51AA");
+                        .HasName("PK__Review__60883D90378C5259");
 
                     b.HasIndex("ParticipantId");
 
@@ -576,7 +687,9 @@ namespace Repository.Migrations
                         .HasColumnName("subscription_id");
 
                     b.Property<bool?>("AutoRenew")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
+                        .HasDefaultValue(true)
                         .HasColumnName("auto_renew");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -597,8 +710,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("Tier")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("tier");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -612,11 +724,47 @@ namespace Repository.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("SubscriptionId")
-                        .HasName("PK__Subscrip__863A7EC1425E97CF");
+                        .HasName("PK__Subscrip__863A7EC1993FA16B");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Subscription", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.SubscriptionTransaction", b =>
+                {
+                    b.Property<Guid>("SubscriptionTransactionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("subscription_transaction_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("SubscriptionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("subscription_id");
+
+                    b.Property<Guid?>("TransactionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("transaction_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.HasKey("SubscriptionTransactionId")
+                        .HasName("PK__Subscrip__762A0D4C91ACD385");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("SubscriptionTransaction", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.Ticket", b =>
@@ -625,54 +773,99 @@ namespace Repository.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("ticket_id");
 
-                    b.Property<DateTime?>("BookingTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasColumnName("booking_time")
-                        .HasDefaultValueSql("(getdate())");
-
                     b.Property<string>("CurrencyCode")
                         .HasMaxLength(3)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(3)")
+                        .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
 
-                    b.Property<Guid?>("ParticipantId")
+                    b.Property<Guid?>("OrderDetailId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("participant_id");
+                        .HasColumnName("order_detail_id");
 
                     b.Property<DateTime?>("PaymentTime")
                         .HasColumnType("datetime")
                         .HasColumnName("payment_time");
 
                     b.Property<decimal?>("Price")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal(18, 2)")
                         .HasColumnName("price");
 
                     b.Property<string>("QrCode")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("qr_code");
 
                     b.Property<string>("Status")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("status");
+
+                    b.Property<Guid?>("TicketRankId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ticket_rank_id");
 
                     b.Property<Guid?>("WorkshopId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("workshop_id");
 
                     b.HasKey("TicketId")
-                        .HasName("PK__Ticket__D596F96BCA20FFB1");
+                        .HasName("PK__Ticket__D596F96B7099B05A");
 
-                    b.HasIndex("ParticipantId");
+                    b.HasIndex("OrderDetailId");
+
+                    b.HasIndex("TicketRankId");
 
                     b.HasIndex("WorkshopId");
 
                     b.ToTable("Ticket", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.TicketRank", b =>
+                {
+                    b.Property<Guid>("TicketRankId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ticket_rank_id");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int")
+                        .HasColumnName("capacity");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("price");
+
+                    b.Property<string>("RankName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("rank_name");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("WorkshopId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("workshop_id");
+
+                    b.HasKey("TicketRankId")
+                        .HasName("PK__TicketRa__1B8160B1D43B79A1");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("TicketRank", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.Transaction", b =>
@@ -693,37 +886,17 @@ namespace Repository.Migrations
 
                     b.Property<string>("CurrencyCode")
                         .HasMaxLength(3)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(3)")
+                        .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
-
-                    b.Property<Guid?>("ParticipantId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("participant_id");
 
                     b.Property<Guid?>("PaymentMethodId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("payment_method_id");
 
-                    b.Property<Guid?>("TicketId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("ticket_id");
-
-                    b.Property<string>("TransactionReference")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("transaction_reference");
-
-                    b.Property<string>("TransactionStatus")
+                    b.Property<string>("TransactionType")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("transaction_status");
-
-                    b.Property<DateTime?>("TransactionTime")
-                        .HasColumnType("datetime")
-                        .HasColumnName("transaction_time");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("transaction_type");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -731,18 +904,16 @@ namespace Repository.Migrations
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.HasKey("TransactionId")
-                        .HasName("PK__Transact__85C600AFBC29D7EE");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
 
-                    b.HasIndex("ParticipantId");
+                    b.HasKey("TransactionId")
+                        .HasName("PK__Transact__85C600AF4A720ABE");
 
                     b.HasIndex("PaymentMethodId");
 
-                    b.HasIndex("TicketId");
-
-                    b.HasIndex(new[] { "TransactionReference" }, "UQ__Transact__F0DAF2E82F8DC13B")
-                        .IsUnique()
-                        .HasFilter("[transaction_reference] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Transaction", (string)null);
                 });
@@ -761,8 +932,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("email");
 
                     b.Property<bool?>("EmailVerified")
@@ -773,26 +943,22 @@ namespace Repository.Migrations
 
                     b.Property<string>("FirstName")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("first_name");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("last_name");
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("phone_number");
 
                     b.Property<bool?>("PhoneVerified")
@@ -803,12 +969,12 @@ namespace Repository.Migrations
 
                     b.Property<string>("ProfileImageUrl")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("profile_image_url");
 
                     b.Property<string>("RefreshToken")
-                        .HasColumnType("text")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("refresh_token");
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
@@ -817,8 +983,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("Role")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("role");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -828,9 +993,9 @@ namespace Repository.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("UserId")
-                        .HasName("PK__User__B9BE370F02E16F77");
+                        .HasName("PK__User__B9BE370F4336E3EF");
 
-                    b.HasIndex(new[] { "Email" }, "UQ__User__AB6E6164168C33A0")
+                    b.HasIndex(new[] { "Email" }, "UQ__User__AB6E616457DE1028")
                         .IsUnique()
                         .HasFilter("[email] IS NOT NULL");
 
@@ -839,12 +1004,12 @@ namespace Repository.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("96173225-e65f-493a-a69a-eb3b688a581b"),
+                            UserId = new Guid("80d160be-4242-40d3-a1c5-f4942ebcf220"),
                             Email = "admin@gmail.com",
                             EmailVerified = true,
                             FirstName = "Alice",
                             LastName = "Smith",
-                            PasswordHash = "$2a$11$FR2Ki3YCqkFCsdULGZZPiOfOWzqWBy56BMuPz/MjqeyMOxDQ3xk8W",
+                            PasswordHash = "$2a$11$HjaKxLuMPe34u6YQsVmx1O8hHTUPLIqRV7ksFPPhkHKhcknK8gmCm",
                             PhoneNumber = "1234567890",
                             PhoneVerified = true,
                             ProfileImageUrl = "https://example.com/profile_image_1.jpg",
@@ -852,12 +1017,12 @@ namespace Repository.Migrations
                         },
                         new
                         {
-                            UserId = new Guid("45fe7490-9058-41ec-99c5-e3c806d8763c"),
+                            UserId = new Guid("686bcd24-a3c8-41f2-963a-b3bd36cdb4ef"),
                             Email = "org@gmail.com",
                             EmailVerified = true,
                             FirstName = "Bob",
                             LastName = "Johnson",
-                            PasswordHash = "$2a$11$nRoy13hETCslCWMu/JJtWOXRyeXLU18ItxcQbDYuVAmmsIzczWTly",
+                            PasswordHash = "$2a$11$BEwSD8C/3W9GUTS2.6ZfW.AxLOQk/7QY60DrtjGRivxKcyIi2xQxO",
                             PhoneNumber = "9876543210",
                             PhoneVerified = true,
                             ProfileImageUrl = "https://example.com/profile_image_2.jpg",
@@ -865,12 +1030,12 @@ namespace Repository.Migrations
                         },
                         new
                         {
-                            UserId = new Guid("4152f4cc-dba0-466b-84c4-30cc256f1c4f"),
+                            UserId = new Guid("5d251802-e09a-4c54-8d4e-320a912fc568"),
                             Email = "charlie@example.com",
                             EmailVerified = true,
                             FirstName = "Charlie",
                             LastName = "Brown",
-                            PasswordHash = "$2a$11$v9fBhxAbETNORWTAijyh6.b8d/7DWnhVGzLfpWHKcjZ/x7ehy2YTm",
+                            PasswordHash = "$2a$11$NHJkE5SI/1.GhYGgSUyzPO5gEJ5AINRsYgLeCwCh09Cz5J0lZf7Ey",
                             PhoneNumber = "5551234567",
                             PhoneVerified = true,
                             ProfileImageUrl = "https://example.com/profile_image_3.jpg",
@@ -900,8 +1065,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("CurrencyCode")
                         .HasMaxLength(3)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(3)")
+                        .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
 
                     b.Property<string>("Description")
@@ -918,20 +1082,17 @@ namespace Repository.Migrations
 
                     b.Property<string>("LocationAddress")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("location_address");
 
                     b.Property<string>("LocationCity")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("location_city");
 
                     b.Property<string>("LocationDistrict")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("location_district");
 
                     b.Property<decimal?>("Longitude")
@@ -943,13 +1104,12 @@ namespace Repository.Migrations
                         .HasColumnName("organizer_id");
 
                     b.Property<decimal?>("Price")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal(18, 2)")
                         .HasColumnName("price");
 
                     b.Property<string>("Slug")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("slug");
 
                     b.Property<DateTime?>("StartTime")
@@ -958,14 +1118,12 @@ namespace Repository.Migrations
 
                     b.Property<string>("Status")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("status");
 
                     b.Property<string>("Title")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("title");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -976,18 +1134,17 @@ namespace Repository.Migrations
 
                     b.Property<string>("VideoUrl")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("video_url");
 
                     b.HasKey("WorkshopId")
-                        .HasName("PK__Workshop__EA6B0559AAAD1465");
+                        .HasName("PK__Workshop__EA6B0559D8B60A03");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("OrganizerId");
 
-                    b.HasIndex(new[] { "Slug" }, "UQ__Workshop__32DD1E4C1ED9DC10")
+                    b.HasIndex(new[] { "Slug" }, "UQ__Workshop__32DD1E4CC1ABD095")
                         .IsUnique()
                         .HasFilter("[slug] IS NOT NULL");
 
@@ -1008,8 +1165,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("image_url");
 
                     b.Property<bool?>("IsPrimary")
@@ -1023,7 +1179,7 @@ namespace Repository.Migrations
                         .HasColumnName("workshop_id");
 
                     b.HasKey("ImageId")
-                        .HasName("PK__Workshop__DC9AC95561A32F46");
+                        .HasName("PK__Workshop__DC9AC9555C0A8683");
 
                     b.HasIndex("WorkshopId");
 
@@ -1036,6 +1192,23 @@ namespace Repository.Migrations
                         .WithMany("Commissions")
                         .HasForeignKey("WorkshopId")
                         .HasConstraintName("FK_Commission_Workshop");
+
+                    b.Navigation("Workshop");
+                });
+
+            modelBuilder.Entity("Repository.Models.CommissionTransaction", b =>
+                {
+                    b.HasOne("Repository.Models.Transaction", "Transaction")
+                        .WithMany("CommissionTransactions")
+                        .HasForeignKey("TransactionId")
+                        .HasConstraintName("FK_CommissionTransaction_Transaction");
+
+                    b.HasOne("Repository.Models.Workshop", "Workshop")
+                        .WithMany("CommissionTransactions")
+                        .HasForeignKey("WorkshopId")
+                        .HasConstraintName("FK_CommissionTransaction_Workshop");
+
+                    b.Navigation("Transaction");
 
                     b.Navigation("Workshop");
                 });
@@ -1111,12 +1284,36 @@ namespace Repository.Migrations
                     b.Navigation("Workshop");
                 });
 
+            modelBuilder.Entity("Repository.Models.PromotionTransaction", b =>
+                {
+                    b.HasOne("Repository.Models.Promotion", "Promotion")
+                        .WithMany("PromotionTransactions")
+                        .HasForeignKey("PromotionId")
+                        .HasConstraintName("FK_PromotionTransaction_Promotion");
+
+                    b.HasOne("Repository.Models.Transaction", "Transaction")
+                        .WithMany("PromotionTransactions")
+                        .HasForeignKey("TransactionId")
+                        .HasConstraintName("FK_PromotionTransaction_Transaction");
+
+                    b.HasOne("Repository.Models.Workshop", "Workshop")
+                        .WithMany("PromotionTransactions")
+                        .HasForeignKey("WorkshopId")
+                        .HasConstraintName("FK_PromotionTransaction_Workshop");
+
+                    b.Navigation("Promotion");
+
+                    b.Navigation("Transaction");
+
+                    b.Navigation("Workshop");
+                });
+
             modelBuilder.Entity("Repository.Models.Review", b =>
                 {
                     b.HasOne("Repository.Models.User", "Participant")
                         .WithMany("Reviews")
                         .HasForeignKey("ParticipantId")
-                        .HasConstraintName("FK_Review_Participant");
+                        .HasConstraintName("FK_Review_User");
 
                     b.HasOne("Repository.Models.Workshop", "Workshop")
                         .WithMany("Reviews")
@@ -1138,45 +1335,72 @@ namespace Repository.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Repository.Models.SubscriptionTransaction", b =>
+                {
+                    b.HasOne("Repository.Models.Subscription", "Subscription")
+                        .WithMany("SubscriptionTransactions")
+                        .HasForeignKey("SubscriptionId")
+                        .HasConstraintName("FK_SubscriptionTransaction_Subscription");
+
+                    b.HasOne("Repository.Models.Transaction", "Transaction")
+                        .WithMany("SubscriptionTransactions")
+                        .HasForeignKey("TransactionId")
+                        .HasConstraintName("FK_SubscriptionTransaction_Transaction");
+
+                    b.Navigation("Subscription");
+
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("Repository.Models.Ticket", b =>
                 {
-                    b.HasOne("Repository.Models.User", "Participant")
+                    b.HasOne("Repository.Models.OrderDetail", "OrderDetail")
                         .WithMany("Tickets")
-                        .HasForeignKey("ParticipantId")
-                        .HasConstraintName("FK_Ticket_Participant");
+                        .HasForeignKey("OrderDetailId")
+                        .HasConstraintName("FK_Ticket_OrderDetails");
+
+                    b.HasOne("Repository.Models.TicketRank", "TicketRank")
+                        .WithMany("Tickets")
+                        .HasForeignKey("TicketRankId")
+                        .HasConstraintName("FK_Ticket_TicketRank");
 
                     b.HasOne("Repository.Models.Workshop", "Workshop")
                         .WithMany("Tickets")
                         .HasForeignKey("WorkshopId")
                         .HasConstraintName("FK_Ticket_Workshop");
 
-                    b.Navigation("Participant");
+                    b.Navigation("OrderDetail");
+
+                    b.Navigation("TicketRank");
+
+                    b.Navigation("Workshop");
+                });
+
+            modelBuilder.Entity("Repository.Models.TicketRank", b =>
+                {
+                    b.HasOne("Repository.Models.Workshop", "Workshop")
+                        .WithMany("TicketRanks")
+                        .HasForeignKey("WorkshopId")
+                        .HasConstraintName("FK_TicketRank_Workshop");
 
                     b.Navigation("Workshop");
                 });
 
             modelBuilder.Entity("Repository.Models.Transaction", b =>
                 {
-                    b.HasOne("Repository.Models.User", "Participant")
-                        .WithMany("Transactions")
-                        .HasForeignKey("ParticipantId")
-                        .HasConstraintName("FK_Transaction_Participant");
-
                     b.HasOne("Repository.Models.PaymentMethod", "PaymentMethod")
                         .WithMany("Transactions")
                         .HasForeignKey("PaymentMethodId")
                         .HasConstraintName("FK_Transaction_PaymentMethod");
 
-                    b.HasOne("Repository.Models.Ticket", "Ticket")
+                    b.HasOne("Repository.Models.User", "User")
                         .WithMany("Transactions")
-                        .HasForeignKey("TicketId")
-                        .HasConstraintName("FK_Transaction_Ticket");
-
-                    b.Navigation("Participant");
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_Transaction_User");
 
                     b.Navigation("PaymentMethod");
 
-                    b.Navigation("Ticket");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Repository.Models.Workshop", b =>
@@ -1216,6 +1440,11 @@ namespace Repository.Migrations
                     b.Navigation("OrderDetails");
                 });
 
+            modelBuilder.Entity("Repository.Models.OrderDetail", b =>
+                {
+                    b.Navigation("Tickets");
+                });
+
             modelBuilder.Entity("Repository.Models.Organizer", b =>
                 {
                     b.Navigation("Promotions");
@@ -1228,11 +1457,33 @@ namespace Repository.Migrations
                     b.Navigation("Transactions");
                 });
 
+            modelBuilder.Entity("Repository.Models.Promotion", b =>
+                {
+                    b.Navigation("PromotionTransactions");
+                });
+
+            modelBuilder.Entity("Repository.Models.Subscription", b =>
+                {
+                    b.Navigation("SubscriptionTransactions");
+                });
+
             modelBuilder.Entity("Repository.Models.Ticket", b =>
                 {
                     b.Navigation("OrderDetails");
+                });
 
-                    b.Navigation("Transactions");
+            modelBuilder.Entity("Repository.Models.TicketRank", b =>
+                {
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("Repository.Models.Transaction", b =>
+                {
+                    b.Navigation("CommissionTransactions");
+
+                    b.Navigation("PromotionTransactions");
+
+                    b.Navigation("SubscriptionTransactions");
                 });
 
             modelBuilder.Entity("Repository.Models.User", b =>
@@ -1245,22 +1496,26 @@ namespace Repository.Migrations
 
                     b.Navigation("Subscriptions");
 
-                    b.Navigation("Tickets");
-
                     b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Repository.Models.Workshop", b =>
                 {
+                    b.Navigation("CommissionTransactions");
+
                     b.Navigation("Commissions");
 
                     b.Navigation("EventAnalytics");
 
                     b.Navigation("OrderDetails");
 
+                    b.Navigation("PromotionTransactions");
+
                     b.Navigation("Promotions");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("TicketRanks");
 
                     b.Navigation("Tickets");
 
