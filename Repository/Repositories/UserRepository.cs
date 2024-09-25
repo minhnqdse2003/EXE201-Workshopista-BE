@@ -3,6 +3,7 @@ using Repository.Interfaces;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,12 +50,13 @@ namespace Repository.Repositories
 
         public async Task<User?> GetUserByUserNameAsync(string userName)
         {
-            return await _context.Users.FirstOrDefaultAsync(x => x.Email == userName);
+            return await _context.Users.Include(x => x.Organizers).FirstOrDefaultAsync(x => x.Email == userName);
         }
 
-        public Task<User?> GetUserByRefreshToken(string token)
+        public async Task<User?> GetUserByRefreshToken(string? token)
         {
-            return _context.Users.FirstOrDefaultAsync(x => x.RefreshToken == token);
+            var result = await _context.Users.FirstOrDefaultAsync(x => x.RefreshToken == token);
+            return result;
         }
 
         public async Task<User?> GetUserByEmail(string email)

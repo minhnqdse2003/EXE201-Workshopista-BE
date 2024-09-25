@@ -54,6 +54,54 @@ namespace Repository.Extensions
                     PhoneVerified = true
                 }
             );
+
+            modelBuilder.Entity<Category>().HasData(
+                   new Category
+                   {
+                       CategoryId = Guid.NewGuid(),
+                       Name = "Business",
+                       Slug = "business",
+                       Description = "Workshops focused on business skills, entrepreneurship, and management.",
+                       CreatedAt = DateTime.UtcNow,
+                       UpdatedAt = DateTime.UtcNow
+                   },
+            new Category
+            {
+                CategoryId = Guid.NewGuid(),
+                Name = "Technology",
+                Slug = "technology",
+                Description = "Workshops on software development, AI, cloud computing, and emerging technologies.",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new Category
+            {
+                CategoryId = Guid.NewGuid(),
+                Name = "Arts & Crafts",
+                Slug = "arts-and-crafts",
+                Description = "Creative workshops covering arts, crafts, and design.",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new Category
+            {
+                CategoryId = Guid.NewGuid(),
+                Name = "Health & Wellness",
+                Slug = "health-wellness",
+                Description = "Workshops focused on fitness, mental health, and overall well-being.",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new Category
+            {
+                CategoryId = Guid.NewGuid(),
+                Name = "Personal Development",
+                Slug = "personal-development",
+                Description = "Workshops aimed at personal growth, leadership, and career development.",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            }
+                );
         }
     }
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Repository.Interfaces;
 using Repository.Models;
 using System;
@@ -15,7 +15,7 @@ namespace Repository.Repositories
         {
         }
 
-        public async Task<Organizer?> GetOrganizerByEmail (string email)
+        public async Task<Organizer?> GetOrganizerByEmail(string email)
         {
             return await _context.Organizers.Where(u => u.ContactEmail.ToLower().Equals(email.ToLower())).FirstOrDefaultAsync();
 

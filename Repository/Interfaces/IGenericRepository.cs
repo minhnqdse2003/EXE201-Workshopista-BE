@@ -7,20 +7,19 @@ using System.Threading.Tasks;
 
 namespace Repository.Interfaces
 {
-    public interface IGenericRepository<T> where T : class
-    {
-        T GetById(int id);
+        public interface IGenericRepository<T> where T : class
+        {
+                T GetById(Guid id);
+                IEnumerable<T> GetAll();
 
-        IEnumerable<T> GetAll();
+                IEnumerable<T> Find(Expression<Func<T, bool>> expression);
 
-        IEnumerable<T> Find(Expression<Func<T, bool>> expression);
+                Task Add(T entity);
 
-        Task Add(T entity);
+                void AddRange(IEnumerable<T> entities);
 
-        void AddRange(IEnumerable<T> entities);
+                void Remove(T entity);
 
-        void Remove(T entity);
-
-        void RemoveRange(IEnumerable<T> entities);
-    }
+                void RemoveRange(IEnumerable<T> entities);
+        }
 }

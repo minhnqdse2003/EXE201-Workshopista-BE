@@ -5,6 +5,7 @@ using Repository.Helpers;
 using Service.Interfaces;
 using Service.Models;
 using Service.Models.Auth;
+using Service.Models.Token;
 
 namespace EXE201_Workshopista.Controllers
 {
@@ -39,9 +40,9 @@ namespace EXE201_Workshopista.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+        public async Task<IActionResult> RefreshToken([FromBody] Token token)
         {
-            var result = await _authService.RefreshToken(refreshToken);
+            var result = await _authService.RefreshToken(token.refreshToken);
             if(result.Message == ResponseMessage.Unauthorized)
             {
                 return Unauthorized(result);
