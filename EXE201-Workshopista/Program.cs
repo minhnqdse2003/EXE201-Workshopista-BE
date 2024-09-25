@@ -11,8 +11,7 @@ using Repository.Repositories;
 using Serilog;
 using Service.Interfaces;
 using Service.Mapping;
-using Service.Services.Auth;
-using Service.Services.Users;
+using Service.Services;
 using System.Text;
 
 namespace EXE201_Workshopista
@@ -32,9 +31,14 @@ namespace EXE201_Workshopista
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //Add Middleware
+            builder.Services.AddSingleton<GlobalExceptionMiddleware>();
+
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IAuthService,AuthService>();
+            builder.Services.AddScoped<IOrganizerService, OrganizerService>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -67,7 +71,7 @@ namespace EXE201_Workshopista
                 });
             });
 
-            builder.Services.AddAutoMapper(typeof(UserProfile));
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.AddDbContext<Exe201WorkshopistaContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DBUtilsConnectionString")));
@@ -120,6 +124,7 @@ namespace EXE201_Workshopista
 
             app.UseCors("AllowAll");
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<GlobalExceptionMiddleware>();
             app.UseSerilogRequestLogging();
 
             app.UseAuthentication();

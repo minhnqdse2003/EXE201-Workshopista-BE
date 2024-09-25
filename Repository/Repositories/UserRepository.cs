@@ -56,5 +56,10 @@ namespace Repository.Repositories
         {
             return _context.Users.FirstOrDefaultAsync(x => x.RefreshToken == token);
         }
+
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            return await _context.Users.Where(u => u.Email.ToLower().Equals(email.ToLower())).FirstOrDefaultAsync();
+        }
     }
 }

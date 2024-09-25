@@ -13,6 +13,7 @@ namespace Service.Interfaces
     {
         Task<ApiResponse<User>> Authenticate(string username, string password);
         string GenerateJwtToken(User user);
+        string DecodeToken(string token, string nameClaim);
         string GenerateRefreshToken();
         Task<ApiResponse<TokenModel>> RefreshToken(string token);
         Task<ApiResponse<TokenModel>> Login(LoginModel loginReq);

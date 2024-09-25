@@ -272,7 +272,7 @@ namespace Repository.Migrations
 
                     b.HasIndex("WorkshopId");
 
-                    b.ToTable("EventAnalytics");
+                    b.ToTable("EventAnalytics", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.News", b =>
@@ -323,7 +323,7 @@ namespace Repository.Migrations
                         .IsUnique()
                         .HasFilter("[slug] IS NOT NULL");
 
-                    b.ToTable("News");
+                    b.ToTable("News", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.Order", b =>
@@ -432,7 +432,7 @@ namespace Repository.Migrations
 
                     b.HasIndex("WorkshopId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.Organizer", b =>

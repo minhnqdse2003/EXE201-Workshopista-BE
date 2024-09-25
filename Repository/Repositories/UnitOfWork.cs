@@ -16,9 +16,11 @@ namespace Repository.Repositories
         {
             _context = context;
             Users = new UserRepository(_context);
+            Organizers = new OrganizerRepository(_context);
         }
 
         public IUserRepository Users { get; private set; }
+        public IOrganizerRepository Organizers { get; private set; }
         public int Complete()
         {
             return _context.SaveChanges();

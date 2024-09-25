@@ -86,5 +86,12 @@ namespace EXE201_Workshopista.Controllers
             await _userService.DeleteUserAsync(id);
             return NoContent();
         }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser(UserRegisterModel model)
+        {
+            await _userService.RegisterAccount(model);
+            return Ok("Register account successfully!");
+        }
     }
 }
