@@ -11,8 +11,10 @@ namespace Repository.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly Exe201WorkshopistaContext _context;
-        public UnitOfWork()
+        public UnitOfWork(Exe201WorkshopistaContext context)
         {
+            _context = context;
+            Users = new UserRepository(_context);
             Workshops = new WorkshopRepository(_context);
             Organizers = new OrganizerRepository(_context);
             Categories = new CategoryRepository(_context);

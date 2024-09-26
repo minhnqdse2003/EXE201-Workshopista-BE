@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Repository.Consts;
 using Repository.Helpers;
 using Repository.Interfaces;
 using Repository.Models;
@@ -85,6 +86,7 @@ namespace Service.Services
             newOrganizer.UserId = newUser.UserId;
             await _unitOfWork.Users.CreateUserAsync(newUser);
             await _unitOfWork.Organizers.Add(newOrganizer);
+            _unitOfWork.Complete();
         }
     }
 }

@@ -13,7 +13,7 @@ using Service.Interfaces;
 using Service.Mapping;
 using Service.Services;
 
-using Service.Services.Workshops;
+using Service.Services;
 
 using System.Text;
 using System.Text.Json.Serialization;
@@ -38,8 +38,6 @@ namespace EXE201_Workshopista
             builder.Services.AddSwaggerGen();
 
             //Add Middleware
-            builder.Services.AddSingleton<GlobalExceptionMiddleware>();
-
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
@@ -134,7 +132,6 @@ namespace EXE201_Workshopista
 
             app.UseCors("AllowAll");
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-            app.UseMiddleware<GlobalExceptionMiddleware>();
             app.UseSerilogRequestLogging();
 
             app.UseAuthentication();
