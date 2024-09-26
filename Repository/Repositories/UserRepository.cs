@@ -63,10 +63,5 @@ namespace Repository.Repositories
         {
             return await _context.Users.Where(u => u.Email.ToLower().Equals(email.ToLower())).FirstOrDefaultAsync();
         }
-
-        public async Task<User?> GetUserByEmail(string email)
-        {
-            return await _context.Users.Where(u => u.Email.ToLower().Equals(email.ToLower())).FirstOrDefaultAsync();
-        }
     }
 }

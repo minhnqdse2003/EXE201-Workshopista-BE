@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Interfaces;
 using Service.Models.Workshops;
-using Service.Services.Workshops;
+using Service.Services;
 using System.Security.Claims;
 
 namespace EXE201_Workshopista.Controllers
@@ -46,7 +46,14 @@ namespace EXE201_Workshopista.Controllers
         [Route("{id}")]
         public IActionResult Delete([FromRoute] string id)
         {
-            return Ok();
+            return Ok( _workshopService.DeleteWorkshop(id));
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public IActionResult Update(WorkShopUpdateRequestModel updateRequestModel, [FromRoute] string id)
+        {
+            return Ok(_workshopService.UpdateWorkshop(updateRequestModel,id));
         }
     }
 }
