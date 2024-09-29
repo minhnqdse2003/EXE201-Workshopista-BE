@@ -15,7 +15,10 @@ namespace Service.Mapping
         public UserProfile()
         {
             CreateMap<User, PostUserModel>().ReverseMap();
+
             CreateMap<User, UserResponseModel>().ReverseMap();
+
+            CreateMap<User, UserInformationModel>().ReverseMap();
         }
     }
 }

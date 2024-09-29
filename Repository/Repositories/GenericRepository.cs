@@ -1,4 +1,5 @@
-﻿using Repository.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Interfaces;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -51,6 +52,19 @@ namespace Repository.Repositories
         public void RemoveRange(IEnumerable<T> entities)
         {
             _context.Set<T>().RemoveRange(entities);
+        }
+
+        public async Task Update(T entityToUpdate)
+        {
+            _context.Set<T>().Attach(entityToUpdate);
+            _context.Entry(entityToUpdate).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRange(List<T> entities)
+        {
+            _context.Set<T>().UpdateRange(entities);
+            await _context.SaveChangesAsync();
         }
     }
 }

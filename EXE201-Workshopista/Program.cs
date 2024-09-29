@@ -10,9 +10,15 @@ using Repository.Models;
 using Repository.Repositories;
 using Serilog;
 using Service.Interfaces;
+using Service.Interfaces.IAuth;
+using Service.Interfaces.IEmailService;
+using Service.Interfaces.IOTP;
 using Service.Mapping;
-using Service.Services;
-
+using Service.Services.Auths;
+using Service.Services.Emails;
+using Service.Services.Organizers;
+using Service.Services.OTPs;
+using Service.Services.Users;
 using Service.Services.Workshops;
 
 using System.Text;
@@ -40,17 +46,20 @@ namespace EXE201_Workshopista
             //Add Middleware
             builder.Services.AddSingleton<GlobalExceptionMiddleware>();
 
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IOTPRepository,OTPRepository>();
+            builder.Services.AddScoped<IOTPService, OTPService>();
             builder.Services.AddScoped<IOrganizerService, OrganizerService>();
             builder.Services.AddScoped<IWorkshopRepository, WorkshopRepository>();
             builder.Services.AddScoped<IWorkshopService, WorkshopService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             builder.Services.AddSwaggerGen(c =>
             {

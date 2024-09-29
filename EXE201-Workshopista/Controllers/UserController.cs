@@ -86,12 +86,21 @@ namespace EXE201_Workshopista.Controllers
             await _userService.DeleteUserAsync(id);
             return NoContent();
         }
+        
 
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser(UserRegisterModel model)
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] string status)
         {
-            await _userService.RegisterAccount(model);
-            return Ok("Register account successfully!");
+            await _userService.ChangeStatus(id, status);
+            return Ok("Update status successfully!");
+        }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> OwnInformation()
+        {
+            string token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+            var response = await _userService.GetOwnInformation(token);
+            return Ok(response);
         }
     }
 }

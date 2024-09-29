@@ -33,9 +33,13 @@ public partial class User
 
     public DateTime? UpdatedAt { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<Organizer> Organizers { get; set; } = new List<Organizer>();
+
+    public virtual ICollection<Otp> Otps { get; set; } = new List<Otp>();
 
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 

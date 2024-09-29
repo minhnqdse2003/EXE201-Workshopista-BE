@@ -14,7 +14,11 @@ namespace Repository.Interfaces
         IOrganizerRepository Organizers { get; }
 
         IWorkshopRepository Workshops { get; }
+
         ICategoryRepository Categories { get; }
+
+        IOTPRepository OTPs { get; }
+
         int Complete();
     }
 }
