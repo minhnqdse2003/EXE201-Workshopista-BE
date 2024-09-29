@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Service.Services
+namespace Service.Services.Organizers
 {
     public class OrganizerService : IOrganizerService
     {
@@ -62,31 +62,19 @@ namespace Service.Services
             return await _unitOfWork.Organizers.GetOrganizerByRefreshToken(token);
         }
 
-        public async Task RegisterOrganizerAccount(OrganizerRegisterModel model)
+        
+
+        public async Task ChangeStatus(Guid organizerId, string status)
         {
-            var exist = await _unitOfWork.Users.GetUserByEmail(model.Email);
-            if (exist != null)
+            var organizer = await _unitOfWork.Organizers.GetOrganizerByIdAsync(organizerId);
+            if (organizer == null)
             {
-                throw new CustomException("The email has already registered by other account!");
+                throw new CustomException("The organizer is not exist!");
             }
+            organizer.Status = status;
 
-            var organizerExist = await _unitOfWork.Organizers.GetOrganizerByEmail(model.ContactEmail);
-            if (organizerExist != null)
-            {
-                throw new CustomException("The organization's email has already existed!");
-            }
+            await _unitOfWork.Organizers.UpdateOrganizerAsync(organizer);
 
-            User newUser = _mapper.Map<User>(model);
-            Organizer newOrganizer = _mapper.Map<Organizer>(model);
-            newUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
-            newUser.Role = RoleConst.Organizer;
-            newUser.CreatedAt = DateTime.Now;
-
-            newOrganizer.CreatedAt = DateTime.Now;
-            newOrganizer.UserId = newUser.UserId;
-            await _unitOfWork.Users.CreateUserAsync(newUser);
-            await _unitOfWork.Organizers.Add(newOrganizer);
-            _unitOfWork.Complete();
         }
     }
 }

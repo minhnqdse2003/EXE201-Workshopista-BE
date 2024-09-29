@@ -11,10 +11,14 @@ namespace Service.Interfaces
 {
     public interface IOrganizerService
     {
-        Task RegisterOrganizerAccount(OrganizerRegisterModel model);
         Task DeleteOrganizerAsync(Guid organizerId);
+
         Task<Organizer> GetOrganizeByIdAsync(Guid organizerId);
+
         Task UpdateOrganizerAsync(UpdateOrganizerModel model, Guid id);
+
         Task<IEnumerable<Organizer>> GetAllOrganizesAsync();
+
+        Task ChangeStatus(Guid organizerId, string status);
     }
 }

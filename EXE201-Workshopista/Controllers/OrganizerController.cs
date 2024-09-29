@@ -59,11 +59,13 @@ namespace EXE201_Workshopista.Controllers
             return NoContent();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateOrganizer(OrganizerRegisterModel model)
+        
+
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] string status)
         {
-            await _organizerService.RegisterOrganizerAccount(model);
-            return Ok("Register account successfully!");
+            await _organizerService.ChangeStatus(id, status);
+            return Ok("Update status successfully!");
         }
     }
 }

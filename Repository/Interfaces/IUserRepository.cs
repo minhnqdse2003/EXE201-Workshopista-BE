@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IGenericRepository<User>
     {
         Task<IEnumerable<User>> GetAllUsersAsync();
 
@@ -24,5 +24,7 @@ namespace Repository.Interfaces
         Task DeleteUserAsync(Guid userId);
 
         Task<User?> GetUserByEmail(string email);
+
     }
+
 }

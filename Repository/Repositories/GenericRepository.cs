@@ -54,9 +54,17 @@ namespace Repository.Repositories
             _context.Set<T>().RemoveRange(entities);
         }
 
-        public void Update(T entity)
+        public async Task Update(T entityToUpdate)
         {
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Set<T>().Attach(entityToUpdate);
+            _context.Entry(entityToUpdate).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRange(List<T> entities)
+        {
+            _context.Set<T>().UpdateRange(entities);
+            await _context.SaveChangesAsync();
         }
     }
 }

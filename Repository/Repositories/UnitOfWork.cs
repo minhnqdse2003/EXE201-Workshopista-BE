@@ -18,17 +18,24 @@ namespace Repository.Repositories
             Workshops = new WorkshopRepository(_context);
             Organizers = new OrganizerRepository(_context);
             Categories = new CategoryRepository(_context);
+            OTPs = new OTPRepository(_context);
         }
 
         public IUserRepository Users { get; private set; }
 
         public IWorkshopRepository Workshops { get; private set; }
+
         public IOrganizerRepository Organizers { get; private set; }
+
         public ICategoryRepository Categories { get; private set; }
+
+        public IOTPRepository OTPs { get; private set; }
+
         public int Complete()
         {
             return _context.SaveChanges();
         }
+
         public void Dispose()
         {
             _context.Dispose();

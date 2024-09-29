@@ -23,6 +23,9 @@ namespace Service.Interfaces
 
         Task DeleteUserAsync(Guid userId);
 
-        Task RegisterAccount(UserRegisterModel model);
+        Task ChangeStatus(Guid userId, string status);
+
+        Task<UserInformationModel> GetOwnInformation(string token);
+
     }
 }

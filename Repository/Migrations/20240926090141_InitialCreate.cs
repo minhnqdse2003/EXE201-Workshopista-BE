@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,7 +26,7 @@ namespace Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditLog__9E2397E040AF3E39", x => x.log_id);
+                    table.PrimaryKey("PK__AuditLog__9E2397E0273670BF", x => x.log_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,7 +95,8 @@ namespace Repository.Migrations
                     refresh_token = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     refresh_token_expiry_time = table.Column<DateTime>(type: "datetime", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -119,7 +120,7 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK__Order__46596229D5600F2F", x => x.order_id);
                     table.ForeignKey(
-                        name: "FK_Order_User",
+                        name: "FK__Order__participa__1AD3FDA4",
                         column: x => x.participant_id,
                         principalTable: "User",
                         principalColumn: "user_id");
@@ -138,13 +139,14 @@ namespace Repository.Migrations
                     social_links = table.Column<string>(type: "text", nullable: true),
                     verified = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__Organize__06347014B8E42884", x => x.organizer_id);
                     table.ForeignKey(
-                        name: "FK_Organizer_User",
+                        name: "FK__Organizer__user___0D7A0286",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "user_id");
@@ -167,7 +169,7 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK__Subscrip__863A7EC1993FA16B", x => x.subscription_id);
                     table.ForeignKey(
-                        name: "FK_Subscription_User",
+                        name: "FK__Subscript__user___236943A5",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "user_id");
@@ -190,15 +192,15 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK__Transact__85C600AF4A720ABE", x => x.transaction_id);
                     table.ForeignKey(
-                        name: "FK_Transaction_PaymentMethod",
-                        column: x => x.payment_method_id,
-                        principalTable: "PaymentMethod",
-                        principalColumn: "payment_method_id");
-                    table.ForeignKey(
                         name: "FK_Transaction_User",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "user_id");
+                    table.ForeignKey(
+                        name: "FK__Transacti__payme__14270015",
+                        column: x => x.payment_method_id,
+                        principalTable: "PaymentMethod",
+                        principalColumn: "payment_method_id");
                 });
 
             migrationBuilder.CreateTable(
@@ -230,12 +232,12 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK__Workshop__EA6B0559D8B60A03", x => x.workshop_id);
                     table.ForeignKey(
-                        name: "FK_Workshop_Category",
+                        name: "FK__Workshop__catego__0F624AF8",
                         column: x => x.category_id,
                         principalTable: "Category",
                         principalColumn: "category_id");
                     table.ForeignKey(
-                        name: "FK_Workshop_Organizer",
+                        name: "FK__Workshop__organi__0E6E26BF",
                         column: x => x.organizer_id,
                         principalTable: "Organizer",
                         principalColumn: "organizer_id");
@@ -281,7 +283,7 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK__Commissi__D19D7CC90A4035D4", x => x.commission_id);
                     table.ForeignKey(
-                        name: "FK_Commission_Workshop",
+                        name: "FK__Commissio__works__2645B050",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -330,7 +332,7 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK__EventAna__D5DC3DE1912B45AA", x => x.analytics_id);
                     table.ForeignKey(
-                        name: "FK_EventAnalytics_Workshop",
+                        name: "FK__EventAnal__works__22751F6C",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -355,12 +357,12 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK__Promotio__2CB9556B36D75614", x => x.promotion_id);
                     table.ForeignKey(
-                        name: "FK_Promotion_Organizer",
+                        name: "FK__Promotion__organ__245D67DE",
                         column: x => x.organizer_id,
                         principalTable: "Organizer",
                         principalColumn: "organizer_id");
                     table.ForeignKey(
-                        name: "FK_Promotion_Workshop",
+                        name: "FK__Promotion__works__25518C17",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -388,7 +390,7 @@ namespace Repository.Migrations
                         principalTable: "User",
                         principalColumn: "user_id");
                     table.ForeignKey(
-                        name: "FK_Review_Workshop",
+                        name: "FK__Review__workshop__208CD6FA",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -431,7 +433,7 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK__Workshop__DC9AC9555C0A8683", x => x.image_id);
                     table.ForeignKey(
-                        name: "FK_WorkshopImage_Workshop",
+                        name: "FK__WorkshopI__works__10566F31",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -487,12 +489,12 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK__OrderDet__F6FB5AE4C762AF40", x => x.order_details_id);
                     table.ForeignKey(
-                        name: "FK_OrderDetails_Order",
+                        name: "FK__OrderDeta__order__1BC821DD",
                         column: x => x.order_id,
                         principalTable: "Order",
                         principalColumn: "order_id");
                     table.ForeignKey(
-                        name: "FK_OrderDetails_Workshop",
+                        name: "FK__OrderDeta__works__1CBC4616",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -526,7 +528,7 @@ namespace Repository.Migrations
                         principalTable: "TicketRank",
                         principalColumn: "ticket_rank_id");
                     table.ForeignKey(
-                        name: "FK_Ticket_Workshop",
+                        name: "FK__Ticket__workshop__114A936A",
                         column: x => x.workshop_id,
                         principalTable: "Workshop",
                         principalColumn: "workshop_id");
@@ -537,21 +539,21 @@ namespace Repository.Migrations
                 columns: new[] { "category_id", "created_at", "description", "name", "slug", "updated_at" },
                 values: new object[,]
                 {
-                    { new Guid("0c1b0bee-ec61-4ee9-bb57-b46409b897fb"), new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9733), "Creative workshops covering arts, crafts, and design.", "Arts & Crafts", "arts-and-crafts", new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9733) },
-                    { new Guid("6e9307e9-c73f-47ea-a5f5-0cc7644b332b"), new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9714), "Workshops focused on business skills, entrepreneurship, and management.", "Business", "business", new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9723) },
-                    { new Guid("7172cb37-9eae-48bb-9941-be02ab50cc0e"), new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9728), "Workshops on software development, AI, cloud computing, and emerging technologies.", "Technology", "technology", new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9729) },
-                    { new Guid("bc4d26a5-2ebb-4bff-8069-692c6ee30ddc"), new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9739), "Workshops aimed at personal growth, leadership, and career development.", "Personal Development", "personal-development", new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9739) },
-                    { new Guid("ff79edde-9cda-42b1-8532-6c087ad61d19"), new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9736), "Workshops focused on fitness, mental health, and overall well-being.", "Health & Wellness", "health-wellness", new DateTime(2024, 9, 25, 10, 20, 41, 715, DateTimeKind.Utc).AddTicks(9736) }
+                    { new Guid("2cb3ae50-9347-48cb-9e4a-3b68311e6ba6"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6958), "Workshops on software development, AI, cloud computing, and emerging technologies.", "Technology", "technology", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6959) },
+                    { new Guid("71d81979-db02-40da-ac10-bd9e83088e9a"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6966), "Workshops focused on fitness, mental health, and overall well-being.", "Health & Wellness", "health-wellness", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6966) },
+                    { new Guid("83a28e59-0311-453b-99b0-abaad0813652"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6968), "Workshops aimed at personal growth, leadership, and career development.", "Personal Development", "personal-development", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6968) },
+                    { new Guid("8796fcb7-455d-49f4-967b-19608547d4f9"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6946), "Workshops focused on business skills, entrepreneurship, and management.", "Business", "business", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6953) },
+                    { new Guid("bcac2bd7-16f0-4b59-9ad8-15bdabb90859"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6962), "Creative workshops covering arts, crafts, and design.", "Arts & Crafts", "arts-and-crafts", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6964) }
                 });
 
             migrationBuilder.InsertData(
                 table: "User",
-                columns: new[] { "user_id", "email", "email_verified", "first_name", "last_name", "password_hash", "phone_number", "phone_verified", "profile_image_url", "refresh_token", "refresh_token_expiry_time", "role" },
+                columns: new[] { "user_id", "email", "email_verified", "first_name", "last_name", "password_hash", "phone_number", "phone_verified", "profile_image_url", "refresh_token", "refresh_token_expiry_time", "role", "status" },
                 values: new object[,]
                 {
-                    { new Guid("5d251802-e09a-4c54-8d4e-320a912fc568"), "charlie@example.com", true, "Charlie", "Brown", "$2a$11$NHJkE5SI/1.GhYGgSUyzPO5gEJ5AINRsYgLeCwCh09Cz5J0lZf7Ey", "5551234567", true, "https://example.com/profile_image_3.jpg", null, null, "Organizer" },
-                    { new Guid("686bcd24-a3c8-41f2-963a-b3bd36cdb4ef"), "org@gmail.com", true, "Bob", "Johnson", "$2a$11$BEwSD8C/3W9GUTS2.6ZfW.AxLOQk/7QY60DrtjGRivxKcyIi2xQxO", "9876543210", true, "https://example.com/profile_image_2.jpg", null, null, "Organizer" },
-                    { new Guid("80d160be-4242-40d3-a1c5-f4942ebcf220"), "admin@gmail.com", true, "Alice", "Smith", "$2a$11$HjaKxLuMPe34u6YQsVmx1O8hHTUPLIqRV7ksFPPhkHKhcknK8gmCm", "1234567890", true, "https://example.com/profile_image_1.jpg", null, null, "admin" }
+                    { new Guid("10477a82-d4e0-4558-ae41-4308213adc54"), "org@gmail.com", true, "Bob", "Johnson", "$2a$11$w9o0TwVi8jmx7e8UAWStg.anwRYY5Ci5I4ATrgFiiiYOBa/PJwZWe", "9876543210", true, "https://example.com/profile_image_2.jpg", null, null, "Organizer", null },
+                    { new Guid("bfc7ddac-eceb-455f-9f10-a306022112bd"), "admin@gmail.com", true, "Alice", "Smith", "$2a$11$8l8fT6roQZiAPL9JtmdlwOsb/gj7mPyfxZ6Cz7Z8xypr.JmFj.mU2", "1234567890", true, "https://example.com/profile_image_1.jpg", null, null, "Admin", null },
+                    { new Guid("e335a7f0-0c6a-4256-a885-2d54a11e8c4e"), "charlie@example.com", true, "Charlie", "Brown", "$2a$11$deYf4feSzglUn7mARRLWnehQYj3J14iCXYQt5DKIMk/jBqgx6g5/q", "5551234567", true, "https://example.com/profile_image_3.jpg", null, null, "Organizer", null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -730,7 +732,7 @@ namespace Repository.Migrations
                 column: "workshop_id");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_OrderDetails_Ticket",
+                name: "FK__OrderDeta__ticke__1DB06A4F",
                 table: "OrderDetails",
                 column: "ticket_id",
                 principalTable: "Ticket",
@@ -741,11 +743,11 @@ namespace Repository.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_OrderDetails_Workshop",
+                name: "FK__OrderDeta__works__1CBC4616",
                 table: "OrderDetails");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Ticket_Workshop",
+                name: "FK__Ticket__workshop__114A936A",
                 table: "Ticket");
 
             migrationBuilder.DropForeignKey(
@@ -753,15 +755,15 @@ namespace Repository.Migrations
                 table: "TicketRank");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Order_User",
+                name: "FK__Order__participa__1AD3FDA4",
                 table: "Order");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_OrderDetails_Order",
+                name: "FK__OrderDeta__order__1BC821DD",
                 table: "OrderDetails");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_OrderDetails_Ticket",
+                name: "FK__OrderDeta__ticke__1DB06A4F",
                 table: "OrderDetails");
 
             migrationBuilder.DropTable(

@@ -21,19 +21,33 @@ namespace Service.Models.Workshops
         public string? LocationCity { get; set; }
 
         public string? LocationDistrict { get; set; }
+
         public string? LocationAddress { get; set; }
+
         public decimal? Latitude { get; set; }
+
         public decimal? Longitude { get; set; }
+
         public DateTime? StartTime { get; set; }
+
         public DateTime? EndTime { get; set; }
+
         public decimal? Price { get; set; }
+
         public string? CurrencyCode { get; set; }
+
         public int? Capacity { get; set; }
+
         public string? VideoUrl { get; set; }
+
         public string? Status { get; set; }
+
         public DateTime? CreatedAt { get; set; }
+
         public virtual OrganizerResponseModel? Organizer { get; set; }
+
         public virtual ICollection<WorkshopImage> WorkshopImages { get; set; } = new List<WorkshopImage>();
+
         public virtual ICollection<TicketRankModelResponse>? TicketRanks { get; set; }
     }
 
