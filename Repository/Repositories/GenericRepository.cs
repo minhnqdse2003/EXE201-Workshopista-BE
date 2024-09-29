@@ -22,6 +22,7 @@ namespace Repository.Repositories
         public async Task Add(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
         public void AddRange(IEnumerable<T> entities)
@@ -44,9 +45,10 @@ namespace Repository.Repositories
             return _context.Set<T>().Find(id);
         }
 
-        public void Remove(T entity)
+        public async void Remove(T entity)
         {
             _context.Set<T>().Remove(entity);
+            await _context.SaveChangesAsync();
         }
 
         public void RemoveRange(IEnumerable<T> entities)

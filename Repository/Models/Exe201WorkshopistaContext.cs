@@ -133,6 +133,9 @@ public partial class Exe201WorkshopistaContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasColumnName("status");
         });
 
         modelBuilder.Entity<Commission>(entity =>

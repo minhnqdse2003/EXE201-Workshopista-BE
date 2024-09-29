@@ -1,26 +1,27 @@
-
 using EXE201_Workshopista.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Repository.Helpers;
 using Repository.Interfaces;
 using Repository.Models;
 using Repository.Repositories;
 using Serilog;
 using Service.Interfaces;
 using Service.Interfaces.IAuth;
+using Service.Interfaces.ICategory;
 using Service.Interfaces.IEmailService;
 using Service.Interfaces.IOTP;
+using Service.Interfaces.ITicketRank;
 using Service.Mapping;
+using Service.Services;
 using Service.Services.Auths;
+using Service.Services.Categories;
 using Service.Services.Emails;
 using Service.Services.Organizers;
 using Service.Services.OTPs;
+using Service.Services.TicketRanks;
 using Service.Services.Users;
-using Service.Services.Workshops;
-
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -43,21 +44,22 @@ namespace EXE201_Workshopista
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //Add Middleware
-            builder.Services.AddSingleton<GlobalExceptionMiddleware>();
 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
-            builder.Services.AddScoped<IOTPRepository,OTPRepository>();
+            builder.Services.AddScoped<IOTPRepository, OTPRepository>();
             builder.Services.AddScoped<IOTPService, OTPService>();
             builder.Services.AddScoped<IOrganizerService, OrganizerService>();
             builder.Services.AddScoped<IWorkshopRepository, WorkshopRepository>();
             builder.Services.AddScoped<IWorkshopService, WorkshopService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
+            builder.Services.AddScoped<ITicketRankRepository, TicketRankRepository>();
+            builder.Services.AddScoped<ITicketRankService, TicketRankService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 

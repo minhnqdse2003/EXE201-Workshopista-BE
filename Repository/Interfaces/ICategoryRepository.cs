@@ -9,5 +9,8 @@ namespace Repository.Interfaces
 {
     public interface ICategoryRepository : IGenericRepository<Category>
     {
+        Task<List<Category>> GetAllCategories();
+        Task<List<Category>> GetActiveCategories();
+        Task<Category?> GetCategoryById(Guid id);
     }
 }

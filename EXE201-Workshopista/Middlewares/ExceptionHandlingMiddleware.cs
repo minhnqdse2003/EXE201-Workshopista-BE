@@ -57,7 +57,7 @@ namespace EXE201_Workshopista.Middlewares
 
             await context.Response.WriteAsJsonAsync(
                 ApiResponse<string>.ErrorResponse(
-                    ResponseMessage.InternalServerError, 
+                    ResponseMessage.InternalServerError,
                     new List<string> { exception.Message }
                 )
             );
