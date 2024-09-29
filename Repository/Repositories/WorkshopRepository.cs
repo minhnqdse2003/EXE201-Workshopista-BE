@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Repositories
 {
-    public class WorkshopRepository : GenericRepository<Workshop>,IWorkshopRepository
+    public class WorkshopRepository : GenericRepository<Workshop>, IWorkshopRepository
     {
         public WorkshopRepository(Exe201WorkshopistaContext context) : base(context)
         {

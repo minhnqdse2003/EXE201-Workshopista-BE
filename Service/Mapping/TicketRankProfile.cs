@@ -15,6 +15,9 @@ namespace Service.Mapping
         {
             CreateMap<TicketRank,WorkshopTicketRankRegisterRequestModel>().ReverseMap();
             CreateMap<TicketRank, TicketRankModelResponse>().ReverseMap();
+            CreateMap<TicketRankUpdateModel, TicketRank>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.TicketRankId, opt => opt.MapFrom(src => Guid.NewGuid()));
         }
     }
 }

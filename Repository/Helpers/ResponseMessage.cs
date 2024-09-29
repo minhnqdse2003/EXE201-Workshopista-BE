@@ -27,6 +27,9 @@ namespace Repository.Helpers
         public const string OrganizerCreateFail = "Organizer fail to create.";
         public const string OrganizerNotFound = "Organizer not found.";
 
+        //Error message for Workshop
+        public const string WorkshopNotFound = "Workshop not found.";
+
         //Error message for Category
         public const string CategoryNotFound = "Category not found.";
 
