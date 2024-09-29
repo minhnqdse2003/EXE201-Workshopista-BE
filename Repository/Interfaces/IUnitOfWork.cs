@@ -19,6 +19,8 @@ namespace Repository.Interfaces
 
         IOTPRepository OTPs { get; }
 
+        ITicketRankRepository TicketRanks { get; }
+
         int Complete();
     }
 }

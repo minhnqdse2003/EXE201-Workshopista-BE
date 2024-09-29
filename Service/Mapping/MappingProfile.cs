@@ -1,5 +1,9 @@
 ﻿using AutoMapper;
+using Repository.Consts;
 using Repository.Models;
+using Service.Models.Category;
+using Service.Models.Organizers;
+using Service.Models.TicketRank;
 using Service.Models.Users;
 using System;
 using System.Collections.Generic;
@@ -20,6 +24,13 @@ namespace Service.Mapping
 
             //Organizer
             CreateMap<OrganizerRegisterModel, Organizer>().ForMember(u => u.OrganizerId, otp => otp.MapFrom(src => Guid.NewGuid()));
+            CreateMap<UpdateOrganizerModel, Organizer>();
+
+            //Category
+            CreateMap<CategoryRequestModel, Category>().ForMember(u => u.UpdatedAt, otp => otp.MapFrom(src => DateTime.Now));
+
+            //TicketRank
+            CreateMap<TicketRankRequestModel, TicketRank>().ForMember(u => u.UpdatedAt, otp => otp.MapFrom(src => DateTime.Now)).ReverseMap();
         }
     }
 }

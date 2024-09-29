@@ -46,18 +46,18 @@ namespace EXE201_Workshopista.Controllers
             return Ok("Update organization successfully!");
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrganizer(Guid id)
-        {
-            var organizer = await _organizerService.GetOrganizeByIdAsync(id);
-            if (organizer == null)
-            {
-                return NotFound();
-            }
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteOrganizer(Guid id)
+        //{
+        //    var organizer = await _organizerService.GetOrganizeByIdAsync(id);
+        //    if (organizer == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            await _organizerService.DeleteOrganizerAsync(id);
-            return NoContent();
-        }
+        //    await _organizerService.DeleteOrganizerAsync(id);
+        //    return NoContent();
+        //}
 
         
 

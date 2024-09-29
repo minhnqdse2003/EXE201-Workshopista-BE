@@ -19,6 +19,7 @@ namespace Repository.Repositories
             Organizers = new OrganizerRepository(_context);
             Categories = new CategoryRepository(_context);
             OTPs = new OTPRepository(_context);
+            TicketRanks = new TicketRankRepository(_context);
         }
 
         public IUserRepository Users { get; private set; }
@@ -30,6 +31,8 @@ namespace Repository.Repositories
         public ICategoryRepository Categories { get; private set; }
 
         public IOTPRepository OTPs { get; private set; }
+
+        public ITicketRankRepository TicketRanks { get; private set; }
 
         public int Complete()
         {

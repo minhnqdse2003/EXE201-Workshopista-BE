@@ -17,5 +17,7 @@ public partial class Category
 
     public DateTime? UpdatedAt { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual ICollection<Workshop> Workshops { get; set; } = new List<Workshop>();
 }

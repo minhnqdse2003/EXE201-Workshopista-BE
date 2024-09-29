@@ -18,7 +18,7 @@ namespace Service.Ultis
                             Your verification code (OTP) is: <strong style='font-size: 18px; color: #d9534f;'>{OTP}</strong><br/>
                             Please enter this code to verify your email address and activate your account.<br/>
                             Once verified, your account will be activated, and you can log in and use our services.<br/>
-                            If you did not request email verification, please ignore this email or <a href='https://www.facebook.com/people/Healing-Consultant/61551391121518/' style='color: #0066cc;'>contact us</a> immediately.
+                            If you did not request email verification, please ignore this email or <a href='https://www.facebook.com/profile.php?id=61566296821667&mibextid=LQQJ4d' style='color: #0066cc;'>contact us</a> immediately.
                          </p>
                          <p style='font-size: 14px;'>This is an automated email, please do not reply.</p>
                          <p style='font-size: 14px;'>Best regards,<br/><strong>Workshopista</strong></p>

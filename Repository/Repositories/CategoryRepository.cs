@@ -1,4 +1,6 @@
-﻿using Repository.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Consts;
+using Repository.Interfaces;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,21 @@ namespace Repository.Repositories
     {
         public CategoryRepository(Exe201WorkshopistaContext context) : base(context)
         {
+        }
+
+        public async Task<List<Category>> GetAllCategories()
+        {
+            return await _context.Categories.ToListAsync();
+        }
+
+        public async Task<List<Category>> GetActiveCategories()
+        {
+            return await _context.Categories.Where(c => c.Status.Equals(StatusConst.Active)).ToListAsync();
+        }
+
+        public async Task<Category?> GetCategoryById(Guid id)
+        {
+            return await _context.Categories.Where(c => c.CategoryId == id).FirstOrDefaultAsync();
         }
     }
 }
