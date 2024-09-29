@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Repository.Extensions;
 
 namespace Repository.Models;
 
@@ -136,7 +137,9 @@ public partial class Exe201WorkshopistaContext : DbContext
 
         modelBuilder.Entity<Commission>(entity =>
         {
+
             entity.HasKey(e => e.CommissionId).HasName("PK__Commissi__D19D7CC90A4035D4");
+
 
             entity.ToTable("Commission");
 

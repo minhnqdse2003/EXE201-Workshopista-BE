@@ -143,7 +143,6 @@ namespace EXE201_Workshopista
 
             app.UseCors("AllowAll");
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-            app.UseMiddleware<GlobalExceptionMiddleware>();
             app.UseSerilogRequestLogging();
 
             app.UseAuthentication();

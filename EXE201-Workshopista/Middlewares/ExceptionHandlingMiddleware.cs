@@ -33,10 +33,11 @@ namespace EXE201_Workshopista.Middlewares
                 }
                 catch (Exception ex)
                 {
+                    var statusCode = ex is CustomException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
                     _logger.LogError(
                     ex, "Exception occurred: {Message}", ex.Message.ToString());
 
-                    await HandleExceptionAsync(httpContext, ex);
+                    await HandleExceptionAsync(httpContext, ex, statusCode);
                 }
             }
         }
@@ -49,10 +50,10 @@ namespace EXE201_Workshopista.Middlewares
             return correlationId.FirstOrDefault() ?? context.TraceIdentifier;
         }
 
-        private async static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private async static Task HandleExceptionAsync(HttpContext context, Exception exception, int statusCode)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.StatusCode = statusCode;
 
             await context.Response.WriteAsJsonAsync(
                 ApiResponse<string>.ErrorResponse(

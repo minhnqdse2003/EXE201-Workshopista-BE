@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Repository.Consts;
 using Microsoft.AspNetCore.SignalR.Protocol;
 using Repository.Helpers;
 using Repository.Interfaces;

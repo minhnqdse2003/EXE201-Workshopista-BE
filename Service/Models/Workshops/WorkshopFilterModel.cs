@@ -35,7 +35,7 @@ namespace Service.Models.Workshops
         public string? CurrencyCode { get; set; }
 
         public int? Capacity { get; set; }
-
+        public int? Status { get; set; }
         public int Page { get; set; } = 1;
 
         public int PageSize { get; set; } = 10;
