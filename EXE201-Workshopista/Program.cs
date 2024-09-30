@@ -128,13 +128,14 @@ namespace EXE201_Workshopista
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy(name: "AllowAll",
-                                  policy =>
-                                  {
-                                      policy.AllowAnyOrigin()
-                                      .AllowAnyHeader()
-                                      .AllowAnyMethod();
-                                  });
+                options.AddPolicy("AllowSpecificOrigin",
+         builder =>
+         {
+             builder.WithOrigins("http://localhost:3000")
+                 .AllowAnyHeader()
+                 .AllowAnyMethod()
+                 .AllowCredentials();
+         });
             });
 
             builder.Services.AddAuthentication(options =>
@@ -157,6 +158,7 @@ namespace EXE201_Workshopista
             });
 
             var app = builder.Build();
+            app.UseCors("AllowSpecificOrigin");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -172,7 +174,6 @@ namespace EXE201_Workshopista
                 context.Database.Migrate();
             }
 
-            app.UseCors("AllowAll");
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseSerilogRequestLogging();
 
