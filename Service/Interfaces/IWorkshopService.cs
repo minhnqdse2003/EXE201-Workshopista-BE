@@ -17,8 +17,8 @@ namespace Service.Interfaces
         ApiResponse<WorkShopResponseModel> GetWorkshopById(Guid id);
 
         Task<ApiResponse<WorkShopResponseModel>> AddWorkshop(WorkShopCreateRequestModel workshopCreateDto,string email);
-        ApiResponse<bool> DeleteWorkshop(string id);
-        ApiResponse<WorkShopResponseModel> UpdateWorkshop(WorkShopUpdateRequestModel workshopUpdateDto,string id);
+        Task<ApiResponse<bool>> DeleteWorkshop(string id);
+        Task<ApiResponse<WorkShopResponseModel>> UpdateWorkshop(WorkShopUpdateRequestModel workshopUpdateDto,string id);
     }
 
 }

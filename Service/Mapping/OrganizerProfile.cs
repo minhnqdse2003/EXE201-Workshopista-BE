@@ -13,7 +13,10 @@ namespace Service.Mapping
     {
         public OrganizerProfile()
         {
-            CreateMap<Organizer, OrganizerRegisterRequestModel>().ReverseMap();
+            CreateMap<OrganizerRegisterRequestModel, Organizer>()
+                .ForMember(dest => dest.OrganizerId, opt => opt.MapFrom(src => Guid.NewGuid()))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Verified, opt => opt.MapFrom(src => false));
             CreateMap<Organizer, OrganizerResponseModel>().ReverseMap();
             CreateMap<OrganizerUpdateRequestModel, Organizer>()
                 .ForMember(dest => dest.OrganizerId, opt => opt.Ignore())

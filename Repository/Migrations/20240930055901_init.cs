@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +38,8 @@ namespace Repository.Migrations
                     slug = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     description = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -148,6 +149,26 @@ namespace Repository.Migrations
                     table.ForeignKey(
                         name: "FK__Organizer__user___0D7A0286",
                         column: x => x.user_id,
+                        principalTable: "User",
+                        principalColumn: "user_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OTP",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Code = table.Column<string>(type: "varchar(6)", unicode: false, maxLength: 6, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OTP", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_OTP_User",
+                        column: x => x.CreatedBy,
                         principalTable: "User",
                         principalColumn: "user_id");
                 });
@@ -536,14 +557,14 @@ namespace Repository.Migrations
 
             migrationBuilder.InsertData(
                 table: "Category",
-                columns: new[] { "category_id", "created_at", "description", "name", "slug", "updated_at" },
+                columns: new[] { "category_id", "created_at", "description", "name", "slug", "status", "updated_at" },
                 values: new object[,]
                 {
-                    { new Guid("2cb3ae50-9347-48cb-9e4a-3b68311e6ba6"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6958), "Workshops on software development, AI, cloud computing, and emerging technologies.", "Technology", "technology", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6959) },
-                    { new Guid("71d81979-db02-40da-ac10-bd9e83088e9a"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6966), "Workshops focused on fitness, mental health, and overall well-being.", "Health & Wellness", "health-wellness", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6966) },
-                    { new Guid("83a28e59-0311-453b-99b0-abaad0813652"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6968), "Workshops aimed at personal growth, leadership, and career development.", "Personal Development", "personal-development", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6968) },
-                    { new Guid("8796fcb7-455d-49f4-967b-19608547d4f9"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6946), "Workshops focused on business skills, entrepreneurship, and management.", "Business", "business", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6953) },
-                    { new Guid("bcac2bd7-16f0-4b59-9ad8-15bdabb90859"), new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6962), "Creative workshops covering arts, crafts, and design.", "Arts & Crafts", "arts-and-crafts", new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6964) }
+                    { new Guid("27ae5c53-f0b7-4f71-b52a-52b78511fb01"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3675), "Workshops on software development, AI, cloud computing, and emerging technologies.", "Technology", "technology", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3676) },
+                    { new Guid("3ddf752c-eed5-42c8-93b9-4cd316135a19"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701), "Workshops aimed at personal growth, leadership, and career development.", "Personal Development", "personal-development", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701) },
+                    { new Guid("8f40d269-eaa5-42d7-9d15-97d9bb147a6d"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3695), "Creative workshops covering arts, crafts, and design.", "Arts & Crafts", "arts-and-crafts", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3696) },
+                    { new Guid("c74797ba-bb5d-46ea-9574-8b7dbe75c4f3"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3667), "Workshops focused on business skills, entrepreneurship, and management.", "Business", "business", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3672) },
+                    { new Guid("e1670a2c-2ea1-474a-a882-28c575df7f81"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3698), "Workshops focused on fitness, mental health, and overall well-being.", "Health & Wellness", "health-wellness", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3699) }
                 });
 
             migrationBuilder.InsertData(
@@ -551,9 +572,9 @@ namespace Repository.Migrations
                 columns: new[] { "user_id", "email", "email_verified", "first_name", "last_name", "password_hash", "phone_number", "phone_verified", "profile_image_url", "refresh_token", "refresh_token_expiry_time", "role", "status" },
                 values: new object[,]
                 {
-                    { new Guid("10477a82-d4e0-4558-ae41-4308213adc54"), "org@gmail.com", true, "Bob", "Johnson", "$2a$11$w9o0TwVi8jmx7e8UAWStg.anwRYY5Ci5I4ATrgFiiiYOBa/PJwZWe", "9876543210", true, "https://example.com/profile_image_2.jpg", null, null, "Organizer", null },
-                    { new Guid("bfc7ddac-eceb-455f-9f10-a306022112bd"), "admin@gmail.com", true, "Alice", "Smith", "$2a$11$8l8fT6roQZiAPL9JtmdlwOsb/gj7mPyfxZ6Cz7Z8xypr.JmFj.mU2", "1234567890", true, "https://example.com/profile_image_1.jpg", null, null, "Admin", null },
-                    { new Guid("e335a7f0-0c6a-4256-a885-2d54a11e8c4e"), "charlie@example.com", true, "Charlie", "Brown", "$2a$11$deYf4feSzglUn7mARRLWnehQYj3J14iCXYQt5DKIMk/jBqgx6g5/q", "5551234567", true, "https://example.com/profile_image_3.jpg", null, null, "Organizer", null }
+                    { new Guid("30c18893-99f0-49b9-98fb-18a990489f87"), "admin@gmail.com", true, "Alice", "Smith", "$2a$11$ASMuiRckojlJiy4wEYzSU.dZ3mrYOGvO0QmfkD8I/H0kgSkMJQqiK", "1234567890", true, "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1", null, null, "Admin", "Active" },
+                    { new Guid("382359c6-916d-4548-8583-1a0807f57b7e"), "org@gmail.com", true, "Bob", "Johnson", "$2a$11$hClCjcawkPoEaPyI8VO3RuH592yCe53DtEvPe/aRPk6bKKROCGREO", "9876543210", true, "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1", null, null, "Organizer", "Active" },
+                    { new Guid("70cfded3-8d98-4a54-ac62-ff6478450c3b"), "charlie@example.com", true, "Charlie", "Brown", "$2a$11$BopGOIlJDnHg8v3Fv6ROxOEEDsYiEwSW683DSMfy6CST1TQS8JvvK", "5551234567", true, "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1", null, null, "Organizer", "Active" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -561,14 +582,14 @@ namespace Repository.Migrations
                 table: "Category",
                 column: "slug",
                 unique: true,
-                filter: "[slug] IS NOT NULL");
+                filter: "([slug] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UQ__Category__72E12F1B8F3F9A5C",
                 table: "Category",
                 column: "name",
                 unique: true,
-                filter: "[name] IS NOT NULL");
+                filter: "([name] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Commission_workshop_id",
@@ -595,7 +616,7 @@ namespace Repository.Migrations
                 table: "News",
                 column: "slug",
                 unique: true,
-                filter: "[slug] IS NOT NULL");
+                filter: "([slug] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_participant_id",
@@ -621,6 +642,11 @@ namespace Repository.Migrations
                 name: "IX_Organizer_user_id",
                 table: "Organizer",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OTP_CreatedBy",
+                table: "OTP",
+                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Promotion_organizer_id",
@@ -707,7 +733,7 @@ namespace Repository.Migrations
                 table: "User",
                 column: "email",
                 unique: true,
-                filter: "[email] IS NOT NULL");
+                filter: "([email] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workshop_category_id",
@@ -724,7 +750,7 @@ namespace Repository.Migrations
                 table: "Workshop",
                 column: "slug",
                 unique: true,
-                filter: "[slug] IS NOT NULL");
+                filter: "([slug] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkshopImage_workshop_id",
@@ -780,6 +806,9 @@ namespace Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "News");
+
+            migrationBuilder.DropTable(
+                name: "OTP");
 
             migrationBuilder.DropTable(
                 name: "PromotionTransaction");

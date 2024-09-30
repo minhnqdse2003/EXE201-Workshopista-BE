@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Repository.Consts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,12 +34,13 @@ namespace Repository.Helpers
         //Error message for Category
         public const string CategoryNotFound = "Category not found.";
 
-        //Success message for ticket rank initialize
+        //Success message for ticket rank 
         public const string TicketRankCreateSuccess = "Ticket rank successfully create.";
 
-        //Fail message for ticket rank initialize
+        //Fail message for ticket rank
         public const string TicketRankCreateFail = "Ticket rank fail to create";
         public const string TicketRankEmpty = "Ticket rank empty.";
+        public const string TicketRankNotFound = "Ticket rank not found";
 
         // Validation messages
         public const string InvalidInput = "One or more fields are invalid.";
@@ -52,6 +54,8 @@ namespace Repository.Helpers
         public const string ReadSuccess = "Item successfully retrieved.";
         public const string UpdateSuccess = "Item successfully updated.";
         public const string DeleteSuccess = "Item successfully deleted.";
+
+        public const string SubscriptionNotFound = "Subscription not found";
 
 
         // Error messages for CRUD operations
@@ -70,5 +74,14 @@ namespace Repository.Helpers
         //Destinition message
         public const string FromTokenClaims = "[From token claims]";
         public const string FromRequestModel = "[From request model]";
+        public const string PaymentLinkCreateSuccess = "Payment link create successfully.";
+        public const string FromWorkshopPickedTicketNotFound = "[From order details]";
+
+        public const string TransactionTypeNotFound = $"Transaction type should include (" +
+            $"{TransactionType.Ticket}/" +
+            $"{TransactionType.Subscription}/" +
+            $"{TransactionType.Commission}/" +
+            $"{TransactionType.Promotion})";
+        public static string PaymentSuccessfully = "Payment successfully.";
     }
 }

@@ -942,6 +942,7 @@ public partial class Exe201WorkshopistaContext : DbContext
                 .HasConstraintName("FK__WorkshopI__works__10566F31");
         });
 
+        ModelBuilderExtensions.SeedUsers(modelBuilder);
         OnModelCreatingPartial(modelBuilder);
     }
 
