@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Security;
 using Repository.Consts;
 using Repository.Models;
 using System;
@@ -11,6 +12,7 @@ namespace Repository.Extensions
 {
     public static class ModelBuilderExtensions
     {
+        private static string ImageUrlDefault = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1";
         public static void SeedUsers(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasData(
@@ -23,8 +25,9 @@ namespace Repository.Extensions
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456789"),
                     PhoneNumber = "1234567890",
                     Role = RoleConst.Admin,
-                    ProfileImageUrl = "https://example.com/profile_image_1.jpg",
+                    ProfileImageUrl = ImageUrlDefault,
                     EmailVerified = true,
+                    Status = StatusConst.Active,
                     PhoneVerified = true
                 },
                 new User
@@ -36,7 +39,8 @@ namespace Repository.Extensions
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456789"),
                     PhoneNumber = "9876543210",
                     Role = RoleConst.Organizer,
-                    ProfileImageUrl = "https://example.com/profile_image_2.jpg",
+                    Status = StatusConst.Active,
+                    ProfileImageUrl = ImageUrlDefault,
                     EmailVerified = true,
                     PhoneVerified = true
                 },
@@ -46,10 +50,11 @@ namespace Repository.Extensions
                     FirstName = "Charlie",
                     LastName = "Brown",
                     Email = "charlie@example.com",
+                    Status = StatusConst.Active,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456789"),
                     PhoneNumber = "5551234567",
                     Role = RoleConst.Organizer,
-                    ProfileImageUrl = "https://example.com/profile_image_3.jpg",
+                    ProfileImageUrl = ImageUrlDefault,
                     EmailVerified = true,
                     PhoneVerified = true
                 }
@@ -62,6 +67,7 @@ namespace Repository.Extensions
                        Name = "Business",
                        Slug = "business",
                        Description = "Workshops focused on business skills, entrepreneurship, and management.",
+                       Status = StatusConst.Active,
                        CreatedAt = DateTime.UtcNow,
                        UpdatedAt = DateTime.UtcNow
                    },
@@ -71,6 +77,7 @@ namespace Repository.Extensions
                 Name = "Technology",
                 Slug = "technology",
                 Description = "Workshops on software development, AI, cloud computing, and emerging technologies.",
+                Status = StatusConst.Active,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             },
@@ -80,6 +87,7 @@ namespace Repository.Extensions
                 Name = "Arts & Crafts",
                 Slug = "arts-and-crafts",
                 Description = "Creative workshops covering arts, crafts, and design.",
+                Status = StatusConst.Active,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             },
@@ -89,6 +97,7 @@ namespace Repository.Extensions
                 Name = "Health & Wellness",
                 Slug = "health-wellness",
                 Description = "Workshops focused on fitness, mental health, and overall well-being.",
+                Status = StatusConst.Active,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             },
@@ -98,6 +107,7 @@ namespace Repository.Extensions
                 Name = "Personal Development",
                 Slug = "personal-development",
                 Description = "Workshops aimed at personal growth, leadership, and career development.",
+                Status = StatusConst.Active,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             }

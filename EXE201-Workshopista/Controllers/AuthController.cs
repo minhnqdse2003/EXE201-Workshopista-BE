@@ -48,13 +48,6 @@ namespace EXE201_Workshopista.Controllers
 
         }
 
-        [HttpGet]
-        [Authorize(Roles = RoleConst.Organizer)]
-        public async Task<IActionResult> Authenticate()
-        {
-            return Ok();
-        }
-
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] Token token)
         {

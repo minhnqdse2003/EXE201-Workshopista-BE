@@ -28,7 +28,7 @@ namespace EXE201_Workshopista.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create(WorkShopCreateRequestModel createRequestModel)
+        public async Task<IActionResult> Create([FromForm]WorkShopCreateRequestModel createRequestModel)
         {
             var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
             var result = await _workshopService.AddWorkshop(createRequestModel,email);
@@ -51,9 +51,9 @@ namespace EXE201_Workshopista.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Update(WorkShopUpdateRequestModel updateRequestModel, [FromRoute] string id)
+        public async Task <IActionResult> Update(WorkShopUpdateRequestModel updateRequestModel, [FromRoute] string id)
         {
-            return Ok(_workshopService.UpdateWorkshop(updateRequestModel,id));
+            return Ok(await _workshopService.UpdateWorkshop(updateRequestModel,id));
         }
     }
 }

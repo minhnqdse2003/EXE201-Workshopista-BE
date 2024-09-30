@@ -11,6 +11,7 @@ namespace Repository.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly Exe201WorkshopistaContext _context;
+
         public UnitOfWork(Exe201WorkshopistaContext context)
         {
             _context = context;
@@ -20,10 +21,20 @@ namespace Repository.Repositories
             Categories = new CategoryRepository(_context);
             OTPs = new OTPRepository(_context);
             TicketRanks = new TicketRankRepository(_context);
+            Orders = new OrderRepository(_context);
+            OrderDetails = new OrderDetailsRepository(_context);
+            Tickets = new TicketRepository(_context);
+            Transactions = new TransactionRepository(_context);
+            Subscriptions = new SubscriptionRepository(_context);
+            Commissions = new CommissionRepository(_context);
+            Promotions = new PromotionRepository(_context);
+            SubscriptionTransactions = new SubscriptionTransactionRepository(_context);
+            CommissionTransactions = new CommissionTransactionRepository(_context);
+            PromotionTransactions = new PromotionTransactionRepository(_context);
         }
 
         public IUserRepository Users { get; private set; }
-
+        public IOrderRepository Orders { get; private set; }
         public IWorkshopRepository Workshops { get; private set; }
 
         public IOrganizerRepository Organizers { get; private set; }
@@ -33,6 +44,22 @@ namespace Repository.Repositories
         public IOTPRepository OTPs { get; private set; }
 
         public ITicketRankRepository TicketRanks { get; private set; }
+        public IOrderDetailsRepository OrderDetails { get; private set; }
+        public ITicketRepository Tickets { get; private set; }
+
+        public ITransactionRepository Transactions { get; private set; }
+
+        public ISubscriptionRepository Subscriptions { get; private set; }
+
+        public ICommissionRepository Commissions { get; private set; }
+
+        public IPromotionRepository Promotions { get; private set; }
+
+        public ISubscriptionTransactionRepository SubscriptionTransactions { get; private set; }
+
+        public ICommissionTransactionRepository CommissionTransactions { get; private set; }
+
+        public IPromotionTransactionRepository PromotionTransactions { get; private set; }
 
         public int Complete()
         {

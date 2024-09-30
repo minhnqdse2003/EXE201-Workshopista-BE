@@ -1,6 +1,9 @@
 using EXE201_Workshopista.Middlewares;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Repository.Interfaces;
@@ -14,6 +17,7 @@ using Service.Interfaces.IEmailService;
 using Service.Interfaces.IOTP;
 using Service.Interfaces.ITicketRank;
 using Service.Mapping;
+using Service.Models.Firebase;
 using Service.Services;
 using Service.Services.Auths;
 using Service.Services.Categories;
@@ -37,17 +41,16 @@ namespace EXE201_Workshopista
             builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-            // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
 
 
             builder.Services.AddScoped<IAuthService, AuthService>();
+            //DI
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IOTPRepository, OTPRepository>();
@@ -60,8 +63,21 @@ namespace EXE201_Workshopista
             builder.Services.AddScoped<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddScoped<ITicketRankRepository, TicketRankRepository>();
             builder.Services.AddScoped<ITicketRankService, TicketRankService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderDetailsRepository, OrderDetailsRepository>();
+            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+            builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+            builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            builder.Services.AddScoped<ICommissionRepository, CommissionRepository>();
+            builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
+            builder.Services.AddScoped<ISubscriptionTransactionRepository, SubscriptionTransactionRepository>();
+            builder.Services.AddScoped<ICommissionTransactionRepository, CommissionTransactionRepository>();
+            builder.Services.AddScoped<IPromotionTransactionRepository, PromotionTransactionRepository>();
+            builder.Services.AddScoped<ITransactionService, TransactionService>();
+            builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
 
             builder.Services.AddSwaggerGen(c =>
             {
@@ -93,6 +109,19 @@ namespace EXE201_Workshopista
             });
 
             builder.Services.AddAutoMapper(typeof(MappingProfile));
+            builder.Services.AddSingleton<FirebaseApp>(provider =>
+            {
+                var firebaseSettings = provider.GetRequiredService<IOptions<FirebaseSettings>>().Value;
+
+                var firebaseApp = FirebaseApp.Create(new AppOptions()
+                {
+                    Credential = GoogleCredential.FromFile(firebaseSettings.ServiceAccountKeyPath),
+                    ProjectId = firebaseSettings.ProjectId,
+                    ServiceAccountId = firebaseSettings.ServiceAccountId
+                });
+
+                return firebaseApp;
+            });
 
             builder.Services.AddDbContext<Exe201WorkshopistaContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DBUtilsConnectionString")));

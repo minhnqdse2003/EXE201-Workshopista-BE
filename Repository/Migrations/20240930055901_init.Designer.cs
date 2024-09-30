@@ -12,8 +12,8 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(Exe201WorkshopistaContext))]
-    [Migration("20240926090141_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240930055901_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,6 +87,11 @@ namespace Repository.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("slug");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -98,59 +103,64 @@ namespace Repository.Migrations
 
                     b.HasIndex(new[] { "Slug" }, "UQ__Category__32DD1E4C475F73D5")
                         .IsUnique()
-                        .HasFilter("[slug] IS NOT NULL");
+                        .HasFilter("([slug] IS NOT NULL)");
 
                     b.HasIndex(new[] { "Name" }, "UQ__Category__72E12F1B8F3F9A5C")
                         .IsUnique()
-                        .HasFilter("[name] IS NOT NULL");
+                        .HasFilter("([name] IS NOT NULL)");
 
                     b.ToTable("Category", (string)null);
 
                     b.HasData(
                         new
                         {
-                            CategoryId = new Guid("8796fcb7-455d-49f4-967b-19608547d4f9"),
-                            CreatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6946),
+                            CategoryId = new Guid("c74797ba-bb5d-46ea-9574-8b7dbe75c4f3"),
+                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3667),
                             Description = "Workshops focused on business skills, entrepreneurship, and management.",
                             Name = "Business",
                             Slug = "business",
-                            UpdatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6953)
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3672)
                         },
                         new
                         {
-                            CategoryId = new Guid("2cb3ae50-9347-48cb-9e4a-3b68311e6ba6"),
-                            CreatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6958),
+                            CategoryId = new Guid("27ae5c53-f0b7-4f71-b52a-52b78511fb01"),
+                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3675),
                             Description = "Workshops on software development, AI, cloud computing, and emerging technologies.",
                             Name = "Technology",
                             Slug = "technology",
-                            UpdatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6959)
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3676)
                         },
                         new
                         {
-                            CategoryId = new Guid("bcac2bd7-16f0-4b59-9ad8-15bdabb90859"),
-                            CreatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6962),
+                            CategoryId = new Guid("8f40d269-eaa5-42d7-9d15-97d9bb147a6d"),
+                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3695),
                             Description = "Creative workshops covering arts, crafts, and design.",
                             Name = "Arts & Crafts",
                             Slug = "arts-and-crafts",
-                            UpdatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6964)
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3696)
                         },
                         new
                         {
-                            CategoryId = new Guid("71d81979-db02-40da-ac10-bd9e83088e9a"),
-                            CreatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6966),
+                            CategoryId = new Guid("e1670a2c-2ea1-474a-a882-28c575df7f81"),
+                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3698),
                             Description = "Workshops focused on fitness, mental health, and overall well-being.",
                             Name = "Health & Wellness",
                             Slug = "health-wellness",
-                            UpdatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6966)
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3699)
                         },
                         new
                         {
-                            CategoryId = new Guid("83a28e59-0311-453b-99b0-abaad0813652"),
-                            CreatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6968),
+                            CategoryId = new Guid("3ddf752c-eed5-42c8-93b9-4cd316135a19"),
+                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701),
                             Description = "Workshops aimed at personal growth, leadership, and career development.",
                             Name = "Personal Development",
                             Slug = "personal-development",
-                            UpdatedAt = new DateTime(2024, 9, 26, 9, 1, 41, 34, DateTimeKind.Utc).AddTicks(6968)
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701)
                         });
                 });
 
@@ -187,7 +197,7 @@ namespace Repository.Migrations
                     b.HasKey("CommissionId")
                         .HasName("PK__Commissi__D19D7CC90A4035D4");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_Commission_workshop_id");
 
                     b.ToTable("Commission", (string)null);
                 });
@@ -225,9 +235,9 @@ namespace Repository.Migrations
                     b.HasKey("CommissionTransactionId")
                         .HasName("PK__Commissi__32A99DDF3CA1F70E");
 
-                    b.HasIndex("TransactionId");
+                    b.HasIndex(new[] { "TransactionId" }, "IX_CommissionTransaction_transaction_id");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_CommissionTransaction_workshop_id");
 
                     b.ToTable("CommissionTransaction", (string)null);
                 });
@@ -273,7 +283,7 @@ namespace Repository.Migrations
                     b.HasKey("AnalyticsId")
                         .HasName("PK__EventAna__D5DC3DE1912B45AA");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_EventAnalytics_workshop_id");
 
                     b.ToTable("EventAnalytics");
                 });
@@ -324,7 +334,7 @@ namespace Repository.Migrations
 
                     b.HasIndex(new[] { "Slug" }, "UQ__News__32DD1E4CEEFB436D")
                         .IsUnique()
-                        .HasFilter("[slug] IS NOT NULL");
+                        .HasFilter("([slug] IS NOT NULL)");
 
                     b.ToTable("News");
                 });
@@ -372,7 +382,7 @@ namespace Repository.Migrations
                     b.HasKey("OrderId")
                         .HasName("PK__Order__46596229D5600F2F");
 
-                    b.HasIndex("ParticipantId");
+                    b.HasIndex(new[] { "ParticipantId" }, "IX_Order_participant_id");
 
                     b.ToTable("Order", (string)null);
                 });
@@ -429,11 +439,11 @@ namespace Repository.Migrations
                     b.HasKey("OrderDetailsId")
                         .HasName("PK__OrderDet__F6FB5AE4C762AF40");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex(new[] { "OrderId" }, "IX_OrderDetails_order_id");
 
-                    b.HasIndex("TicketId");
+                    b.HasIndex(new[] { "TicketId" }, "IX_OrderDetails_ticket_id");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_OrderDetails_workshop_id");
 
                     b.ToTable("OrderDetails");
                 });
@@ -496,9 +506,36 @@ namespace Repository.Migrations
                     b.HasKey("OrganizerId")
                         .HasName("PK__Organize__06347014B8E42884");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex(new[] { "UserId" }, "IX_Organizer_user_id");
 
                     b.ToTable("Organizer", (string)null);
+                });
+
+            modelBuilder.Entity("Repository.Models.Otp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(6)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(6)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool?>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.ToTable("OTP", (string)null);
                 });
 
             modelBuilder.Entity("Repository.Models.PaymentMethod", b =>
@@ -585,9 +622,9 @@ namespace Repository.Migrations
                     b.HasKey("PromotionId")
                         .HasName("PK__Promotio__2CB9556B36D75614");
 
-                    b.HasIndex("OrganizerId");
+                    b.HasIndex(new[] { "OrganizerId" }, "IX_Promotion_organizer_id");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_Promotion_workshop_id");
 
                     b.ToTable("Promotion", (string)null);
                 });
@@ -625,11 +662,11 @@ namespace Repository.Migrations
                     b.HasKey("PromotionTransactionId")
                         .HasName("PK__Promotio__A5C4F6151910D125");
 
-                    b.HasIndex("PromotionId");
+                    b.HasIndex(new[] { "PromotionId" }, "IX_PromotionTransaction_promotion_id");
 
-                    b.HasIndex("TransactionId");
+                    b.HasIndex(new[] { "TransactionId" }, "IX_PromotionTransaction_transaction_id");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_PromotionTransaction_workshop_id");
 
                     b.ToTable("PromotionTransaction", (string)null);
                 });
@@ -676,9 +713,9 @@ namespace Repository.Migrations
                     b.HasKey("ReviewId")
                         .HasName("PK__Review__60883D90378C5259");
 
-                    b.HasIndex("ParticipantId");
+                    b.HasIndex(new[] { "ParticipantId" }, "IX_Review_participant_id");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_Review_workshop_id");
 
                     b.ToTable("Review", (string)null);
                 });
@@ -729,7 +766,7 @@ namespace Repository.Migrations
                     b.HasKey("SubscriptionId")
                         .HasName("PK__Subscrip__863A7EC1993FA16B");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex(new[] { "UserId" }, "IX_Subscription_user_id");
 
                     b.ToTable("Subscription", (string)null);
                 });
@@ -763,9 +800,9 @@ namespace Repository.Migrations
                     b.HasKey("SubscriptionTransactionId")
                         .HasName("PK__Subscrip__762A0D4C91ACD385");
 
-                    b.HasIndex("SubscriptionId");
+                    b.HasIndex(new[] { "SubscriptionId" }, "IX_SubscriptionTransaction_subscription_id");
 
-                    b.HasIndex("TransactionId");
+                    b.HasIndex(new[] { "TransactionId" }, "IX_SubscriptionTransaction_transaction_id");
 
                     b.ToTable("SubscriptionTransaction", (string)null);
                 });
@@ -814,11 +851,11 @@ namespace Repository.Migrations
                     b.HasKey("TicketId")
                         .HasName("PK__Ticket__D596F96B7099B05A");
 
-                    b.HasIndex("OrderDetailId");
+                    b.HasIndex(new[] { "OrderDetailId" }, "IX_Ticket_order_detail_id");
 
-                    b.HasIndex("TicketRankId");
+                    b.HasIndex(new[] { "TicketRankId" }, "IX_Ticket_ticket_rank_id");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_Ticket_workshop_id");
 
                     b.ToTable("Ticket", (string)null);
                 });
@@ -866,7 +903,7 @@ namespace Repository.Migrations
                     b.HasKey("TicketRankId")
                         .HasName("PK__TicketRa__1B8160B1D43B79A1");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_TicketRank_workshop_id");
 
                     b.ToTable("TicketRank", (string)null);
                 });
@@ -914,9 +951,9 @@ namespace Repository.Migrations
                     b.HasKey("TransactionId")
                         .HasName("PK__Transact__85C600AF4A720ABE");
 
-                    b.HasIndex("PaymentMethodId");
+                    b.HasIndex(new[] { "PaymentMethodId" }, "IX_Transaction_payment_method_id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex(new[] { "UserId" }, "IX_Transaction_user_id");
 
                     b.ToTable("Transaction", (string)null);
                 });
@@ -1005,49 +1042,52 @@ namespace Repository.Migrations
 
                     b.HasIndex(new[] { "Email" }, "UQ__User__AB6E616457DE1028")
                         .IsUnique()
-                        .HasFilter("[email] IS NOT NULL");
+                        .HasFilter("([email] IS NOT NULL)");
 
                     b.ToTable("User", (string)null);
 
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("bfc7ddac-eceb-455f-9f10-a306022112bd"),
+                            UserId = new Guid("30c18893-99f0-49b9-98fb-18a990489f87"),
                             Email = "admin@gmail.com",
                             EmailVerified = true,
                             FirstName = "Alice",
                             LastName = "Smith",
-                            PasswordHash = "$2a$11$8l8fT6roQZiAPL9JtmdlwOsb/gj7mPyfxZ6Cz7Z8xypr.JmFj.mU2",
+                            PasswordHash = "$2a$11$ASMuiRckojlJiy4wEYzSU.dZ3mrYOGvO0QmfkD8I/H0kgSkMJQqiK",
                             PhoneNumber = "1234567890",
                             PhoneVerified = true,
-                            ProfileImageUrl = "https://example.com/profile_image_1.jpg",
-                            Role = "Admin"
+                            ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
+                            Role = "Admin",
+                            Status = "Active"
                         },
                         new
                         {
-                            UserId = new Guid("10477a82-d4e0-4558-ae41-4308213adc54"),
+                            UserId = new Guid("382359c6-916d-4548-8583-1a0807f57b7e"),
                             Email = "org@gmail.com",
                             EmailVerified = true,
                             FirstName = "Bob",
                             LastName = "Johnson",
-                            PasswordHash = "$2a$11$w9o0TwVi8jmx7e8UAWStg.anwRYY5Ci5I4ATrgFiiiYOBa/PJwZWe",
+                            PasswordHash = "$2a$11$hClCjcawkPoEaPyI8VO3RuH592yCe53DtEvPe/aRPk6bKKROCGREO",
                             PhoneNumber = "9876543210",
                             PhoneVerified = true,
-                            ProfileImageUrl = "https://example.com/profile_image_2.jpg",
-                            Role = "Organizer"
+                            ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
+                            Role = "Organizer",
+                            Status = "Active"
                         },
                         new
                         {
-                            UserId = new Guid("e335a7f0-0c6a-4256-a885-2d54a11e8c4e"),
+                            UserId = new Guid("70cfded3-8d98-4a54-ac62-ff6478450c3b"),
                             Email = "charlie@example.com",
                             EmailVerified = true,
                             FirstName = "Charlie",
                             LastName = "Brown",
-                            PasswordHash = "$2a$11$deYf4feSzglUn7mARRLWnehQYj3J14iCXYQt5DKIMk/jBqgx6g5/q",
+                            PasswordHash = "$2a$11$BopGOIlJDnHg8v3Fv6ROxOEEDsYiEwSW683DSMfy6CST1TQS8JvvK",
                             PhoneNumber = "5551234567",
                             PhoneVerified = true,
-                            ProfileImageUrl = "https://example.com/profile_image_3.jpg",
-                            Role = "Organizer"
+                            ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
+                            Role = "Organizer",
+                            Status = "Active"
                         });
                 });
 
@@ -1148,13 +1188,13 @@ namespace Repository.Migrations
                     b.HasKey("WorkshopId")
                         .HasName("PK__Workshop__EA6B0559D8B60A03");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex(new[] { "CategoryId" }, "IX_Workshop_category_id");
 
-                    b.HasIndex("OrganizerId");
+                    b.HasIndex(new[] { "OrganizerId" }, "IX_Workshop_organizer_id");
 
                     b.HasIndex(new[] { "Slug" }, "UQ__Workshop__32DD1E4CC1ABD095")
                         .IsUnique()
-                        .HasFilter("[slug] IS NOT NULL");
+                        .HasFilter("([slug] IS NOT NULL)");
 
                     b.ToTable("Workshop", (string)null);
                 });
@@ -1189,7 +1229,7 @@ namespace Repository.Migrations
                     b.HasKey("ImageId")
                         .HasName("PK__Workshop__DC9AC9555C0A8683");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex(new[] { "WorkshopId" }, "IX_WorkshopImage_workshop_id");
 
                     b.ToTable("WorkshopImage", (string)null);
                 });
@@ -1273,6 +1313,16 @@ namespace Repository.Migrations
                         .HasConstraintName("FK__Organizer__user___0D7A0286");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Repository.Models.Otp", b =>
+                {
+                    b.HasOne("Repository.Models.User", "CreatedByNavigation")
+                        .WithMany("Otps")
+                        .HasForeignKey("CreatedBy")
+                        .HasConstraintName("FK_OTP_User");
+
+                    b.Navigation("CreatedByNavigation");
                 });
 
             modelBuilder.Entity("Repository.Models.Promotion", b =>
@@ -1499,6 +1549,8 @@ namespace Repository.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Organizers");
+
+                    b.Navigation("Otps");
 
                     b.Navigation("Reviews");
 

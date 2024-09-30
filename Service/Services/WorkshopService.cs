@@ -20,11 +20,13 @@ namespace Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IFirebaseStorageService _firebaseStorageService;
 
-        public WorkshopService(IUnitOfWork unitOfWork, IMapper mapper)
+        public WorkshopService(IUnitOfWork unitOfWork, IMapper mapper, IFirebaseStorageService firebaseStorageService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _firebaseStorageService = firebaseStorageService;
         }
 
         public async Task<ApiResponse<IEnumerable<WorkShopResponseModel>>> GetFilter(WorkshopFilterModel filterModel)
@@ -108,16 +110,34 @@ namespace Service.Services
             workshop.Organizer = organizer;
             workshop.TicketRanks = ticketRank;
             workshop.Status = StatusConst.InActive;
+            workshop.StartTime = DateTimeOffset.FromUnixTimeSeconds(workshopCreateDto.StartTime).UtcDateTime;
+            workshop.EndTime = DateTimeOffset.FromUnixTimeSeconds(workshopCreateDto.EndTime).UtcDateTime;
             workshop.Capacity = ticketRank.Sum(x => x.Capacity);
+            workshop.Price = ticketRank.Min(x => x.Price);
+
+            var downloadUrl = await _firebaseStorageService.UploadFile(workshopCreateDto.WorkshopImages);
+
+            foreach(var link in downloadUrl)
+            {
+                var workshopImage = new WorkshopImage
+                {
+                    ImageId = Guid.NewGuid(),  
+                    WorkshopId = workshop.WorkshopId,
+                    ImageUrl = link,     
+                    IsPrimary = false,          
+                    CreatedAt = DateTime.UtcNow 
+                };
+
+                workshop.WorkshopImages.Add(workshopImage);
+            }
 
             await _unitOfWork.Workshops.Add(workshop);
-            _unitOfWork.Complete();
 
             var workshopDto = _mapper.Map<WorkShopResponseModel>(workshop);
             return ApiResponse<WorkShopResponseModel>.SuccessResponse(workshopDto, ResponseMessage.CreateSuccess);
         }
 
-        public ApiResponse<bool> DeleteWorkshop(string id)
+        public async Task<ApiResponse<bool>> DeleteWorkshop(string id)
         {
             Guid workShopId = Guid.Parse(id);
             var existingWorkshop = _unitOfWork.Workshops.GetById(workShopId);
@@ -126,13 +146,12 @@ namespace Service.Services
                 throw new CustomException(ResponseMessage.WorkshopNotFound + ResponseMessage.FromRequestModel);
             }
             existingWorkshop.Status = StatusConst.InActive;
-            _unitOfWork.Workshops.Update(existingWorkshop);
-            _unitOfWork.Complete();
+            await _unitOfWork.Workshops.Update(existingWorkshop);
 
             return ApiResponse<bool>.SuccessResponse(true,ResponseMessage.DeleteSuccess);
         }
 
-        public ApiResponse<WorkShopResponseModel> UpdateWorkshop(WorkShopUpdateRequestModel workshopUpdateDto,string id)
+        public async Task<ApiResponse<WorkShopResponseModel>> UpdateWorkshop(WorkShopUpdateRequestModel workshopUpdateDto,string id)
         {
             // Fetch the workshop by id
             var query = _unitOfWork.Workshops.Get();
@@ -144,6 +163,11 @@ namespace Service.Services
             if (existingWorkshop == null)
             {
                 throw new CustomException(ResponseMessage.WorkshopNotFound + ResponseMessage.FromRequestModel);
+            }
+
+            if (existingWorkshop.Status == StatusConst.Active) // Replace with your actual accepted status check
+            {
+                throw new CustomException("Cannot update information for an active workshop.");
             }
 
             // Map the updated properties from the DTO to the existing workshop
@@ -160,6 +184,36 @@ namespace Service.Services
                 existingWorkshop.Category = category;
             }
 
+            if (workshopUpdateDto.StartTime.HasValue)
+            {
+                DateTime newStartTime =  DateTimeOffset.FromUnixTimeSeconds(workshopUpdateDto.StartTime 
+                    ?? throw new CustomException("StartTime is null but still access the if loop.")).UtcDateTime;
+
+                // Check if the newStartTime is valid compared to existing EndTime
+                if (newStartTime >= existingWorkshop.EndTime)
+                {
+                    throw new CustomException("New StartTime cannot be equal to or after the existing EndTime.");
+                }
+
+                // If valid, update the StartTime
+                existingWorkshop.StartTime = newStartTime;
+            }
+
+            if (workshopUpdateDto.EndTime.HasValue)
+            {
+                DateTime newEndTime = DateTimeOffset.FromUnixTimeSeconds(workshopUpdateDto.EndTime
+                    ?? throw new CustomException("EndTime is null but still accessed the if loop.")).UtcDateTime;
+
+                // Check if the newEndTime is valid compared to existing StartTime
+                if (newEndTime <= existingWorkshop.StartTime)
+                {
+                    throw new CustomException("New EndTime cannot be equal to or before the existing StartTime.");
+                }
+
+                // If valid, update the EndTime
+                existingWorkshop.EndTime = newEndTime;
+            }
+
             if (workshopUpdateDto.TicketRanks != null && workshopUpdateDto.TicketRanks.Any())
             {
                 // Update ticket ranks logic
@@ -167,11 +221,11 @@ namespace Service.Services
                 existingWorkshop.TicketRanks.Clear();
                 existingWorkshop.TicketRanks = updatedTicketRanks;
                 existingWorkshop.Capacity = updatedTicketRanks.Sum(x => x.Capacity);
+                existingWorkshop.Price = updatedTicketRanks.Min(x => x.Price);
             }
 
             // Update the workshop in the database
-            _unitOfWork.Workshops.Update(existingWorkshop);
-            _unitOfWork.Complete();
+            await _unitOfWork.Workshops.Update(existingWorkshop);
 
             // Map to response model and return
             var updatedWorkshopDto = _mapper.Map<WorkShopResponseModel>(existingWorkshop);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,15 +18,14 @@ namespace Service.Models.Workshops
         public string? LocationAddress { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
-        public DateTime? StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public decimal? Price { get; set; }
-        public string? CurrencyCode { get; set; }
-        public int? Capacity { get; set; }
+        public long? StartTime { get; set; }
+        public long? EndTime { get; set; }
         public string? VideoUrl { get; set; }
         public string? Status { get; set; }
         public OrganizerUpdateRequestModel? Organizer { get; set; }
         public List<TicketRankUpdateModel>? TicketRanks { get; set; }
+        public List<IFormFile>? WorkshopImages { get; set; }
+        public List<string>? RemainingWorkshop { get; set; }
     }
     public class TicketRankUpdateModel
     {
@@ -47,5 +47,4 @@ namespace Service.Models.Workshops
         public string? SocialLinks { get; set; }
         public bool? Verified { get; set; }
     }
-
 }
