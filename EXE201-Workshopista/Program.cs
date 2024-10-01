@@ -128,14 +128,23 @@ namespace EXE201_Workshopista
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigin",
-         builder =>
-         {
-             builder.WithOrigins("http://localhost:3000")
-                 .AllowAnyHeader()
-                 .AllowAnyMethod()
-                 .AllowCredentials();
-         });
+                options.AddPolicy(name: "Develop",
+                                  policy =>
+                                  {
+                                      policy
+                                      .AllowAnyOrigin()
+                                      .AllowAnyHeader()
+                                      .AllowAnyMethod();
+                                  });
+
+                options.AddPolicy(name: "Production",
+                                  policy =>
+                                  {
+                                      policy
+                                      .SetIsOriginAllowedToAllowWildcardSubdomains()
+                                      .AllowAnyHeader()
+                                      .AllowAnyMethod();
+                                  });
             });
 
             builder.Services.AddAuthentication(options =>
@@ -158,14 +167,18 @@ namespace EXE201_Workshopista
             });
 
             var app = builder.Build();
-            app.UseCors("AllowSpecificOrigin");
-
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseCors("Develop");
             }
+            else
+            {
+                app.UseCors("Production");
+            }
+
+            // Configure the HTTP request pipeline.
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
             using (var scope = app.Services.CreateScope())
