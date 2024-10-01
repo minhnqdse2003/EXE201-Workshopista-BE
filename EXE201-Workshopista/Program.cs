@@ -137,7 +137,12 @@ namespace EXE201_Workshopista
                                   policy =>
                                   {
                                       policy
-                                      .AllowAnyOrigin()
+                                      .WithOrigins(
+                                            "http://localhost:3000", 
+                                            "http://localhost:5000",  
+                                            "http://127.0.0.1:3000",  
+                                            "http://127.0.0.1:5000"  
+                                      )
                                       .AllowAnyHeader()
                                       .AllowAnyMethod()
                                       .AllowCredentials();
@@ -147,6 +152,12 @@ namespace EXE201_Workshopista
                                   policy =>
                                   {
                                       policy
+                                      .WithOrigins(
+                                            "http://localhost:3000",
+                                            "http://localhost:5000",
+                                            "http://127.0.0.1:3000",
+                                            "http://127.0.0.1:5000"
+                                      )
                                       .AllowAnyHeader()
                                       .AllowAnyMethod()
                                       .AllowCredentials();
