@@ -271,8 +271,6 @@ namespace Service.Services
             string amount = itemsModel["amount"];
             string formattedAmount = amount.Substring(0, amount.Length - 3);
 
-            var embeddata = new { merchantinfo = "embeddata123", redirecturl = "https://localhost:7052/api/Transaction/Callback" };
-
             var items = new
             {
                 transId = transId,
@@ -284,6 +282,8 @@ namespace Service.Services
                 ?? throw new CustomException($"{nameof(key1)} not found.{nameof(GenerateZaloPayParameters)}");
             string createOrderUrl = _configuration["ServerName"] + _configuration["ZaloPayment:redirectUrl"]
                 ?? throw new CustomException($"{nameof(createOrderUrl)} not found.{nameof(GenerateZaloPayParameters)}");
+
+            var embeddata = new { merchantinfo = "embeddata123", redirecturl = createOrderUrl };
 
 
             var param = new Dictionary<string, string>

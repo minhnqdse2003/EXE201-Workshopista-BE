@@ -65,7 +65,9 @@ public partial class Exe201WorkshopistaContext : DbContext
     {
         IConfiguration configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true).Build();
+                .AddJsonFile("appsettings.json", true, true)
+                .AddEnvironmentVariables()
+                .Build();
         return configuration["ConnectionStrings:DBUtilsConnectionString"];
     }
 

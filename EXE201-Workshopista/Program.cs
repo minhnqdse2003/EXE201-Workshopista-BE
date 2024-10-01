@@ -46,6 +46,11 @@ namespace EXE201_Workshopista
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
+            builder.Configuration
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
 
 
             builder.Services.AddScoped<IAuthService, AuthService>();
