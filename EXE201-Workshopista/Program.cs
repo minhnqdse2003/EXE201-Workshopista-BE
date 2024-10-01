@@ -139,7 +139,8 @@ namespace EXE201_Workshopista
                                       policy
                                       .AllowAnyOrigin()
                                       .AllowAnyHeader()
-                                      .AllowAnyMethod();
+                                      .AllowAnyMethod()
+                                      .AllowCredentials();
                                   });
 
                 options.AddPolicy(name: "Production",
@@ -148,7 +149,8 @@ namespace EXE201_Workshopista
                                       policy
                                       .SetIsOriginAllowedToAllowWildcardSubdomains()
                                       .AllowAnyHeader()
-                                      .AllowAnyMethod();
+                                      .AllowAnyMethod()
+                                      .AllowCredentials();
                                   });
             });
 
