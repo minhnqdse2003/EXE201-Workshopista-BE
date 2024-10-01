@@ -112,7 +112,7 @@ namespace Service.Services.Auths
             await _userService.UpdateUserAsync(auth.Data);
 
             return ApiResponse<TokenModel>.SuccessResponse(
-                new TokenModel { Token = token, RefreshToken = refreshToken },
+                new TokenModel { Token = token, RefreshToken = refreshToken, User = _mapper.Map<LoginUserResponseModel>(auth.Data) },
                 ResponseMessage.LoginSuccess);
         }
 

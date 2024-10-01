@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Repository.Models;
+using Service.Models.Auth;
 using Service.Models.Users;
 using Service.Models.Workshops;
 using System;
@@ -19,6 +20,7 @@ namespace Service.Mapping
             CreateMap<User, UserResponseModel>().ReverseMap();
 
             CreateMap<User, UserInformationModel>().ReverseMap();
+            CreateMap<User, LoginUserResponseModel>().ReverseMap();
         }
     }
 }
