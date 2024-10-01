@@ -147,7 +147,6 @@ namespace EXE201_Workshopista
                                   policy =>
                                   {
                                       policy
-                                      .SetIsOriginAllowedToAllowWildcardSubdomains()
                                       .AllowAnyHeader()
                                       .AllowAnyMethod()
                                       .AllowCredentials();
