@@ -12,7 +12,7 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(Exe201WorkshopistaContext))]
-    [Migration("20240930055901_init")]
+    [Migration("20241005014315_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -114,53 +114,53 @@ namespace Repository.Migrations
                     b.HasData(
                         new
                         {
-                            CategoryId = new Guid("c74797ba-bb5d-46ea-9574-8b7dbe75c4f3"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3667),
+                            CategoryId = new Guid("e166aa8b-bb77-4c98-8cf7-881f3889c0d9"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3031),
                             Description = "Workshops focused on business skills, entrepreneurship, and management.",
                             Name = "Business",
                             Slug = "business",
                             Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3672)
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3037)
                         },
                         new
                         {
-                            CategoryId = new Guid("27ae5c53-f0b7-4f71-b52a-52b78511fb01"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3675),
+                            CategoryId = new Guid("ee0b6f90-c724-46d6-a0f1-62b8776ca367"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3040),
                             Description = "Workshops on software development, AI, cloud computing, and emerging technologies.",
                             Name = "Technology",
                             Slug = "technology",
                             Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3676)
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3041)
                         },
                         new
                         {
-                            CategoryId = new Guid("8f40d269-eaa5-42d7-9d15-97d9bb147a6d"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3695),
+                            CategoryId = new Guid("ccbdac12-70e6-4b44-a825-2620990306d9"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3044),
                             Description = "Creative workshops covering arts, crafts, and design.",
                             Name = "Arts & Crafts",
                             Slug = "arts-and-crafts",
                             Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3696)
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3045)
                         },
                         new
                         {
-                            CategoryId = new Guid("e1670a2c-2ea1-474a-a882-28c575df7f81"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3698),
+                            CategoryId = new Guid("5e6d2117-ab06-45a0-982a-e3df2a6d0dbc"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3059),
                             Description = "Workshops focused on fitness, mental health, and overall well-being.",
                             Name = "Health & Wellness",
                             Slug = "health-wellness",
                             Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3699)
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3059)
                         },
                         new
                         {
-                            CategoryId = new Guid("3ddf752c-eed5-42c8-93b9-4cd316135a19"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701),
+                            CategoryId = new Guid("6a3ae500-36be-4240-846b-5b8c3a6097c6"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3062),
                             Description = "Workshops aimed at personal growth, leadership, and career development.",
                             Name = "Personal Development",
                             Slug = "personal-development",
                             Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701)
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3062)
                         });
                 });
 
@@ -355,6 +355,9 @@ namespace Repository.Migrations
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
+
+                    b.Property<long?>("LongOrderId")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid?>("ParticipantId")
                         .HasColumnType("uniqueidentifier")
@@ -929,6 +932,9 @@ namespace Repository.Migrations
                         .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
 
+                    b.Property<long?>("LongTransactionId")
+                        .HasColumnType("bigint");
+
                     b.Property<Guid?>("PaymentMethodId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("payment_method_id");
@@ -1049,12 +1055,12 @@ namespace Repository.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("30c18893-99f0-49b9-98fb-18a990489f87"),
+                            UserId = new Guid("9a57ec50-eaf7-4f45-a03e-bc50e88b8e52"),
                             Email = "admin@gmail.com",
                             EmailVerified = true,
                             FirstName = "Alice",
                             LastName = "Smith",
-                            PasswordHash = "$2a$11$ASMuiRckojlJiy4wEYzSU.dZ3mrYOGvO0QmfkD8I/H0kgSkMJQqiK",
+                            PasswordHash = "$2a$11$EU4w6nD6CcWPqZDQky7XJelNLUzj6TwIzPpmg9nCYmV1kCAV7.yUe",
                             PhoneNumber = "1234567890",
                             PhoneVerified = true,
                             ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
@@ -1063,12 +1069,12 @@ namespace Repository.Migrations
                         },
                         new
                         {
-                            UserId = new Guid("382359c6-916d-4548-8583-1a0807f57b7e"),
+                            UserId = new Guid("d3aa7376-f61b-4898-b49b-4f27eb4dfdbb"),
                             Email = "org@gmail.com",
                             EmailVerified = true,
                             FirstName = "Bob",
                             LastName = "Johnson",
-                            PasswordHash = "$2a$11$hClCjcawkPoEaPyI8VO3RuH592yCe53DtEvPe/aRPk6bKKROCGREO",
+                            PasswordHash = "$2a$11$IhTnqE49QH/2gp.1xcQ6t.48Vzy62KgIl6Qhwuw3v2Phv1XTHYUri",
                             PhoneNumber = "9876543210",
                             PhoneVerified = true,
                             ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
@@ -1077,12 +1083,12 @@ namespace Repository.Migrations
                         },
                         new
                         {
-                            UserId = new Guid("70cfded3-8d98-4a54-ac62-ff6478450c3b"),
+                            UserId = new Guid("b002b85b-e43a-45cd-a3a2-54edeb9fe014"),
                             Email = "charlie@example.com",
                             EmailVerified = true,
                             FirstName = "Charlie",
                             LastName = "Brown",
-                            PasswordHash = "$2a$11$BopGOIlJDnHg8v3Fv6ROxOEEDsYiEwSW683DSMfy6CST1TQS8JvvK",
+                            PasswordHash = "$2a$11$xn.9rGVqW9qNbkYS3z038uzZJg8u33H3Yw7Amsw0JMIVMAWNkuO6a",
                             PhoneNumber = "5551234567",
                             PhoneVerified = true,
                             ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",

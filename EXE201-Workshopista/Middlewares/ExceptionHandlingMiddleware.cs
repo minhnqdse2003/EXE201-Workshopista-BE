@@ -33,7 +33,12 @@ namespace EXE201_Workshopista.Middlewares
                 }
                 catch (Exception ex)
                 {
-                    var statusCode = ex is CustomException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
+                    var statusCode = StatusCodes.Status500InternalServerError;
+                    if( ex.InnerException != null && ex.InnerException.GetType().Name == nameof(CustomException))
+                    {
+                        statusCode = StatusCodes.Status400BadRequest;
+                    }
+
                     _logger.LogError(
                     ex, "Exception occurred: {Message}", ex.Message.ToString());
 

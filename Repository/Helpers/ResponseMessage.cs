@@ -55,7 +55,11 @@ namespace Repository.Helpers
         public const string UpdateSuccess = "Item successfully updated.";
         public const string DeleteSuccess = "Item successfully deleted.";
 
-        public const string SubscriptionNotFound = "Subscription not found";
+        public const string SubscriptionNotFound = "Subscription not found type should include(" +
+            $"{SubscriptionTiers.PremiumPro}" +
+            $"{SubscriptionTiers.FreeTier}" +
+            $"{SubscriptionTiers.PremiumAnnual})" +
+            $"{SubscriptionTiers.PremiumBasic})";
 
 
         // Error messages for CRUD operations
@@ -83,5 +87,7 @@ namespace Repository.Helpers
             $"{TransactionType.Commission}/" +
             $"{TransactionType.Promotion})";
         public static string PaymentSuccessfully = "Payment successfully.";
+        public static string TicketNotFound = "Ticket not found or invalid QR code.";
+        public static string EnvVaribaleNotFound = "Enviroment varibale not found";
     }
 }

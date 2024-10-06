@@ -19,6 +19,8 @@ using Repository.Interfaces;
 using Repository.Consts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using FirebaseAdmin.Messaging;
+using Net.payOS;
 
 namespace Service.Services
 {
@@ -26,11 +28,15 @@ namespace Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
+        private readonly ITicketService _ticketService;
+        private readonly PayOS _payOs;
 
-        public TransactionService(IUnitOfWork unitOfWork, IConfiguration configuration)
+        public TransactionService(IUnitOfWork unitOfWork, IConfiguration configuration, ITicketService ticketService, PayOS payOs)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _ticketService = ticketService;
+            _payOs = payOs;
         }
 
         public async Task<ApiResponse<object>> CreatePaymentUrl(TransactionRequestModel requestModel, string email)
@@ -49,7 +55,7 @@ namespace Service.Services
                 case TransactionType.Ticket:
                     {
                         Order order = await CreateOrder(existingUser, requestModel);
-                        items.Add("transId", order.OrderId.ToString());
+                        items.Add("transId", order.LongOrderId.ToString());
                         items.Add("amount", order.TotalAmount.ToString());
                         break;
                     }
@@ -57,15 +63,15 @@ namespace Service.Services
                     {
                         Transaction transaction = await CreateTransaction(existingUser, requestModel);
                         var totalAmount = await HandleSubscriptionTransaction(transaction, requestModel.Subscriptions);
-                        items.Add("transId", transaction.TransactionId.ToString());
+                        items.Add("transId", transaction.LongTransactionId.ToString());
                         items.Add("amount", totalAmount.ToString());
                         break;
                     }
                 case TransactionType.Promotion:
                     {
                         Transaction transaction = await CreateTransaction(existingUser, requestModel);
-                        var totalAmount =  await HandlePromotionTransaction(transaction, requestModel.Promotions);
-                        items.Add("transId", transaction.TransactionId.ToString());
+                        var totalAmount = await HandlePromotionTransaction(transaction, requestModel.Promotions);
+                        items.Add("transId", transaction.LongTransactionId.ToString());
                         items.Add("amount", totalAmount.ToString());
                         break;
                     }
@@ -76,9 +82,9 @@ namespace Service.Services
             }
 
             var param = GenerateZaloPayParameters(items);
-            var result = HttpHelper.PostFormAsync(_configuration["ZaloPayment:createOrderUrl"], param).Result;
+            var result = await _payOs.createPaymentLink(param);
 
-            return ApiResponse<Object>.SuccessResponse(result, ResponseMessage.PaymentLinkCreateSuccess);
+            return ApiResponse<Object>.SuccessResponse(result.checkoutUrl, ResponseMessage.PaymentLinkCreateSuccess);
         }
 
         private async Task<decimal> HandlePromotionTransaction(Transaction transaction, PromotionRequestModel? promotions)
@@ -139,6 +145,7 @@ namespace Service.Services
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
+            transaction.LongTransactionId = ConvertGuidToLong(transaction.TransactionId);
             await _unitOfWork.Transactions.Add(transaction);
             return transaction;
         }
@@ -221,14 +228,8 @@ namespace Service.Services
                 Participant = existingUser,
                 OrderDetails = updateOrderDetailModels,
             };
-
+            order.LongOrderId = ConvertGuidToLong(order.OrderId);
             await _unitOfWork.Orders.Add(order);
-
-            var existingTicket = _unitOfWork.OrderDetails.GetQuery();
-
-            var ticket = await existingTicket
-                .Include(od => od.Ticket)
-                .FirstOrDefaultAsync(x => x.OrderDetailsId == updateOrderDetailModels.FirstOrDefault().OrderDetailsId);
 
             return order;
         }
@@ -264,122 +265,120 @@ namespace Service.Services
             }
         }
 
-        private Dictionary<string, string> GenerateZaloPayParameters(Dictionary<string, string> itemsModel)
+        private Net.payOS.Types.PaymentData GenerateZaloPayParameters(Dictionary<string, string> itemsModel)
         {
             string transId = itemsModel["transId"];
-
             string amount = itemsModel["amount"];
             string formattedAmount = amount.Substring(0, amount.Length - 3);
 
             var items = new
             {
-                transId = transId,
-                amount = amount,
-            };
-            string appid = _configuration["ZaloPayment:appid"] 
-                ?? throw new CustomException($"{nameof(appid)} not found.{nameof(GenerateZaloPayParameters)}");
-            string key1 = _configuration["ZaloPayment:key1"]
-                ?? throw new CustomException($"{nameof(key1)} not found.{nameof(GenerateZaloPayParameters)}");
-            string createOrderUrl = _configuration["ServerName"] + _configuration["ZaloPayment:redirectUrl"]
-                ?? throw new CustomException($"{nameof(createOrderUrl)} not found.{nameof(GenerateZaloPayParameters)}");
-
-            var embeddata = new { merchantinfo = "embeddata123", redirecturl = createOrderUrl };
-
-
-            var param = new Dictionary<string, string>
-            {
-                { "appid", appid },
-                { "appuser", "demo" },
-                { "apptime", Utils.GetTimeStamp().ToString() },
-                { "amount", formattedAmount},
-                { "apptransid", DateTime.Now.ToString("yyMMdd") + "_" + transId },
-                { "embeddata", JsonConvert.SerializeObject(embeddata) },
-                { "item", JsonConvert.SerializeObject(items) },
-                { "description", "ZaloPay demo" },
-                { "bankcode", "zalopayapp" }
+                transId = long.Parse(transId),
+                amount = int.Parse(formattedAmount),
             };
 
-            var data = $"{appid}|{param["apptransid"]}|{param["appuser"]}|{param["amount"]}|{param["apptime"]}|{param["embeddata"]}|{param["item"]}";
-            param.Add("mac", HmacHelper.Compute(ZaloPayHMAC.HMACSHA256, key1, data));
+            var serverName = _configuration["FeServerName"] ?? throw new CustomException(ResponseMessage.EnvVaribaleNotFound);
+            var returnUrl = serverName + _configuration["PaymentEnvironment:RETURN_URL"] ?? throw new CustomException(ResponseMessage.EnvVaribaleNotFound);
+            var cancelUrl = serverName + _configuration["PaymentEnvironment:CANCELURL"] ?? throw new CustomException(ResponseMessage.EnvVaribaleNotFound);
 
-            return param;
+            long expiredAt = (long)(DateTime.UtcNow.AddMinutes(10) - new DateTime(1970, 1, 1)).TotalSeconds;
+            var paymentData = new Net.payOS.Types.PaymentData(
+               orderCode: items.transId,
+               amount: items.amount,
+               description: $"Pay for {transId}",
+               items: new List<Net.payOS.Types.ItemData>(),
+               cancelUrl: cancelUrl,
+               returnUrl: returnUrl,
+               expiredAt: expiredAt
+           );
+
+            return paymentData;
         }
 
-        public async Task<ApiResponse<string>> PaymentUrlCallbackProcessing(ZaloPayCallbackModel model)
+        private long ConvertGuidToLong(Guid guid)
         {
-            var transactionId = Guid.Parse(model.AppTransId.ToString().Split('_').LastOrDefault());
+            Random random = new Random();
+            
+            return random.Next();
+        }
 
-            var existingOrder = _unitOfWork.Orders.GetById(transactionId);
+        public async Task<ApiResponse<string>> PaymentUrlCallbackProcessing(PayosCallbackModel model)
+        {
+            //var transactionId = Guid.Parse(model.AppTransId.ToString().Split('_').LastOrDefault());
 
-            if (existingOrder != null)
-            {
-                existingOrder.PaymentTime = DateTime.UtcNow;
-                existingOrder.PaymentStatus = PaymentStatus.Completed;
-                existingOrder.UpdatedAt = DateTime.UtcNow;
-                await _unitOfWork.Orders.Update(existingOrder);
+            //var existingOrder = _unitOfWork.Orders.GetById(transactionId);
+
+            //if (existingOrder != null)
+            //{
+            //    existingOrder.PaymentTime = DateTime.UtcNow;
+            //    existingOrder.PaymentStatus = PaymentStatus.Completed;
+            //    existingOrder.UpdatedAt = DateTime.UtcNow;
+            //    await _unitOfWork.Orders.Update(existingOrder);
 
 
-                //Loop through all ticket and change it status
-                var ordersQuery = _unitOfWork.Orders.GetQuery();
-                var trackedOrder = await ordersQuery
-                    .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Ticket)
-                    .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Tickets)
-                    .FirstOrDefaultAsync(x => x.OrderId == existingOrder.OrderId);
+            //    //Loop through all ticket and change it status
+            //    var ordersQuery = _unitOfWork.Orders.GetQuery();
+            //    var trackedOrder = await ordersQuery
+            //        .Include(o => o.OrderDetails)
+            //            .ThenInclude(od => od.Ticket)
+            //        .Include(o => o.OrderDetails)
+            //            .ThenInclude(od => od.Tickets)
+            //        .FirstOrDefaultAsync(x => x.OrderId == existingOrder.OrderId);
 
-                foreach (var orderDetail in trackedOrder.OrderDetails)
-                {
-                    if (orderDetail.Ticket != null)
-                    {
-                        orderDetail.Ticket.Status = PaymentStatus.Completed;  // Update ticket status
-                        orderDetail.Ticket.PaymentTime = DateTime.UtcNow;  // Update timestamp (if you have a field for this)
-                    }
+            //    foreach (var orderDetail in trackedOrder.OrderDetails)
+            //    {
+            //        if (orderDetail.Ticket != null)
+            //        {
+            //            orderDetail.Ticket.Status = PaymentStatus.Completed;
+            //            orderDetail.Ticket.PaymentTime = DateTime.UtcNow;
+            //            orderDetail.Ticket.QrCode = _ticketService.GenerateTicketPrivateKey(orderDetail.Ticket.TicketId);
+            //        }
 
-                    if(orderDetail.Tickets.Count > 0)
-                    {
-                        foreach (var ticket in orderDetail.Tickets)
-                        {
-                            ticket.Status = PaymentStatus.Completed;
-                            ticket.PaymentTime = DateTime.UtcNow;
-                        }
-                    }
-                }
+            //        if (orderDetail.Tickets.Count > 0)
+            //        {
+            //            foreach (var ticket in orderDetail.Tickets)
+            //            {
+            //                ticket.Status = PaymentStatus.Completed;
+            //                ticket.PaymentTime = DateTime.UtcNow;
+            //                ticket.QrCode = _ticketService.GenerateTicketPrivateKey(ticket.TicketId);
+            //            }
+            //        }
+            //    }
 
-                _unitOfWork.Complete();
+            //    _unitOfWork.Complete();
 
-                return ApiResponse<string>.SuccessResponse(ResponseMessage.PaymentSuccessfully);
-            }
+            //    return ApiResponse<string>.SuccessResponse(ResponseMessage.PaymentSuccessfully);
+            //}
 
-            var transactionQuery = _unitOfWork.Transactions.GetQuery()
-                .Include(ct => ct.CommissionTransactions)
-                .Include(pt => pt.PromotionTransactions)
-                .Include(st => st.SubscriptionTransactions)
-                .Include(pm => pm.PaymentMethod)
-                .Include(u => u.User)
-                .Where(x => x.TransactionId == transactionId);
+            //var transactionQuery = _unitOfWork.Transactions.GetQuery()
+            //    .Include(ct => ct.CommissionTransactions)
+            //    .Include(pt => pt.PromotionTransactions)
+            //    .Include(st => st.SubscriptionTransactions)
+            //    .Include(pm => pm.PaymentMethod)
+            //    .Include(u => u.User)
+            //    .Where(x => x.TransactionId == transactionId);
 
-            bool exists = await transactionQuery.AnyAsync();
+            //bool exists = await transactionQuery.AnyAsync();
 
-            if (!exists)
-            {
-                return ApiResponse<string>.ErrorResponse("Transaction not found.");
-            }
+            //if (!exists)
+            //{
+            //    return ApiResponse<string>.ErrorResponse("Transaction not found.");
+            //}
 
-            var transaction = await transactionQuery.FirstOrDefaultAsync();
+            //var transaction = await transactionQuery.FirstOrDefaultAsync();
 
-            switch (transaction.TransactionType)
-            {
-                case TransactionType.Subscription:
-                    {
-                        await HandleSubscriptionTransactionCallBack(transaction);
-                        HandlepaymentMethodCallBack(transaction);
-                        await _unitOfWork.Transactions.Update(transaction);
-                        break;
-                    }
-                default:
-                    throw new CustomException(ResponseMessage.TransactionTypeNotFound);
-            }
+            //switch (transaction.TransactionType)
+            //{
+            //    case TransactionType.Subscription:
+            //        {
+            //            await HandleSubscriptionTransactionCallBack(transaction);
+            //            HandlepaymentMethodCallBack(transaction);
+            //            await _unitOfWork.Transactions.Update(transaction);
+            //            break;
+            //        }
+            //    default:
+            //        throw new CustomException(ResponseMessage.TransactionTypeNotFound);
+            //}
 
             return ApiResponse<string>.SuccessResponse("Payment Successfully");
         }
@@ -438,5 +437,9 @@ namespace Service.Services
 
         }
 
+        public Task<ApiResponse<TransactionDto>> Get()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

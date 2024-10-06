@@ -1,3 +1,4 @@
+using DotNetEnv;
 using EXE201_Workshopista.Middlewares;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Net.payOS;
 using Repository.Interfaces;
 using Repository.Models;
 using Repository.Repositories;
@@ -41,7 +43,7 @@ namespace EXE201_Workshopista
             builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-
+            Env.Load();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -51,8 +53,14 @@ namespace EXE201_Workshopista
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
-
-
+            builder.Services.AddSingleton<PayOS>(provider =>
+            {
+                string clientId = builder.Configuration["PaymentEnvironment:PAYOS_CLIENT_ID"] ?? throw new Exception("Cannot find PAYOS_CLIENT_ID");
+                string apiKey = builder.Configuration["PaymentEnvironment:PAYOS_API_KEY"] ?? throw new Exception("Cannot find PAYOS_API_KEY");
+                string checksumKey = builder.Configuration["PaymentEnvironment:PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Cannot find PAYOS_CHECKSUM_KEY");
+ 
+                return new PayOS(clientId, apiKey, checksumKey);
+            });
             builder.Services.AddScoped<IAuthService, AuthService>();
             //DI
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -79,6 +87,7 @@ namespace EXE201_Workshopista
             builder.Services.AddScoped<ICommissionTransactionRepository, CommissionTransactionRepository>();
             builder.Services.AddScoped<IPromotionTransactionRepository, PromotionTransactionRepository>();
             builder.Services.AddScoped<ITransactionService, TransactionService>();
+            builder.Services.AddScoped<ITicketService, TicketService>();
             builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
