@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Net.payOS.Types;
 using Newtonsoft.Json;
 using Service.Interfaces;
 using Service.Models.Transaction;
@@ -33,10 +34,10 @@ namespace EXE201_Workshopista.Controllers
         }
 
         [HttpPost("Callback")]
-        public async Task<IActionResult> PaymentCallback([FromBody] PayosCallbackModel model)
+        public async Task<IActionResult> PaymentCallback([FromBody] WebhookType model)
         {
-            _logger.LogWarning(JsonConvert.SerializeObject(model, Formatting.Indented));
-            return Ok();
+            var result = await _transactionService.PaymentUrlCallbackProcessing(model);
+            return result.Success ? Ok(result) : BadRequest(result);
         }
     }
 }

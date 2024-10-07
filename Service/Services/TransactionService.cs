@@ -302,94 +302,105 @@ namespace Service.Services
             return random.Next();
         }
 
-        public async Task<ApiResponse<string>> PaymentUrlCallbackProcessing(PayosCallbackModel model)
+        public async Task<ApiResponse<string>> PaymentUrlCallbackProcessing(Net.payOS.Types.WebhookType model)
         {
-            //var transactionId = Guid.Parse(model.AppTransId.ToString().Split('_').LastOrDefault());
+            Net.payOS.Types.WebhookData verifiedData = _payOs.verifyPaymentWebhookData(model);
 
-            //var existingOrder = _unitOfWork.Orders.GetById(transactionId);
+            string responseCode = verifiedData.code;
+            var transactionId = verifiedData.orderCode;
 
-            //if (existingOrder != null)
-            //{
-            //    existingOrder.PaymentTime = DateTime.UtcNow;
-            //    existingOrder.PaymentStatus = PaymentStatus.Completed;
-            //    existingOrder.UpdatedAt = DateTime.UtcNow;
-            //    await _unitOfWork.Orders.Update(existingOrder);
+            var existingOrder = _unitOfWork.Orders.GetQuery().FirstOrDefault(x => x.LongOrderId == transactionId);
+
+            if (existingOrder != null)
+            {
+                if(responseCode != "00")
+                {
+                    existingOrder.PaymentStatus = PaymentStatus.Canceled;
+                    existingOrder.UpdatedAt = DateTime.UtcNow;
+                    await _unitOfWork.Orders.Update(existingOrder);
+                    return ApiResponse<string>.ErrorResponse(ResponseMessage.PaymentFailed);
+                }
+
+                existingOrder.PaymentTime = DateTime.UtcNow;
+                existingOrder.PaymentStatus = PaymentStatus.Completed;
+                existingOrder.UpdatedAt = DateTime.UtcNow;
+                await _unitOfWork.Orders.Update(existingOrder);
 
 
-            //    //Loop through all ticket and change it status
-            //    var ordersQuery = _unitOfWork.Orders.GetQuery();
-            //    var trackedOrder = await ordersQuery
-            //        .Include(o => o.OrderDetails)
-            //            .ThenInclude(od => od.Ticket)
-            //        .Include(o => o.OrderDetails)
-            //            .ThenInclude(od => od.Tickets)
-            //        .FirstOrDefaultAsync(x => x.OrderId == existingOrder.OrderId);
+                //Loop through all ticket and change it status
+                var ordersQuery = _unitOfWork.Orders.GetQuery();
+                var trackedOrder = await ordersQuery
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Ticket)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Tickets)
+                    .FirstOrDefaultAsync(x => x.OrderId == existingOrder.OrderId);
 
-            //    foreach (var orderDetail in trackedOrder.OrderDetails)
-            //    {
-            //        if (orderDetail.Ticket != null)
-            //        {
-            //            orderDetail.Ticket.Status = PaymentStatus.Completed;
-            //            orderDetail.Ticket.PaymentTime = DateTime.UtcNow;
-            //            orderDetail.Ticket.QrCode = _ticketService.GenerateTicketPrivateKey(orderDetail.Ticket.TicketId);
-            //        }
+                foreach (var orderDetail in trackedOrder.OrderDetails)
+                {
+                    if (orderDetail.Ticket != null)
+                    {
+                        orderDetail.Ticket.Status = PaymentStatus.Completed;
+                        orderDetail.Ticket.PaymentTime = DateTime.UtcNow;
+                        orderDetail.Ticket.QrCode = _ticketService.GenerateTicketPrivateKey(orderDetail.Ticket.TicketId);
+                    }
 
-            //        if (orderDetail.Tickets.Count > 0)
-            //        {
-            //            foreach (var ticket in orderDetail.Tickets)
-            //            {
-            //                ticket.Status = PaymentStatus.Completed;
-            //                ticket.PaymentTime = DateTime.UtcNow;
-            //                ticket.QrCode = _ticketService.GenerateTicketPrivateKey(ticket.TicketId);
-            //            }
-            //        }
-            //    }
+                    if (orderDetail.Tickets.Count > 0)
+                    {
+                        foreach (var ticket in orderDetail.Tickets)
+                        {
+                            ticket.Status = PaymentStatus.Completed;
+                            ticket.PaymentTime = DateTime.UtcNow;
+                            ticket.QrCode = _ticketService.GenerateTicketPrivateKey(ticket.TicketId);
+                        }
+                    }
+                }
 
-            //    _unitOfWork.Complete();
+                _unitOfWork.Complete();
 
-            //    return ApiResponse<string>.SuccessResponse(ResponseMessage.PaymentSuccessfully);
-            //}
+                return ApiResponse<string>.SuccessResponse(ResponseMessage.PaymentSuccessfully);
+            }
 
-            //var transactionQuery = _unitOfWork.Transactions.GetQuery()
-            //    .Include(ct => ct.CommissionTransactions)
-            //    .Include(pt => pt.PromotionTransactions)
-            //    .Include(st => st.SubscriptionTransactions)
-            //    .Include(pm => pm.PaymentMethod)
-            //    .Include(u => u.User)
-            //    .Where(x => x.TransactionId == transactionId);
+            var transactionQuery = _unitOfWork.Transactions.GetQuery()
+                .Include(ct => ct.CommissionTransactions)
+                .Include(pt => pt.PromotionTransactions)
+                .Include(st => st.SubscriptionTransactions)
+                .Include(pm => pm.PaymentMethod)
+                .Include(u => u.User)
+                .Where(x => x.LongTransactionId == transactionId);
 
-            //bool exists = await transactionQuery.AnyAsync();
+            bool exists = await transactionQuery.AnyAsync();
 
-            //if (!exists)
-            //{
-            //    return ApiResponse<string>.ErrorResponse("Transaction not found.");
-            //}
+            if (!exists)
+            {
+                return ApiResponse<string>.ErrorResponse("Transaction not found.");
+            }
 
-            //var transaction = await transactionQuery.FirstOrDefaultAsync();
+            var transaction = await transactionQuery.FirstOrDefaultAsync();
 
-            //switch (transaction.TransactionType)
-            //{
-            //    case TransactionType.Subscription:
-            //        {
-            //            await HandleSubscriptionTransactionCallBack(transaction);
-            //            HandlepaymentMethodCallBack(transaction);
-            //            await _unitOfWork.Transactions.Update(transaction);
-            //            break;
-            //        }
-            //    default:
-            //        throw new CustomException(ResponseMessage.TransactionTypeNotFound);
-            //}
+            switch (transaction.TransactionType)
+            {
+                case TransactionType.Subscription:
+                    {
+                        await HandleSubscriptionTransactionCallBack(transaction);
+                        HandlepaymentMethodCallBack(verifiedData,transaction);
+                        await _unitOfWork.Transactions.Update(transaction);
+                        break;
+                    }
+                default:
+                    throw new CustomException(ResponseMessage.TransactionTypeNotFound);
+            }
 
             return ApiResponse<string>.SuccessResponse("Payment Successfully");
         }
 
-        private void HandlepaymentMethodCallBack(Transaction transaction)
+        private void HandlepaymentMethodCallBack(Net.payOS.Types.WebhookData webHookData, Transaction transaction)
         {
             PaymentMethod paymentMethod = new PaymentMethod()
             {
                 PaymentMethodId = Guid.NewGuid(),
-                MethodName = "Zalopay",
-                Description = "Empty",
+                MethodName = "VietQR",
+                Description = webHookData.description,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
             };

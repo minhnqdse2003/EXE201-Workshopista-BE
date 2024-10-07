@@ -87,6 +87,7 @@ namespace Repository.Helpers
             $"{TransactionType.Commission}/" +
             $"{TransactionType.Promotion})";
         public static string PaymentSuccessfully = "Payment successfully.";
+        public static string PaymentFailed = "Payment faild due to some unexpected reason.";
         public static string TicketNotFound = "Ticket not found or invalid QR code.";
         public static string EnvVaribaleNotFound = "Enviroment varibale not found";
     }
