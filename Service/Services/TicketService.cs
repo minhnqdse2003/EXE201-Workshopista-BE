@@ -10,6 +10,7 @@ using Service.Interfaces;
 using Service.Models;
 using Service.Models.Ticket;
 using System;
+using System.Reflection.PortableExecutable;
 
 namespace Service.Services
 {
@@ -68,8 +69,12 @@ namespace Service.Services
             {
                 if(od.Tickets.Count > 0)
                 {
-                    userTickets.AddRange(od.Tickets);
-                } else
+                    foreach(var ticket in od.Tickets)
+                    {
+                        if(ticket.Status != null)
+                            userTickets.AddRange(od.Tickets);
+                    }
+                } else if (od.Ticket != null && od.Ticket.Status != null)
                 {
                     userTickets.Add(od.Ticket);
                 }
@@ -120,6 +125,20 @@ namespace Service.Services
         {
             string hashedTicketId = BCrypt.Net.BCrypt.HashPassword(ticketId.ToString());
             return hashedTicketId;
+        }
+
+        public async Task<ApiResponse<Ticket>> UpdateTicket(TicketUpdateModel updateModel)
+        {
+            var existingTicket = _unitOfWork.Tickets.GetById(updateModel.TicketId);
+            if(existingTicket == null)
+            {
+                throw new CustomException(ResponseMessage.TicketNotFound);
+            }
+
+            _mapper.Map(updateModel,existingTicket);
+            await _unitOfWork.Tickets.Update(existingTicket);
+
+            return ApiResponse<Ticket>.SuccessResponse(existingTicket);
         }
     }
 }

@@ -69,6 +69,7 @@ namespace Service.Services
                     }
                 case TransactionType.Promotion:
                     {
+                        await CanPurchasePromotion(requestModel.Promotions);
                         Transaction transaction = await CreateTransaction(existingUser, requestModel);
                         var totalAmount = await HandlePromotionTransaction(transaction, requestModel.Promotions);
                         items.Add("transId", transaction.LongTransactionId.ToString());
@@ -87,28 +88,82 @@ namespace Service.Services
             return ApiResponse<Object>.SuccessResponse(result.checkoutUrl, ResponseMessage.PaymentLinkCreateSuccess);
         }
 
+        private async Task CanPurchasePromotion(PromotionRequestModel? promotions)
+        {
+            if (promotions == null) throw new CustomException($"nameof(promotions) can't be null");
+            var existingWorkshop = await GetWorkshop(promotions.WorkshopId ?? Guid.NewGuid());
+            DateTime workshopStartDate = existingWorkshop.StartTime ?? throw new CustomException(nameof(workshopStartDate) + "can't be null");
+            DateTime workshopEndDate = existingWorkshop.EndTime ?? throw new CustomException(nameof(workshopEndDate) + "can't be null");
+            string promotionType = PromotionConstants.GetType(promotions.PromotionType ?? throw new CustomException(nameof(promotionType) + "can't be null"));
+
+            int overlappingPromotions = _unitOfWork.Promotions.CountOverlappingPromotions(promotionType, workshopStartDate, workshopEndDate);
+            int numberOfPromotionType = _unitOfWork.Promotions.CountNumberOfPromotionType(existingWorkshop.WorkshopId);
+
+            if(numberOfPromotionType >= 1)
+            {
+                throw new CustomException("The number of promotions for your workshop cannot exceed 1.");
+            }
+
+            switch (promotionType)
+            {
+                case PromotionConstants.Banner:
+                    if (overlappingPromotions >= PromotionConstants.PromotionQuantityMaxLength.BannerLenght)
+                        throw new CustomException($"Maximum number of overlapping {promotionType} promotions reached.");
+                    return;
+                case PromotionConstants.Featured:
+                    if (overlappingPromotions >= PromotionConstants.PromotionQuantityMaxLength.FeaturedLenght)
+                        throw new CustomException($"Maximum number of overlapping {promotionType} promotions reached.");
+                    return;
+                case PromotionConstants.Highlight:
+                    if (overlappingPromotions >= PromotionConstants.PromotionQuantityMaxLength.FeaturedLenght)
+                        throw new CustomException($"Maximum number of overlapping {promotionType} promotions reached.");
+                    return;
+                default:
+                    return;
+            }
+        }
+
         private async Task<decimal> HandlePromotionTransaction(Transaction transaction, PromotionRequestModel? promotions)
         {
             if (promotions == null)
                 throw new CustomException(ResponseMessage.InvalidInput + "[promotion model]");
-            var existingWorkshop = await GetWorkshopWithTicketRanks(promotions.WorkshopId ?? Guid.NewGuid());
+
+            var existingWorkshop = await GetWorkshop(promotions.WorkshopId ?? Guid.NewGuid());
+            var promotionPrice = PurchasePromotion(existingWorkshop, promotions.PromotionType);
 
             //Create Promotion Transaction
             var promotionTransaction = new PromotionTransaction()
             {
                 PromotionTransactionId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow,
+                PromotionType = promotions.PromotionType,
                 UpdatedAt = DateTime.UtcNow,
                 Workshop = existingWorkshop,
             };
             //Assign promotion amount
 
-            transaction.Amount = 100000.00m;
+            transaction.Amount = promotionPrice;
             transaction.PromotionTransactions.Add(promotionTransaction);
 
             await _unitOfWork.Transactions.Update(transaction);
 
-            return transaction.Amount ?? 100000.00m;
+            return promotionPrice;
+        }
+
+        private decimal PurchasePromotion(Workshop existingWorkshop, string? promotionType)
+        {
+            DateTime workshopStartDate = existingWorkshop.StartTime
+                ?? throw new CustomException("Start time of workshop can't be null");
+            DateTime workshopEndDate = existingWorkshop.EndTime
+                    ?? throw new CustomException("End time of workshop can't be null");
+            decimal basePrice = PromotionConstants.GetPromotionPrice(promotionType
+                ?? throw new CustomException($"{nameof(promotionType)} can't be null"));
+
+            int overlappingPromotions = _unitOfWork.Promotions.CountOverlappingPromotions(promotionType, workshopStartDate, workshopEndDate);
+            decimal finalPrice = basePrice * (1 + (PromotionConstants.PromotionBasePrice.DemandFactorIncrease * overlappingPromotions));
+            finalPrice = Math.Round(finalPrice, 2, MidpointRounding.AwayFromZero);
+
+            return finalPrice;
         }
 
         private async Task<decimal> HandleSubscriptionTransaction(Transaction transaction, SubscriptionRequestModel? subscriptions)
@@ -145,6 +200,7 @@ namespace Service.Services
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
+
             transaction.LongTransactionId = ConvertGuidToLong(transaction.TransactionId);
             await _unitOfWork.Transactions.Add(transaction);
             return transaction;
@@ -163,7 +219,7 @@ namespace Service.Services
             {
                 ValidateOrderDetails(orderDetails);
 
-                var existingWorkshop = await GetWorkshopWithTicketRanks(orderDetails.WorkshopId);
+                var existingWorkshop = await GetWorkshop(orderDetails.WorkshopId);
                 var ticketRank = GetTicketRank(existingWorkshop, orderDetails.TicketRankId ?? Guid.NewGuid());
 
                 // Create a new OrderDetail object based on the retrieved workshop and ticket rank
@@ -234,6 +290,16 @@ namespace Service.Services
             return order;
         }
 
+        private int GetWorkshopCapacity(Workshop existingWorkshop, OrderRequestModel orderRequestModel)
+        {
+            var curSize = existingWorkshop.Capacity;
+            if (orderRequestModel.Quantity == null || curSize - orderRequestModel.Quantity < 0)
+            {
+                throw new CustomException(ResponseMessage.WorkshopCapacityExceeded);
+            }
+            return (int)orderRequestModel.Quantity;
+        }
+
         private TicketRank GetTicketRank(Workshop workshop, Guid ticketRankId)
         {
             var ticketRank = workshop.TicketRanks.FirstOrDefault(tr => tr.TicketRankId == ticketRankId);
@@ -244,7 +310,7 @@ namespace Service.Services
             return ticketRank;
         }
 
-        private async Task<Workshop> GetWorkshopWithTicketRanks(Guid workshopId)
+        private async Task<Workshop> GetWorkshop(Guid workshopId)
         {
             var workshop = await _unitOfWork.Workshops.Get()
                 .Include(w => w.TicketRanks)
@@ -298,7 +364,7 @@ namespace Service.Services
         private long ConvertGuidToLong(Guid guid)
         {
             Random random = new Random();
-            
+
             return random.Next();
         }
 
@@ -309,11 +375,13 @@ namespace Service.Services
             string responseCode = verifiedData.code;
             var transactionId = verifiedData.orderCode;
 
-            var existingOrder = _unitOfWork.Orders.GetQuery().FirstOrDefault(x => x.LongOrderId == transactionId);
+            var existingOrder = _unitOfWork.Orders.GetQuery()
+                .Include(o => o.OrderDetails)
+                .FirstOrDefault(x => x.LongOrderId == transactionId);
 
             if (existingOrder != null)
             {
-                if(responseCode != "00")
+                if (responseCode != "00")
                 {
                     existingOrder.PaymentStatus = PaymentStatus.Canceled;
                     existingOrder.UpdatedAt = DateTime.UtcNow;
@@ -331,10 +399,18 @@ namespace Service.Services
                 var ordersQuery = _unitOfWork.Orders.GetQuery();
                 var trackedOrder = await ordersQuery
                     .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Workshop)
+                    .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Ticket)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Tickets)
                     .FirstOrDefaultAsync(x => x.OrderId == existingOrder.OrderId);
+
+                foreach(var orderDetail in trackedOrder.OrderDetails)
+                {
+                    var amount = orderDetail.Quantity;
+                    orderDetail.Workshop.Capacity -= amount;
+                }
 
                 foreach (var orderDetail in trackedOrder.OrderDetails)
                 {
@@ -367,6 +443,7 @@ namespace Service.Services
                 .Include(st => st.SubscriptionTransactions)
                 .Include(pm => pm.PaymentMethod)
                 .Include(u => u.User)
+                    .ThenInclude(o => o.Organizers)
                 .Where(x => x.LongTransactionId == transactionId);
 
             bool exists = await transactionQuery.AnyAsync();
@@ -383,7 +460,14 @@ namespace Service.Services
                 case TransactionType.Subscription:
                     {
                         await HandleSubscriptionTransactionCallBack(transaction);
-                        HandlepaymentMethodCallBack(verifiedData,transaction);
+                        HandlepaymentMethodCallBack(verifiedData, transaction);
+                        await _unitOfWork.Transactions.Update(transaction);
+                        break;
+                    }
+                case TransactionType.Promotion:
+                    {
+                        await HandlePromotionTransactionCallBack(transaction);
+                        HandlepaymentMethodCallBack(verifiedData, transaction);
                         await _unitOfWork.Transactions.Update(transaction);
                         break;
                     }
@@ -392,6 +476,48 @@ namespace Service.Services
             }
 
             return ApiResponse<string>.SuccessResponse("Payment Successfully");
+        }
+
+        private async Task HandlePromotionTransactionCallBack(Transaction transaction)
+        {
+            if (transaction == null)
+                throw new CustomException("Transaction is null.");
+
+            if (transaction.PaymentMethod != null)
+                throw new CustomException("This order have already completed!");
+
+            Promotion promotion = new Promotion()
+            {
+                PromotionId = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Organizer = transaction.User.Organizers.FirstOrDefault(),
+            };
+
+            PromotionTransaction existingPromotionTransaction = transaction.PromotionTransactions
+                .FirstOrDefault() ??
+                throw new CustomException("Promotion transaction can't be null");
+
+            var promotionTransactionQuery = _unitOfWork.PromotionTransactions.GetQuery();
+
+            PromotionTransaction trackingPromotion = await promotionTransactionQuery
+                .Include(pt => pt.Workshop)
+                .Include(pt => pt.Promotion)
+                .FirstOrDefaultAsync(pt => pt.PromotionTransactionId == existingPromotionTransaction.PromotionTransactionId)
+                ?? throw new CustomException($"{nameof(trackingPromotion)} can't be null");
+
+            if (trackingPromotion.Workshop == null)
+                throw new CustomException("Workshop is null due to not include.");
+
+            promotion.Workshop = trackingPromotion.Workshop;
+            promotion.StartDate = trackingPromotion.Workshop.StartTime;
+            promotion.EndDate = trackingPromotion.Workshop.EndTime;
+            promotion.Price = transaction.Amount;
+            promotion.CurrencyCode = CurrencyCode.VietnameseCurrency;
+            promotion.PromotionType = trackingPromotion.PromotionType;
+            trackingPromotion.Promotion = promotion;
+
+            await _unitOfWork.PromotionTransactions.Update(trackingPromotion);
         }
 
         private void HandlepaymentMethodCallBack(Net.payOS.Types.WebhookData webHookData, Transaction transaction)

@@ -90,5 +90,7 @@ namespace Repository.Helpers
         public static string PaymentFailed = "Payment faild due to some unexpected reason.";
         public static string TicketNotFound = "Ticket not found or invalid QR code.";
         public static string EnvVaribaleNotFound = "Enviroment varibale not found";
+        public static string OrganizerFound = "Organizer already exist";
+        public static string WorkshopCapacityExceeded = "The workshop has reached its maximum capacity. No more participants can be added.";
     }
 }

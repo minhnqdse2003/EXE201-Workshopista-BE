@@ -33,5 +33,11 @@ namespace EXE201_Workshopista.Controllers
         {
             return Ok(await _ticketService.Verify(validateQrModel.QrContent));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateTicket(TicketUpdateModel requestModel)
+        {
+            return Ok(await _ticketService.UpdateTicket(requestModel));
+        }
     }
 }

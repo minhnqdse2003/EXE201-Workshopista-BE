@@ -13,5 +13,7 @@ namespace Repository.Repositories
         public PromotionTransactionRepository(Exe201WorkshopistaContext context) : base(context)
         {
         }
+
+        public IQueryable<PromotionTransaction> GetQuery() => _context.PromotionTransactions.AsQueryable();
     }
 }

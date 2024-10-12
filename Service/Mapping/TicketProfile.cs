@@ -16,6 +16,10 @@ namespace Service.Mapping
         {
             CreateMap<Ticket, TicketDto>()
                  .ForMember(dest => dest.QrCode, opt => opt.MapFrom<QRCodeResolver>());
+
+            CreateMap<TicketUpdateModel, Ticket>()
+                .ForMember(dest => dest.TicketId, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

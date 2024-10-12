@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Repository.Models;
 
 namespace Service.Interfaces
 {
@@ -15,6 +16,7 @@ namespace Service.Interfaces
         string GenerateTicketPrivateKey(Guid ticketId);
         Task<bool> Verify(string hashData);
         Task<ApiResponse<List<TicketDto>>> GetUserTicket(string userName);
+        Task<ApiResponse<Ticket>> UpdateTicket(TicketUpdateModel updateModel);
 
     }
 }
