@@ -193,6 +193,7 @@ namespace Service.Services.Auths
             newUser.Role = RoleConst.Organizer;
             newUser.CreatedAt = DateTime.Now;
             newUser.EmailVerified = false;
+            newUser.Status = StatusConst.Active;
 
             var newOtp = OTPGeneration.CreateNewOTPCode();
             var htmlBody = EmailTemplate.VerifyEmailOTP(model.Email, newOtp);

@@ -31,6 +31,7 @@ namespace Repository.Repositories
             SubscriptionTransactions = new SubscriptionTransactionRepository(_context);
             CommissionTransactions = new CommissionTransactionRepository(_context);
             PromotionTransactions = new PromotionTransactionRepository(_context);
+            Reviews = new ReviewRepository(_context);
         }
 
         public IUserRepository Users { get; private set; }
@@ -60,6 +61,8 @@ namespace Repository.Repositories
         public ICommissionTransactionRepository CommissionTransactions { get; private set; }
 
         public IPromotionTransactionRepository PromotionTransactions { get; private set; }
+
+        public IReviewRepository Reviews { get; private set; }
 
         public int Complete()
         {

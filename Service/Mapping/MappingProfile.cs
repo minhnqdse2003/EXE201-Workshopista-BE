@@ -3,6 +3,7 @@ using Repository.Consts;
 using Repository.Models;
 using Service.Models.Category;
 using Service.Models.Organizers;
+using Service.Models.Reviews;
 using Service.Models.TicketRank;
 using Service.Models.Users;
 using System;
@@ -31,6 +32,9 @@ namespace Service.Mapping
 
             //TicketRank
             CreateMap<TicketRankRequestModel, TicketRank>().ForMember(u => u.UpdatedAt, otp => otp.MapFrom(src => DateTime.Now)).ReverseMap();
+
+            //Reviews
+            CreateMap<ReviewCreateModel, Review>().ForMember(u => u.ReviewId, otp => otp.MapFrom(src => Guid.NewGuid())).ForMember(u => u.CreatedAt, otp => otp.MapFrom(src => DateTime.Now));
         }
     }
 }
