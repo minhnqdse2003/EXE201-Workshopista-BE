@@ -87,8 +87,11 @@ namespace Service.Services
             }
 
             //Find organizer and attach to workshop
-            var organizer = _mapper.Map<Organizer>(workshopCreateDto.Organizer);
-            organizer.User = existingUser;
+            if(existingUser.Organizers.Count != 1)
+            {
+                throw new CustomException(ResponseMessage.OrganizerNotFound);
+            }
+            var organizer = existingUser.Organizers.FirstOrDefault();
 
             //Find category
             var category = _unitOfWork.Categories.GetById((Guid)workshopCreateDto.CategoryId);

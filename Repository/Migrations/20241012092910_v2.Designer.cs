@@ -12,8 +12,8 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(Exe201WorkshopistaContext))]
-    [Migration("20240930055901_init")]
-    partial class init
+    [Migration("20241012092910_v2")]
+    partial class v2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,58 +110,6 @@ namespace Repository.Migrations
                         .HasFilter("([name] IS NOT NULL)");
 
                     b.ToTable("Category", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            CategoryId = new Guid("c74797ba-bb5d-46ea-9574-8b7dbe75c4f3"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3667),
-                            Description = "Workshops focused on business skills, entrepreneurship, and management.",
-                            Name = "Business",
-                            Slug = "business",
-                            Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3672)
-                        },
-                        new
-                        {
-                            CategoryId = new Guid("27ae5c53-f0b7-4f71-b52a-52b78511fb01"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3675),
-                            Description = "Workshops on software development, AI, cloud computing, and emerging technologies.",
-                            Name = "Technology",
-                            Slug = "technology",
-                            Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3676)
-                        },
-                        new
-                        {
-                            CategoryId = new Guid("8f40d269-eaa5-42d7-9d15-97d9bb147a6d"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3695),
-                            Description = "Creative workshops covering arts, crafts, and design.",
-                            Name = "Arts & Crafts",
-                            Slug = "arts-and-crafts",
-                            Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3696)
-                        },
-                        new
-                        {
-                            CategoryId = new Guid("e1670a2c-2ea1-474a-a882-28c575df7f81"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3698),
-                            Description = "Workshops focused on fitness, mental health, and overall well-being.",
-                            Name = "Health & Wellness",
-                            Slug = "health-wellness",
-                            Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3699)
-                        },
-                        new
-                        {
-                            CategoryId = new Guid("3ddf752c-eed5-42c8-93b9-4cd316135a19"),
-                            CreatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701),
-                            Description = "Workshops aimed at personal growth, leadership, and career development.",
-                            Name = "Personal Development",
-                            Slug = "personal-development",
-                            Status = "Active",
-                            UpdatedAt = new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701)
-                        });
                 });
 
             modelBuilder.Entity("Repository.Models.Commission", b =>
@@ -355,6 +303,9 @@ namespace Repository.Migrations
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
+
+                    b.Property<long?>("LongOrderId")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid?>("ParticipantId")
                         .HasColumnType("uniqueidentifier")
@@ -645,6 +596,9 @@ namespace Repository.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("promotion_id");
 
+                    b.Property<string>("PromotionType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("TransactionId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("transaction_id");
@@ -929,6 +883,9 @@ namespace Repository.Migrations
                         .HasColumnType("nvarchar(3)")
                         .HasColumnName("currency_code");
 
+                    b.Property<long?>("LongTransactionId")
+                        .HasColumnType("bigint");
+
                     b.Property<Guid?>("PaymentMethodId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("payment_method_id");
@@ -1045,50 +1002,6 @@ namespace Repository.Migrations
                         .HasFilter("([email] IS NOT NULL)");
 
                     b.ToTable("User", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = new Guid("30c18893-99f0-49b9-98fb-18a990489f87"),
-                            Email = "admin@gmail.com",
-                            EmailVerified = true,
-                            FirstName = "Alice",
-                            LastName = "Smith",
-                            PasswordHash = "$2a$11$ASMuiRckojlJiy4wEYzSU.dZ3mrYOGvO0QmfkD8I/H0kgSkMJQqiK",
-                            PhoneNumber = "1234567890",
-                            PhoneVerified = true,
-                            ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
-                            Role = "Admin",
-                            Status = "Active"
-                        },
-                        new
-                        {
-                            UserId = new Guid("382359c6-916d-4548-8583-1a0807f57b7e"),
-                            Email = "org@gmail.com",
-                            EmailVerified = true,
-                            FirstName = "Bob",
-                            LastName = "Johnson",
-                            PasswordHash = "$2a$11$hClCjcawkPoEaPyI8VO3RuH592yCe53DtEvPe/aRPk6bKKROCGREO",
-                            PhoneNumber = "9876543210",
-                            PhoneVerified = true,
-                            ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
-                            Role = "Organizer",
-                            Status = "Active"
-                        },
-                        new
-                        {
-                            UserId = new Guid("70cfded3-8d98-4a54-ac62-ff6478450c3b"),
-                            Email = "charlie@example.com",
-                            EmailVerified = true,
-                            FirstName = "Charlie",
-                            LastName = "Brown",
-                            PasswordHash = "$2a$11$BopGOIlJDnHg8v3Fv6ROxOEEDsYiEwSW683DSMfy6CST1TQS8JvvK",
-                            PhoneNumber = "5551234567",
-                            PhoneVerified = true,
-                            ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
-                            Role = "Organizer",
-                            Status = "Active"
-                        });
                 });
 
             modelBuilder.Entity("Repository.Models.Workshop", b =>

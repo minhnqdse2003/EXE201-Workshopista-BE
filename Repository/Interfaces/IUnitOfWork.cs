@@ -28,5 +28,6 @@ namespace Repository.Interfaces
 
         IReviewRepository Reviews { get; }
         int Complete();
+        Task<int> CompleteAsync();
     }
 }

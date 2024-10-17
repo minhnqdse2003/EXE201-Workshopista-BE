@@ -9,5 +9,7 @@ namespace Repository.Interfaces
 {
     public interface IPromotionRepository : IGenericRepository<Promotion>
     {
+        int CountNumberOfPromotionType(Guid workshopId);
+        int CountOverlappingPromotions(string promotionType, DateTime workshopStartDate, DateTime workshopEndDate);
     }
 }

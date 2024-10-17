@@ -1,4 +1,5 @@
-﻿using Repository.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Interfaces;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,11 @@ namespace Repository.Repositories
     {
         public TicketRepository(Exe201WorkshopistaContext context) : base(context)
         {
+        }
+
+        public async Task<Ticket?> GetTicketAsyncByQrCode(string hashQrContent)
+        {
+            return await _context.Tickets.FirstOrDefaultAsync(x => x.QrCode == hashQrContent);
         }
     }
 }
