@@ -10,5 +10,6 @@ namespace Repository.Interfaces
 {
     public interface IPromotionTransactionRepository : IGenericRepository<PromotionTransaction>
     {
+        IQueryable<PromotionTransaction> GetQuery();
     }
 }

@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Service.Interfaces
 {
     public interface ITransactionService
     {
         Task<ApiResponse<object>> CreatePaymentUrl(TransactionRequestModel requestModel,string email);
-        Task<ApiResponse<string>> PaymentUrlCallbackProcessing(ZaloPayCallbackModel model);
+        Task<ApiResponse<string>> PaymentUrlCallbackProcessing(Net.payOS.Types.WebhookType model);
+        Task<ApiResponse<TransactionDto>> Get();
     }
 }

@@ -21,18 +21,8 @@ namespace Service.Models.Workshops
         public long StartTime { get; set; }
         public long EndTime { get; set; }
         public int Capacity { get; set; }
-        public required OrganizerRegisterRequestModel Organizer { get; set; }
         public required ICollection<WorkshopTicketRankRegisterRequestModel> TicketRanks { get; set; }
         public required List<IFormFile> WorkshopImages { get; set; }
-    }
-
-    public class OrganizerRegisterRequestModel
-    {
-        public required string OrganizationName { get; set; }
-        public required string ContactEmail { get; set; }
-        public required string ContactPhone { get; set; }
-        public string WebsiteUrl { get; set; }
-        public string SocialLinks { get; set; }
     }
 
     public class WorkshopTicketRankRegisterRequestModel

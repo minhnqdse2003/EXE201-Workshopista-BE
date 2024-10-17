@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Repository.Models;
@@ -6,6 +7,7 @@ using Service.Interfaces;
 using Service.Models.Organizers;
 using Service.Models.Users;
 using Service.Services;
+using System.Security.Claims;
 
 namespace EXE201_Workshopista.Controllers
 {
@@ -44,6 +46,14 @@ namespace EXE201_Workshopista.Controllers
         {
             await _organizerService.UpdateOrganizerAsync(model, id);
             return Ok("Update organization successfully!");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> PostOrganizer([FromBody]OrganizerCreateModel request)
+        {
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            return Ok(await _organizerService.CreateOrganizerAsync(request,email));
         }
 
         //[HttpDelete("{id}")]
