@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Models;
 
@@ -11,9 +12,11 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(Exe201WorkshopistaContext))]
-    partial class Exe201WorkshopistaContextModelSnapshot : ModelSnapshot
+    [Migration("20241005014315_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,6 +110,58 @@ namespace Repository.Migrations
                         .HasFilter("([name] IS NOT NULL)");
 
                     b.ToTable("Category", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = new Guid("e166aa8b-bb77-4c98-8cf7-881f3889c0d9"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3031),
+                            Description = "Workshops focused on business skills, entrepreneurship, and management.",
+                            Name = "Business",
+                            Slug = "business",
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3037)
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("ee0b6f90-c724-46d6-a0f1-62b8776ca367"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3040),
+                            Description = "Workshops on software development, AI, cloud computing, and emerging technologies.",
+                            Name = "Technology",
+                            Slug = "technology",
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3041)
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("ccbdac12-70e6-4b44-a825-2620990306d9"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3044),
+                            Description = "Creative workshops covering arts, crafts, and design.",
+                            Name = "Arts & Crafts",
+                            Slug = "arts-and-crafts",
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3045)
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("5e6d2117-ab06-45a0-982a-e3df2a6d0dbc"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3059),
+                            Description = "Workshops focused on fitness, mental health, and overall well-being.",
+                            Name = "Health & Wellness",
+                            Slug = "health-wellness",
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3059)
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("6a3ae500-36be-4240-846b-5b8c3a6097c6"),
+                            CreatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3062),
+                            Description = "Workshops aimed at personal growth, leadership, and career development.",
+                            Name = "Personal Development",
+                            Slug = "personal-development",
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3062)
+                        });
                 });
 
             modelBuilder.Entity("Repository.Models.Commission", b =>
@@ -593,9 +648,6 @@ namespace Repository.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("promotion_id");
 
-                    b.Property<string>("PromotionType")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid?>("TransactionId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("transaction_id");
@@ -999,6 +1051,50 @@ namespace Repository.Migrations
                         .HasFilter("([email] IS NOT NULL)");
 
                     b.ToTable("User", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("9a57ec50-eaf7-4f45-a03e-bc50e88b8e52"),
+                            Email = "admin@gmail.com",
+                            EmailVerified = true,
+                            FirstName = "Alice",
+                            LastName = "Smith",
+                            PasswordHash = "$2a$11$EU4w6nD6CcWPqZDQky7XJelNLUzj6TwIzPpmg9nCYmV1kCAV7.yUe",
+                            PhoneNumber = "1234567890",
+                            PhoneVerified = true,
+                            ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
+                            Role = "Admin",
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            UserId = new Guid("d3aa7376-f61b-4898-b49b-4f27eb4dfdbb"),
+                            Email = "org@gmail.com",
+                            EmailVerified = true,
+                            FirstName = "Bob",
+                            LastName = "Johnson",
+                            PasswordHash = "$2a$11$IhTnqE49QH/2gp.1xcQ6t.48Vzy62KgIl6Qhwuw3v2Phv1XTHYUri",
+                            PhoneNumber = "9876543210",
+                            PhoneVerified = true,
+                            ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
+                            Role = "Organizer",
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            UserId = new Guid("b002b85b-e43a-45cd-a3a2-54edeb9fe014"),
+                            Email = "charlie@example.com",
+                            EmailVerified = true,
+                            FirstName = "Charlie",
+                            LastName = "Brown",
+                            PasswordHash = "$2a$11$xn.9rGVqW9qNbkYS3z038uzZJg8u33H3Yw7Amsw0JMIVMAWNkuO6a",
+                            PhoneNumber = "5551234567",
+                            PhoneVerified = true,
+                            ProfileImageUrl = "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1",
+                            Role = "Organizer",
+                            Status = "Active"
+                        });
                 });
 
             modelBuilder.Entity("Repository.Models.Workshop", b =>

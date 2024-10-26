@@ -1,4 +1,5 @@
 ﻿using Repository.Models;
+using Service.Models;
 using Service.Models.Organizers;
 using Service.Models.Users;
 using System;
@@ -20,5 +21,7 @@ namespace Service.Interfaces
         Task<IEnumerable<Organizer>> GetAllOrganizesAsync();
 
         Task ChangeStatus(Guid organizerId, string status);
+
+        Task<ApiResponse<Organizer>> CreateOrganizerAsync(OrganizerCreateModel createModel, string email);
     }
 }

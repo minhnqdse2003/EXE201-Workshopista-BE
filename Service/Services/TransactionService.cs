@@ -19,6 +19,8 @@ using Repository.Interfaces;
 using Repository.Consts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using FirebaseAdmin.Messaging;
+using Net.payOS;
 
 namespace Service.Services
 {
@@ -26,11 +28,15 @@ namespace Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
+        private readonly ITicketService _ticketService;
+        private readonly PayOS _payOs;
 
-        public TransactionService(IUnitOfWork unitOfWork, IConfiguration configuration)
+        public TransactionService(IUnitOfWork unitOfWork, IConfiguration configuration, ITicketService ticketService, PayOS payOs)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _ticketService = ticketService;
+            _payOs = payOs;
         }
 
         public async Task<ApiResponse<object>> CreatePaymentUrl(TransactionRequestModel requestModel, string email)
@@ -49,7 +55,7 @@ namespace Service.Services
                 case TransactionType.Ticket:
                     {
                         Order order = await CreateOrder(existingUser, requestModel);
-                        items.Add("transId", order.OrderId.ToString());
+                        items.Add("transId", order.LongOrderId.ToString());
                         items.Add("amount", order.TotalAmount.ToString());
                         break;
                     }
@@ -57,15 +63,16 @@ namespace Service.Services
                     {
                         Transaction transaction = await CreateTransaction(existingUser, requestModel);
                         var totalAmount = await HandleSubscriptionTransaction(transaction, requestModel.Subscriptions);
-                        items.Add("transId", transaction.TransactionId.ToString());
+                        items.Add("transId", transaction.LongTransactionId.ToString());
                         items.Add("amount", totalAmount.ToString());
                         break;
                     }
                 case TransactionType.Promotion:
                     {
+                        await CanPurchasePromotion(requestModel.Promotions);
                         Transaction transaction = await CreateTransaction(existingUser, requestModel);
-                        var totalAmount =  await HandlePromotionTransaction(transaction, requestModel.Promotions);
-                        items.Add("transId", transaction.TransactionId.ToString());
+                        var totalAmount = await HandlePromotionTransaction(transaction, requestModel.Promotions);
+                        items.Add("transId", transaction.LongTransactionId.ToString());
                         items.Add("amount", totalAmount.ToString());
                         break;
                     }
@@ -76,33 +83,87 @@ namespace Service.Services
             }
 
             var param = GenerateZaloPayParameters(items);
-            var result = HttpHelper.PostFormAsync(_configuration["ZaloPayment:createOrderUrl"], param).Result;
+            var result = await _payOs.createPaymentLink(param);
 
-            return ApiResponse<Object>.SuccessResponse(result, ResponseMessage.PaymentLinkCreateSuccess);
+            return ApiResponse<Object>.SuccessResponse(result.checkoutUrl, ResponseMessage.PaymentLinkCreateSuccess);
+        }
+
+        private async Task CanPurchasePromotion(PromotionRequestModel? promotions)
+        {
+            if (promotions == null) throw new CustomException($"nameof(promotions) can't be null");
+            var existingWorkshop = await GetWorkshop(promotions.WorkshopId ?? Guid.NewGuid());
+            DateTime workshopStartDate = existingWorkshop.StartTime ?? throw new CustomException(nameof(workshopStartDate) + "can't be null");
+            DateTime workshopEndDate = existingWorkshop.EndTime ?? throw new CustomException(nameof(workshopEndDate) + "can't be null");
+            string promotionType = PromotionConstants.GetType(promotions.PromotionType ?? throw new CustomException(nameof(promotionType) + "can't be null"));
+
+            int overlappingPromotions = _unitOfWork.Promotions.CountOverlappingPromotions(promotionType, workshopStartDate, workshopEndDate);
+            int numberOfPromotionType = _unitOfWork.Promotions.CountNumberOfPromotionType(existingWorkshop.WorkshopId);
+
+            if(numberOfPromotionType >= 1)
+            {
+                throw new CustomException("The number of promotions for your workshop cannot exceed 1.");
+            }
+
+            switch (promotionType)
+            {
+                case PromotionConstants.Banner:
+                    if (overlappingPromotions >= PromotionConstants.PromotionQuantityMaxLength.BannerLenght)
+                        throw new CustomException($"Maximum number of overlapping {promotionType} promotions reached.");
+                    return;
+                case PromotionConstants.Featured:
+                    if (overlappingPromotions >= PromotionConstants.PromotionQuantityMaxLength.FeaturedLenght)
+                        throw new CustomException($"Maximum number of overlapping {promotionType} promotions reached.");
+                    return;
+                case PromotionConstants.Highlight:
+                    if (overlappingPromotions >= PromotionConstants.PromotionQuantityMaxLength.FeaturedLenght)
+                        throw new CustomException($"Maximum number of overlapping {promotionType} promotions reached.");
+                    return;
+                default:
+                    return;
+            }
         }
 
         private async Task<decimal> HandlePromotionTransaction(Transaction transaction, PromotionRequestModel? promotions)
         {
             if (promotions == null)
                 throw new CustomException(ResponseMessage.InvalidInput + "[promotion model]");
-            var existingWorkshop = await GetWorkshopWithTicketRanks(promotions.WorkshopId ?? Guid.NewGuid());
+
+            var existingWorkshop = await GetWorkshop(promotions.WorkshopId ?? Guid.NewGuid());
+            var promotionPrice = PurchasePromotion(existingWorkshop, promotions.PromotionType);
 
             //Create Promotion Transaction
             var promotionTransaction = new PromotionTransaction()
             {
                 PromotionTransactionId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow,
+                PromotionType = promotions.PromotionType,
                 UpdatedAt = DateTime.UtcNow,
                 Workshop = existingWorkshop,
             };
             //Assign promotion amount
 
-            transaction.Amount = 100000.00m;
+            transaction.Amount = promotionPrice;
             transaction.PromotionTransactions.Add(promotionTransaction);
 
             await _unitOfWork.Transactions.Update(transaction);
 
-            return transaction.Amount ?? 100000.00m;
+            return promotionPrice;
+        }
+
+        private decimal PurchasePromotion(Workshop existingWorkshop, string? promotionType)
+        {
+            DateTime workshopStartDate = existingWorkshop.StartTime
+                ?? throw new CustomException("Start time of workshop can't be null");
+            DateTime workshopEndDate = existingWorkshop.EndTime
+                    ?? throw new CustomException("End time of workshop can't be null");
+            decimal basePrice = PromotionConstants.GetPromotionPrice(promotionType
+                ?? throw new CustomException($"{nameof(promotionType)} can't be null"));
+
+            int overlappingPromotions = _unitOfWork.Promotions.CountOverlappingPromotions(promotionType, workshopStartDate, workshopEndDate);
+            decimal finalPrice = basePrice * (1 + (PromotionConstants.PromotionBasePrice.DemandFactorIncrease * overlappingPromotions));
+            finalPrice = Math.Round(finalPrice, 2, MidpointRounding.AwayFromZero);
+
+            return finalPrice;
         }
 
         private async Task<decimal> HandleSubscriptionTransaction(Transaction transaction, SubscriptionRequestModel? subscriptions)
@@ -139,6 +200,8 @@ namespace Service.Services
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
+
+            transaction.LongTransactionId = ConvertGuidToLong(transaction.TransactionId);
             await _unitOfWork.Transactions.Add(transaction);
             return transaction;
         }
@@ -156,7 +219,7 @@ namespace Service.Services
             {
                 ValidateOrderDetails(orderDetails);
 
-                var existingWorkshop = await GetWorkshopWithTicketRanks(orderDetails.WorkshopId);
+                var existingWorkshop = await GetWorkshop(orderDetails.WorkshopId);
                 var ticketRank = GetTicketRank(existingWorkshop, orderDetails.TicketRankId ?? Guid.NewGuid());
 
                 // Create a new OrderDetail object based on the retrieved workshop and ticket rank
@@ -221,16 +284,20 @@ namespace Service.Services
                 Participant = existingUser,
                 OrderDetails = updateOrderDetailModels,
             };
-
+            order.LongOrderId = ConvertGuidToLong(order.OrderId);
             await _unitOfWork.Orders.Add(order);
 
-            var existingTicket = _unitOfWork.OrderDetails.GetQuery();
-
-            var ticket = await existingTicket
-                .Include(od => od.Ticket)
-                .FirstOrDefaultAsync(x => x.OrderDetailsId == updateOrderDetailModels.FirstOrDefault().OrderDetailsId);
-
             return order;
+        }
+
+        private int GetWorkshopCapacity(Workshop existingWorkshop, OrderRequestModel orderRequestModel)
+        {
+            var curSize = existingWorkshop.Capacity;
+            if (orderRequestModel.Quantity == null || curSize - orderRequestModel.Quantity < 0)
+            {
+                throw new CustomException(ResponseMessage.WorkshopCapacityExceeded);
+            }
+            return (int)orderRequestModel.Quantity;
         }
 
         private TicketRank GetTicketRank(Workshop workshop, Guid ticketRankId)
@@ -243,7 +310,7 @@ namespace Service.Services
             return ticketRank;
         }
 
-        private async Task<Workshop> GetWorkshopWithTicketRanks(Guid workshopId)
+        private async Task<Workshop> GetWorkshop(Guid workshopId)
         {
             var workshop = await _unitOfWork.Workshops.Get()
                 .Include(w => w.TicketRanks)
@@ -264,55 +331,64 @@ namespace Service.Services
             }
         }
 
-        private Dictionary<string, string> GenerateZaloPayParameters(Dictionary<string, string> itemsModel)
+        private Net.payOS.Types.PaymentData GenerateZaloPayParameters(Dictionary<string, string> itemsModel)
         {
             string transId = itemsModel["transId"];
-
             string amount = itemsModel["amount"];
             string formattedAmount = amount.Substring(0, amount.Length - 3);
 
             var items = new
             {
-                transId = transId,
-                amount = amount,
-            };
-            string appid = _configuration["ZaloPayment:appid"] 
-                ?? throw new CustomException($"{nameof(appid)} not found.{nameof(GenerateZaloPayParameters)}");
-            string key1 = _configuration["ZaloPayment:key1"]
-                ?? throw new CustomException($"{nameof(key1)} not found.{nameof(GenerateZaloPayParameters)}");
-            string createOrderUrl = _configuration["ServerName"] + _configuration["ZaloPayment:redirectUrl"]
-                ?? throw new CustomException($"{nameof(createOrderUrl)} not found.{nameof(GenerateZaloPayParameters)}");
-
-            var embeddata = new { merchantinfo = "embeddata123", redirecturl = createOrderUrl };
-
-
-            var param = new Dictionary<string, string>
-            {
-                { "appid", appid },
-                { "appuser", "demo" },
-                { "apptime", Utils.GetTimeStamp().ToString() },
-                { "amount", formattedAmount},
-                { "apptransid", DateTime.Now.ToString("yyMMdd") + "_" + transId },
-                { "embeddata", JsonConvert.SerializeObject(embeddata) },
-                { "item", JsonConvert.SerializeObject(items) },
-                { "description", "ZaloPay demo" },
-                { "bankcode", "zalopayapp" }
+                transId = long.Parse(transId),
+                amount = int.Parse(formattedAmount),
             };
 
-            var data = $"{appid}|{param["apptransid"]}|{param["appuser"]}|{param["amount"]}|{param["apptime"]}|{param["embeddata"]}|{param["item"]}";
-            param.Add("mac", HmacHelper.Compute(ZaloPayHMAC.HMACSHA256, key1, data));
+            var serverName = _configuration["FeServerName"] ?? throw new CustomException(ResponseMessage.EnvVaribaleNotFound);
+            var returnUrl = serverName + _configuration["PaymentEnvironment:RETURN_URL"] ?? throw new CustomException(ResponseMessage.EnvVaribaleNotFound);
+            var cancelUrl = serverName + _configuration["PaymentEnvironment:CANCELURL"] ?? throw new CustomException(ResponseMessage.EnvVaribaleNotFound);
 
-            return param;
+            long expiredAt = (long)(DateTime.UtcNow.AddMinutes(10) - new DateTime(1970, 1, 1)).TotalSeconds;
+            var paymentData = new Net.payOS.Types.PaymentData(
+               orderCode: items.transId,
+               amount: items.amount,
+               description: $"Pay for {transId}",
+               items: new List<Net.payOS.Types.ItemData>(),
+               cancelUrl: cancelUrl,
+               returnUrl: returnUrl,
+               expiredAt: expiredAt
+           );
+
+            return paymentData;
         }
 
-        public async Task<ApiResponse<string>> PaymentUrlCallbackProcessing(ZaloPayCallbackModel model)
+        private long ConvertGuidToLong(Guid guid)
         {
-            var transactionId = Guid.Parse(model.AppTransId.ToString().Split('_').LastOrDefault());
+            Random random = new Random();
 
-            var existingOrder = _unitOfWork.Orders.GetById(transactionId);
+            return random.Next();
+        }
+
+        public async Task<ApiResponse<string>> PaymentUrlCallbackProcessing(Net.payOS.Types.WebhookType model)
+        {
+            Net.payOS.Types.WebhookData verifiedData = _payOs.verifyPaymentWebhookData(model);
+
+            string responseCode = verifiedData.code;
+            var transactionId = verifiedData.orderCode;
+
+            var existingOrder = _unitOfWork.Orders.GetQuery()
+                .Include(o => o.OrderDetails)
+                .FirstOrDefault(x => x.LongOrderId == transactionId);
 
             if (existingOrder != null)
             {
+                if (responseCode != "00")
+                {
+                    existingOrder.PaymentStatus = PaymentStatus.Canceled;
+                    existingOrder.UpdatedAt = DateTime.UtcNow;
+                    await _unitOfWork.Orders.Update(existingOrder);
+                    return ApiResponse<string>.ErrorResponse(ResponseMessage.PaymentFailed);
+                }
+
                 existingOrder.PaymentTime = DateTime.UtcNow;
                 existingOrder.PaymentStatus = PaymentStatus.Completed;
                 existingOrder.UpdatedAt = DateTime.UtcNow;
@@ -323,25 +399,35 @@ namespace Service.Services
                 var ordersQuery = _unitOfWork.Orders.GetQuery();
                 var trackedOrder = await ordersQuery
                     .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Workshop)
+                    .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Ticket)
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Tickets)
                     .FirstOrDefaultAsync(x => x.OrderId == existingOrder.OrderId);
 
+                foreach(var orderDetail in trackedOrder.OrderDetails)
+                {
+                    var amount = orderDetail.Quantity;
+                    orderDetail.Workshop.Capacity -= amount;
+                }
+
                 foreach (var orderDetail in trackedOrder.OrderDetails)
                 {
                     if (orderDetail.Ticket != null)
                     {
-                        orderDetail.Ticket.Status = PaymentStatus.Completed;  // Update ticket status
-                        orderDetail.Ticket.PaymentTime = DateTime.UtcNow;  // Update timestamp (if you have a field for this)
+                        orderDetail.Ticket.Status = PaymentStatus.Completed;
+                        orderDetail.Ticket.PaymentTime = DateTime.UtcNow;
+                        orderDetail.Ticket.QrCode = _ticketService.GenerateTicketPrivateKey(orderDetail.Ticket.TicketId);
                     }
 
-                    if(orderDetail.Tickets.Count > 0)
+                    if (orderDetail.Tickets.Count > 0)
                     {
                         foreach (var ticket in orderDetail.Tickets)
                         {
                             ticket.Status = PaymentStatus.Completed;
                             ticket.PaymentTime = DateTime.UtcNow;
+                            ticket.QrCode = _ticketService.GenerateTicketPrivateKey(ticket.TicketId);
                         }
                     }
                 }
@@ -357,7 +443,8 @@ namespace Service.Services
                 .Include(st => st.SubscriptionTransactions)
                 .Include(pm => pm.PaymentMethod)
                 .Include(u => u.User)
-                .Where(x => x.TransactionId == transactionId);
+                    .ThenInclude(o => o.Organizers)
+                .Where(x => x.LongTransactionId == transactionId);
 
             bool exists = await transactionQuery.AnyAsync();
 
@@ -373,7 +460,14 @@ namespace Service.Services
                 case TransactionType.Subscription:
                     {
                         await HandleSubscriptionTransactionCallBack(transaction);
-                        HandlepaymentMethodCallBack(transaction);
+                        HandlepaymentMethodCallBack(verifiedData, transaction);
+                        await _unitOfWork.Transactions.Update(transaction);
+                        break;
+                    }
+                case TransactionType.Promotion:
+                    {
+                        await HandlePromotionTransactionCallBack(transaction);
+                        HandlepaymentMethodCallBack(verifiedData, transaction);
                         await _unitOfWork.Transactions.Update(transaction);
                         break;
                     }
@@ -384,13 +478,55 @@ namespace Service.Services
             return ApiResponse<string>.SuccessResponse("Payment Successfully");
         }
 
-        private void HandlepaymentMethodCallBack(Transaction transaction)
+        private async Task HandlePromotionTransactionCallBack(Transaction transaction)
+        {
+            if (transaction == null)
+                throw new CustomException("Transaction is null.");
+
+            if (transaction.PaymentMethod != null)
+                throw new CustomException("This order have already completed!");
+
+            Promotion promotion = new Promotion()
+            {
+                PromotionId = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Organizer = transaction.User.Organizers.FirstOrDefault(),
+            };
+
+            PromotionTransaction existingPromotionTransaction = transaction.PromotionTransactions
+                .FirstOrDefault() ??
+                throw new CustomException("Promotion transaction can't be null");
+
+            var promotionTransactionQuery = _unitOfWork.PromotionTransactions.GetQuery();
+
+            PromotionTransaction trackingPromotion = await promotionTransactionQuery
+                .Include(pt => pt.Workshop)
+                .Include(pt => pt.Promotion)
+                .FirstOrDefaultAsync(pt => pt.PromotionTransactionId == existingPromotionTransaction.PromotionTransactionId)
+                ?? throw new CustomException($"{nameof(trackingPromotion)} can't be null");
+
+            if (trackingPromotion.Workshop == null)
+                throw new CustomException("Workshop is null due to not include.");
+
+            promotion.Workshop = trackingPromotion.Workshop;
+            promotion.StartDate = trackingPromotion.Workshop.StartTime;
+            promotion.EndDate = trackingPromotion.Workshop.EndTime;
+            promotion.Price = transaction.Amount;
+            promotion.CurrencyCode = CurrencyCode.VietnameseCurrency;
+            promotion.PromotionType = trackingPromotion.PromotionType;
+            trackingPromotion.Promotion = promotion;
+
+            await _unitOfWork.PromotionTransactions.Update(trackingPromotion);
+        }
+
+        private void HandlepaymentMethodCallBack(Net.payOS.Types.WebhookData webHookData, Transaction transaction)
         {
             PaymentMethod paymentMethod = new PaymentMethod()
             {
                 PaymentMethodId = Guid.NewGuid(),
-                MethodName = "Zalopay",
-                Description = "Empty",
+                MethodName = "VietQR",
+                Description = webHookData.description,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
             };
@@ -438,5 +574,9 @@ namespace Service.Services
 
         }
 
+        public Task<ApiResponse<TransactionDto>> Get()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

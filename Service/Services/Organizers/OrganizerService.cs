@@ -4,6 +4,7 @@ using Repository.Helpers;
 using Repository.Interfaces;
 using Repository.Models;
 using Service.Interfaces;
+using Service.Models;
 using Service.Models.Organizers;
 using Service.Models.Users;
 using System;
@@ -62,7 +63,28 @@ namespace Service.Services.Organizers
             return await _unitOfWork.Organizers.GetOrganizerByRefreshToken(token);
         }
 
-        
+        public async Task<ApiResponse<Organizer>> CreateOrganizerAsync(OrganizerCreateModel createModel,string email)
+        {
+            var existingUser = await _unitOfWork.Users.GetUserByUserNameAsync(email);
+            
+            if(existingUser == null)
+            {
+                throw new CustomException(ResponseMessage.UserNotFound);
+            }
+
+            if(existingUser.Organizers.Count != 0)
+            {
+                throw new CustomException(ResponseMessage.OrganizerFound);
+            }
+
+            Organizer organizer = new Organizer();
+            _mapper.Map(createModel,organizer);
+            existingUser.Organizers.Add(organizer);
+            
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponse<Organizer>.SuccessResponse(organizer);
+        }
 
         public async Task ChangeStatus(Guid organizerId, string status)
         {

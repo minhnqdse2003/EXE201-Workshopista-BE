@@ -7,6 +7,8 @@ public partial class Transaction
 {
     public Guid TransactionId { get; set; }
 
+    public long? LongTransactionId { get; set; }
+
     public Guid? PaymentMethodId { get; set; }
 
     public Guid? UserId { get; set; }

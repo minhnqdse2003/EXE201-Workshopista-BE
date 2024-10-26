@@ -109,6 +109,7 @@ namespace Repository.Migrations
                 columns: table => new
                 {
                     order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LongOrderId = table.Column<long>(type: "bigint", nullable: true),
                     participant_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     total_amount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     currency_code = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: true),
@@ -201,6 +202,7 @@ namespace Repository.Migrations
                 columns: table => new
                 {
                     transaction_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LongTransactionId = table.Column<long>(type: "bigint", nullable: true),
                     payment_method_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     transaction_type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
@@ -560,11 +562,11 @@ namespace Repository.Migrations
                 columns: new[] { "category_id", "created_at", "description", "name", "slug", "status", "updated_at" },
                 values: new object[,]
                 {
-                    { new Guid("27ae5c53-f0b7-4f71-b52a-52b78511fb01"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3675), "Workshops on software development, AI, cloud computing, and emerging technologies.", "Technology", "technology", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3676) },
-                    { new Guid("3ddf752c-eed5-42c8-93b9-4cd316135a19"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701), "Workshops aimed at personal growth, leadership, and career development.", "Personal Development", "personal-development", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3701) },
-                    { new Guid("8f40d269-eaa5-42d7-9d15-97d9bb147a6d"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3695), "Creative workshops covering arts, crafts, and design.", "Arts & Crafts", "arts-and-crafts", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3696) },
-                    { new Guid("c74797ba-bb5d-46ea-9574-8b7dbe75c4f3"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3667), "Workshops focused on business skills, entrepreneurship, and management.", "Business", "business", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3672) },
-                    { new Guid("e1670a2c-2ea1-474a-a882-28c575df7f81"), new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3698), "Workshops focused on fitness, mental health, and overall well-being.", "Health & Wellness", "health-wellness", "Active", new DateTime(2024, 9, 30, 5, 59, 1, 369, DateTimeKind.Utc).AddTicks(3699) }
+                    { new Guid("5e6d2117-ab06-45a0-982a-e3df2a6d0dbc"), new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3059), "Workshops focused on fitness, mental health, and overall well-being.", "Health & Wellness", "health-wellness", "Active", new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3059) },
+                    { new Guid("6a3ae500-36be-4240-846b-5b8c3a6097c6"), new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3062), "Workshops aimed at personal growth, leadership, and career development.", "Personal Development", "personal-development", "Active", new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3062) },
+                    { new Guid("ccbdac12-70e6-4b44-a825-2620990306d9"), new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3044), "Creative workshops covering arts, crafts, and design.", "Arts & Crafts", "arts-and-crafts", "Active", new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3045) },
+                    { new Guid("e166aa8b-bb77-4c98-8cf7-881f3889c0d9"), new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3031), "Workshops focused on business skills, entrepreneurship, and management.", "Business", "business", "Active", new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3037) },
+                    { new Guid("ee0b6f90-c724-46d6-a0f1-62b8776ca367"), new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3040), "Workshops on software development, AI, cloud computing, and emerging technologies.", "Technology", "technology", "Active", new DateTime(2024, 10, 5, 1, 43, 15, 11, DateTimeKind.Utc).AddTicks(3041) }
                 });
 
             migrationBuilder.InsertData(
@@ -572,9 +574,9 @@ namespace Repository.Migrations
                 columns: new[] { "user_id", "email", "email_verified", "first_name", "last_name", "password_hash", "phone_number", "phone_verified", "profile_image_url", "refresh_token", "refresh_token_expiry_time", "role", "status" },
                 values: new object[,]
                 {
-                    { new Guid("30c18893-99f0-49b9-98fb-18a990489f87"), "admin@gmail.com", true, "Alice", "Smith", "$2a$11$ASMuiRckojlJiy4wEYzSU.dZ3mrYOGvO0QmfkD8I/H0kgSkMJQqiK", "1234567890", true, "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1", null, null, "Admin", "Active" },
-                    { new Guid("382359c6-916d-4548-8583-1a0807f57b7e"), "org@gmail.com", true, "Bob", "Johnson", "$2a$11$hClCjcawkPoEaPyI8VO3RuH592yCe53DtEvPe/aRPk6bKKROCGREO", "9876543210", true, "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1", null, null, "Organizer", "Active" },
-                    { new Guid("70cfded3-8d98-4a54-ac62-ff6478450c3b"), "charlie@example.com", true, "Charlie", "Brown", "$2a$11$BopGOIlJDnHg8v3Fv6ROxOEEDsYiEwSW683DSMfy6CST1TQS8JvvK", "5551234567", true, "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1", null, null, "Organizer", "Active" }
+                    { new Guid("9a57ec50-eaf7-4f45-a03e-bc50e88b8e52"), "admin@gmail.com", true, "Alice", "Smith", "$2a$11$EU4w6nD6CcWPqZDQky7XJelNLUzj6TwIzPpmg9nCYmV1kCAV7.yUe", "1234567890", true, "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1", null, null, "Admin", "Active" },
+                    { new Guid("b002b85b-e43a-45cd-a3a2-54edeb9fe014"), "charlie@example.com", true, "Charlie", "Brown", "$2a$11$xn.9rGVqW9qNbkYS3z038uzZJg8u33H3Yw7Amsw0JMIVMAWNkuO6a", "5551234567", true, "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1", null, null, "Organizer", "Active" },
+                    { new Guid("d3aa7376-f61b-4898-b49b-4f27eb4dfdbb"), "org@gmail.com", true, "Bob", "Johnson", "$2a$11$IhTnqE49QH/2gp.1xcQ6t.48Vzy62KgIl6Qhwuw3v2Phv1XTHYUri", "9876543210", true, "https://i0.wp.com/fdlc.org/wp-content/uploads/2021/01/157-1578186_user-profile-default-image-png-clipart.png.jpeg?fit=880%2C769&ssl=1", null, null, "Organizer", "Active" }
                 });
 
             migrationBuilder.CreateIndex(

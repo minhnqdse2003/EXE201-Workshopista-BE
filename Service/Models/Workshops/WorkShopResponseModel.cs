@@ -46,7 +46,7 @@ namespace Service.Models.Workshops
 
         public virtual OrganizerResponseModel? Organizer { get; set; }
 
-        public virtual ICollection<WorkshopImage> WorkshopImages { get; set; } = new List<WorkshopImage>();
+        public virtual ICollection<WorkshopImageResponseModel> WorkshopImages { get; set; } = new List<WorkshopImageResponseModel>();
 
         public virtual ICollection<TicketRankModelResponse>? TicketRanks { get; set; }
     }
@@ -72,6 +72,19 @@ namespace Service.Models.Workshops
         public DateTime? UpdatedAt { get; set; }
 
         public virtual UserResponseModel? User { get; set; }
+    }
+
+    public class WorkshopImageResponseModel
+    {
+        public Guid ImageId { get; set; }
+
+        public Guid? WorkshopId { get; set; }
+
+        public string? ImageUrl { get; set; }
+
+        public bool? IsPrimary { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
     }
 
     public class UserResponseModel
