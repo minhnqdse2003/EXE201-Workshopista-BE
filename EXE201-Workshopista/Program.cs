@@ -129,7 +129,7 @@ namespace EXE201_Workshopista
 
                 var firebaseApp = FirebaseApp.Create(new AppOptions()
                 {
-                    Credential = GoogleCredential.FromFile(firebaseSettings.ServiceAccountKeyPath),
+                    Credential = GoogleCredential.GetApplicationDefault(),
                     ProjectId = firebaseSettings.ProjectId,
                     ServiceAccountId = firebaseSettings.ServiceAccountId
                 });
