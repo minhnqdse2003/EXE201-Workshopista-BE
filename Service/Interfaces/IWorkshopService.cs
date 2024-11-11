@@ -19,6 +19,8 @@ namespace Service.Interfaces
         Task<ApiResponse<WorkShopResponseModel>> AddWorkshop(WorkShopCreateRequestModel workshopCreateDto,string email);
         Task<ApiResponse<bool>> DeleteWorkshop(string id);
         Task<ApiResponse<WorkShopResponseModel>> UpdateWorkshop(WorkShopUpdateRequestModel workshopUpdateDto,string id);
+        Task<ApiResponse<List<WorkshopImageResponseModel>>> GetWorkShopBanner();
+        Task<ApiResponse<bool>> UpdateWorkshopImageStatus(string imageId);
     }
 
 }

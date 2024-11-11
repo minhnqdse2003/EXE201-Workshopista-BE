@@ -89,6 +89,7 @@ namespace EXE201_Workshopista
             builder.Services.AddScoped<ITransactionService, TransactionService>();
             builder.Services.AddScoped<ITicketService, TicketService>();
             builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
+            builder.Services.AddScoped<IWorkshopImageRepository, WorkshopImageRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 

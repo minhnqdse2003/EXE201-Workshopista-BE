@@ -92,5 +92,6 @@ namespace Repository.Helpers
         public static string EnvVaribaleNotFound = "Enviroment varibale not found";
         public static string OrganizerFound = "Organizer already exist";
         public static string WorkshopCapacityExceeded = "The workshop has reached its maximum capacity. No more participants can be added.";
+        public static string ImageNotFound = "Image not found.";
     }
 }
