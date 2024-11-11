@@ -16,6 +16,7 @@ public partial class PromotionTransaction
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
     public string? PromotionType { get; set; }
 
     public virtual Promotion? Promotion { get; set; }

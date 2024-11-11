@@ -14,7 +14,7 @@ namespace Repository.Consts
             public const decimal BannerBasePrice = 100000.00m;
             public const decimal FeaturedBasePrice = 200000.00m;
             public const decimal HighlightBasePrice = 300000.00m;
-            public const decimal DemandFactorIncrease = 0.10m; // 10% increase per overlapping promotion
+            public const decimal DemandFactorIncrease = 0.10m;
         }
 
         public static decimal GetPromotionPrice(string type)
