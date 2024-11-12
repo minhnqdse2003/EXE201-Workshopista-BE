@@ -25,6 +25,8 @@ namespace Repository.Interfaces
         ICategoryRepository Categories { get; }
         IOTPRepository OTPs { get; }
         ITicketRankRepository TicketRanks { get; }
+
+        IReviewRepository Reviews { get; }
         IWorkshopImageRepository WorkshopImage { get; }
 
         int Complete();

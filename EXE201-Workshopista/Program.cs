@@ -26,6 +26,7 @@ using Service.Services.Categories;
 using Service.Services.Emails;
 using Service.Services.Organizers;
 using Service.Services.OTPs;
+using Service.Services.Reviews;
 using Service.Services.TicketRanks;
 using Service.Services.Users;
 using System.Text;
@@ -91,6 +92,8 @@ namespace EXE201_Workshopista
             builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
             builder.Services.AddScoped<IWorkshopImageRepository, WorkshopImageRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 

@@ -224,6 +224,7 @@ namespace Service.Services
                                 .Include(x => x.Category)
                                 .Include(x => x.TicketRanks)
                                 .Include(x => x.Organizer)
+                                .Include(x => x.WorkshopImages)
                                 .FirstOrDefault(x => x.WorkshopId == Guid.Parse(id));
             if (existingWorkshop == null)
             {
@@ -234,8 +235,28 @@ namespace Service.Services
             {
                 throw new CustomException("Cannot update information for an active workshop.");
             }
-
             _mapper.Map(workshopUpdateDto, existingWorkshop);
+
+            if (workshopUpdateDto.WorkshopImages.Count > 0)
+            {
+                existingWorkshop.WorkshopImages.Clear();
+                var downloadUrl = await _firebaseStorageService.UploadFile(workshopUpdateDto.WorkshopImages);
+
+                foreach (var link in downloadUrl)
+                {
+                    var workshopImage = new WorkshopImage
+                    {
+                        ImageId = Guid.NewGuid(),
+                        WorkshopId = Guid.Parse(id),
+                        ImageUrl = link,
+                        IsPrimary = false,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    existingWorkshop.WorkshopImages.Add(workshopImage);
+                }
+            }
+
 
             // Update related entities like Category and TicketRanks
             if (workshopUpdateDto.CategoryId.HasValue)
