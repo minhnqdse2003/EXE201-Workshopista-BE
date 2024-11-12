@@ -211,11 +211,11 @@ namespace EXE201_Workshopista
             app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
-            //using (var scope = app.Services.CreateScope())
-            //{
-            //    var context = scope.ServiceProvider.GetRequiredService<Exe201WorkshopistaContext>();
-            //    context.Database.Migrate();
-            //}
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<Exe201WorkshopistaContext>();
+                context.Database.Migrate();
+            }
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseSerilogRequestLogging();
