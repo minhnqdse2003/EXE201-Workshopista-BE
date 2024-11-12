@@ -82,7 +82,7 @@ namespace Service.Services
 
             if (!userTickets.Any())
             {
-                throw new CustomException("No tickets found for the specified user.");
+                return ApiResponse<List<TicketDto>>.SuccessResponse(_mapper.Map<List<TicketDto>>(new List<TicketDto>()),ResponseMessage.ReadSuccess);
             }
 
             return ApiResponse<List<TicketDto>>.SuccessResponse(_mapper.Map<List<TicketDto>>(userTickets),ResponseMessage.ReadSuccess);

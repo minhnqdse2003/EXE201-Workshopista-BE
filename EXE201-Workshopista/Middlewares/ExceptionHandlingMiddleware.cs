@@ -34,7 +34,7 @@ namespace EXE201_Workshopista.Middlewares
                 catch (Exception ex)
                 {
                     var statusCode = StatusCodes.Status500InternalServerError;
-                    if( ex.InnerException != null && ex.InnerException.GetType().Name == nameof(CustomException))
+                    if(ex is CustomException)
                     {
                         statusCode = StatusCodes.Status400BadRequest;
                     }
