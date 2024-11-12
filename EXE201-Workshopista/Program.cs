@@ -90,6 +90,7 @@ namespace EXE201_Workshopista
             builder.Services.AddScoped<ITransactionService, TransactionService>();
             builder.Services.AddScoped<ITicketService, TicketService>();
             builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
+            builder.Services.AddScoped<IWorkshopImageRepository, WorkshopImageRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
@@ -132,7 +133,7 @@ namespace EXE201_Workshopista
 
                 var firebaseApp = FirebaseApp.Create(new AppOptions()
                 {
-                    Credential = GoogleCredential.FromFile(firebaseSettings.ServiceAccountKeyPath),
+                    Credential = GoogleCredential.GetApplicationDefault(),
                     ProjectId = firebaseSettings.ProjectId,
                     ServiceAccountId = firebaseSettings.ServiceAccountId
                 });
@@ -210,11 +211,11 @@ namespace EXE201_Workshopista
             app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
-            using (var scope = app.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<Exe201WorkshopistaContext>();
-                context.Database.Migrate();
-            }
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var context = scope.ServiceProvider.GetRequiredService<Exe201WorkshopistaContext>();
+            //    context.Database.Migrate();
+            //}
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseSerilogRequestLogging();
