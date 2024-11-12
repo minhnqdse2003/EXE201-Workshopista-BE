@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Repository.Consts;
+using Repository.Models;
 using Service.Interfaces;
 using Service.Models.Workshops;
 using Service.Services;
@@ -41,6 +43,23 @@ namespace EXE201_Workshopista.Controllers
         {
             return Ok( _workshopService.GetWorkshopById(Guid.Parse(id)));
         }
+
+        [HttpGet]
+        [Route($"{nameof(WorkshopImage)}/{PromotionConstants.Banner}")]
+        public async Task<IActionResult> GetWorkshopBannerAsync()
+        {
+            var result = await _workshopService.GetWorkShopBanner();
+            return Ok(result);
+        }
+
+        [HttpPut]
+        [Route($"{nameof(WorkshopImage)}" + "/{id}")]
+        public async Task<IActionResult> UpdateWorkshopImageStatus([FromRoute] string id)
+        {
+            var result = await _workshopService.UpdateWorkshopImageStatus(id);
+            return Ok(result);
+        }
+
 
         [HttpDelete]
         [Route("{id}")]

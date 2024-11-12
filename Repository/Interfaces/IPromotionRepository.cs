@@ -11,5 +11,6 @@ namespace Repository.Interfaces
     {
         int CountNumberOfPromotionType(Guid workshopId);
         int CountOverlappingPromotions(string promotionType, DateTime workshopStartDate, DateTime workshopEndDate);
+        IQueryable<Promotion> GetQuery();
     }
 }
