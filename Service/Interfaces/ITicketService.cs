@@ -15,8 +15,7 @@ namespace Service.Interfaces
         bool VerifyQRCode(string scannedHash, Guid ticketId);
         string GenerateTicketPrivateKey(Guid ticketId);
         Task<bool> Verify(string hashData);
-        Task<ApiResponse<List<TicketDto>>> GetUserTicket(string userName);
+        Task<ApiResponse<List<ListTicketDto>>> GetUserTicket(string userName);
         Task<ApiResponse<Ticket>> UpdateTicket(TicketUpdateModel updateModel);
-
     }
 }
