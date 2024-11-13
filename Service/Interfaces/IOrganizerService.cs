@@ -14,7 +14,7 @@ namespace Service.Interfaces
     {
         Task DeleteOrganizerAsync(Guid organizerId);
 
-        Task<Organizer> GetOrganizeByIdAsync(Guid organizerId);
+        Task<ApiResponse<OrganizerDetailsDto>> GetOrganizeByIdAsync(string email);
 
         Task UpdateOrganizerAsync(UpdateOrganizerModel model, Guid id);
 

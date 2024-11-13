@@ -31,9 +31,21 @@ namespace Service.Services.Organizers
             return await _unitOfWork.Organizers.GetAllOrganizersAsync();
         }
 
-        public async Task<Organizer> GetOrganizeByIdAsync(Guid organizerId)
+        public async Task<ApiResponse<OrganizerDetailsDto>> GetOrganizeByIdAsync(string email)
         {
-            return await _unitOfWork.Organizers.GetOrganizerByIdAsync(organizerId);
+            var existingUser = await _unitOfWork.Users.GetUserByUserNameAsync(email);
+
+            if (existingUser == null)
+            {
+                throw new CustomException(ResponseMessage.UserNotFound);
+            }
+
+            if (existingUser.Organizers.Count != 1)
+            {
+                throw new CustomException(ResponseMessage.OrganizerNotFound);
+            }
+
+            return ApiResponse<OrganizerDetailsDto>.SuccessResponse(_mapper.Map<OrganizerDetailsDto>(existingUser.Organizers.FirstOrDefault()));
         }
 
         public async Task UpdateOrganizerAsync(UpdateOrganizerModel model, Guid id)
