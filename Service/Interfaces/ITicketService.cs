@@ -17,5 +17,6 @@ namespace Service.Interfaces
         Task<bool> Verify(string hashData);
         Task<ApiResponse<List<ListTicketDto>>> GetUserTicket(string userName);
         Task<ApiResponse<Ticket>> UpdateTicket(TicketUpdateModel updateModel);
+        Task<ApiResponse<TicketDetailsDto?>> GetTicketDetails(string ticketId);
     }
 }

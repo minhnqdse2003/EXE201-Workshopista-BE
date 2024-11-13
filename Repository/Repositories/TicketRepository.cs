@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 using Repository.Interfaces;
 using Repository.Models;
 using System;
@@ -14,6 +15,8 @@ namespace Repository.Repositories
         public TicketRepository(Exe201WorkshopistaContext context) : base(context)
         {
         }
+
+        public IQueryable<Ticket> GetQuery() => _context.Tickets.AsQueryable();
 
         public async Task<Ticket?> GetTicketAsyncByQrCode(string hashQrContent)
         {

@@ -97,8 +97,51 @@ namespace Service.Services
             }
 
             return ApiResponse<List<ListTicketDto>>.SuccessResponse(orderDetails, ResponseMessage.ReadSuccess);
-
         }
+
+        public async Task<ApiResponse<TicketDetailsDto?>> GetTicketDetails(string ticketId)
+        {
+            // Parse the ticketId once for reuse
+            var parsedTicketId = Guid.Parse(ticketId);
+
+            // Fetch the ticket details in a single optimized query
+            var orderDetails = await _unitOfWork.Tickets.GetQuery()
+                .Where(t => t.TicketId == parsedTicketId)
+                .Select(t => new TicketDetailsDto
+                {
+                    WorkshopDetails = new TicketDetailsWorkshopDto
+                    {
+                        Title = t.Workshop.Title ?? "Empty title",
+                        LocationAddress = t.Workshop.LocationAddress,
+                        LocationCity = t.Workshop.LocationCity,
+                        LocationDistrict = t.Workshop.LocationDistrict,
+                        StartTime = t.Workshop.StartTime ?? DateTime.UtcNow,
+                        // Attempt to get the primary image, otherwise fallback to the first available image
+                        WorkshopImage = t.Workshop.WorkshopImages
+                            .Where(w => w.IsPrimary ?? false )
+                            .Select(w => w.ImageUrl)
+                            .FirstOrDefault()
+                            ?? t.Workshop.WorkshopImages
+                                .Select(wi => wi.ImageUrl)
+                                .FirstOrDefault()
+                    },
+                    Price = t.TicketRank.Price,
+                    QrCode = t.QrCode,
+                    RankName = t.TicketRank.RankName,
+                    Status = t.Status
+                })
+                .FirstOrDefaultAsync();
+
+            if (orderDetails == null)
+            {
+                throw new CustomException(ResponseMessage.TicketNotFound);
+            }
+
+            orderDetails.QrCode = GenerateQRCode(parsedTicketId);
+
+            return ApiResponse<TicketDetailsDto?>.SuccessResponse(orderDetails);
+        }
+
 
         public async Task<bool> Verify(string hashData)
         {
