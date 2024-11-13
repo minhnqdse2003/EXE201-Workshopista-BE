@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using FirebaseAdmin.Messaging;
 using Net.payOS;
+using AutoMapper;
 
 namespace Service.Services
 {
@@ -28,15 +29,17 @@ namespace Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
         private readonly ITicketService _ticketService;
         private readonly PayOS _payOs;
 
-        public TransactionService(IUnitOfWork unitOfWork, IConfiguration configuration, ITicketService ticketService, PayOS payOs)
+        public TransactionService(IUnitOfWork unitOfWork, IConfiguration configuration, ITicketService ticketService, PayOS payOs, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _ticketService = ticketService;
             _payOs = payOs;
+            _mapper = mapper;
         }
 
         public async Task<ApiResponse<object>> CreatePaymentUrl(TransactionRequestModel requestModel, string email)
@@ -99,7 +102,7 @@ namespace Service.Services
             int overlappingPromotions = _unitOfWork.Promotions.CountOverlappingPromotions(promotionType, workshopStartDate, workshopEndDate);
             int numberOfPromotionType = _unitOfWork.Promotions.CountNumberOfPromotionType(existingWorkshop.WorkshopId);
 
-            if(numberOfPromotionType >= 1)
+            if (numberOfPromotionType >= 1)
             {
                 throw new CustomException("The number of promotions for your workshop cannot exceed 1.");
             }
@@ -406,7 +409,7 @@ namespace Service.Services
                         .ThenInclude(od => od.Tickets)
                     .FirstOrDefaultAsync(x => x.OrderId == existingOrder.OrderId);
 
-                foreach(var orderDetail in trackedOrder.OrderDetails)
+                foreach (var orderDetail in trackedOrder.OrderDetails)
                 {
                     var amount = orderDetail.Quantity;
                     orderDetail.Workshop.Capacity -= amount;
@@ -577,6 +580,21 @@ namespace Service.Services
         public Task<ApiResponse<TransactionDto>> Get()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<ApiResponse<List<SubscriptionDto>>> GetSubscription(string email)
+        {
+            var existingUser = await _unitOfWork.Users.GetUserByUserNameAsync(email);
+            if (existingUser == null)
+            {
+                throw new CustomException(ResponseMessage.UserNotFound);
+            }
+
+            return ApiResponse<List<SubscriptionDto>>.SuccessResponse(
+                    existingUser.Subscriptions.Count > 0 ?
+                    _mapper.Map<List<SubscriptionDto>>(existingUser.Subscriptions) :
+                    new List<SubscriptionDto>()
+                );
         }
     }
 }
