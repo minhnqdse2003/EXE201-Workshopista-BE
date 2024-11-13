@@ -16,7 +16,7 @@ namespace Service.Interfaces
 
         Task<ApiResponse<OrganizerDetailsDto>> GetOrganizeByIdAsync(string email);
 
-        Task UpdateOrganizerAsync(UpdateOrganizerModel model, Guid id);
+        Task UpdateOrganizerAsync(UpdateOrganizerModel model, string email);
 
         Task<IEnumerable<Organizer>> GetAllOrganizesAsync();
 

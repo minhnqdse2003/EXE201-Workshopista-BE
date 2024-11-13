@@ -10,17 +10,12 @@ namespace Service.Models.Organizers
     public class UpdateOrganizerModel
     {
         [Required(ErrorMessage ="Please input organization's name")]
-        public string? OrganizationName { get; set; }
-
+        public required string OrganizationName { get; set; }
         [Required(ErrorMessage = "Please input organization's mail")]
-        public string? ContactEmail { get; set; }
-
+        public required string ContactEmail { get; set; }
         [Required(ErrorMessage = "Please input organization's contact phone")]
-        public string? ContactPhone { get; set; }
-
+        public required string ContactPhone { get; set; }
         public string? WebsiteUrl { get; set; }
-
         public string? SocialLinks { get; set; }
-
     }
 }

@@ -36,10 +36,11 @@ namespace EXE201_Workshopista.Controllers
             return Ok(await _organizerService.GetOrganizeByIdAsync(email));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, UpdateOrganizerModel model)
+        [HttpPut]
+        public async Task<IActionResult> PutUser(UpdateOrganizerModel model)
         {
-            await _organizerService.UpdateOrganizerAsync(model, id);
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            await _organizerService.UpdateOrganizerAsync(model, email);
             return Ok("Update organization successfully!");
         }
 

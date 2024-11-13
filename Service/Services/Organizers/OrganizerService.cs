@@ -48,22 +48,41 @@ namespace Service.Services.Organizers
             return ApiResponse<OrganizerDetailsDto>.SuccessResponse(_mapper.Map<OrganizerDetailsDto>(existingUser.Organizers.FirstOrDefault()));
         }
 
-        public async Task UpdateOrganizerAsync(UpdateOrganizerModel model, Guid id)
+        public async Task UpdateOrganizerAsync(UpdateOrganizerModel model, string email)
         {
-            var organize = await _unitOfWork.Organizers.GetOrganizerByIdAsync(id);
-            if (organize == null)
+            var existingUser = await _unitOfWork.Users.GetUserByUserNameAsync(email);
+            if (existingUser == null)
             {
-                throw new CustomException("The organization is not existed!");
+                throw new CustomException(ResponseMessage.UserNotFound);
             }
-            var organizerExist = await _unitOfWork.Organizers.GetOrganizerByEmail(model.ContactEmail);
-            if (organizerExist != null)
+
+            var organizers = existingUser.Organizers;
+
+            if (organizers.Count > 1)
             {
-                throw new CustomException("The organization's email has already existed!");
+                throw new CustomException(ResponseMessage.OrganizerNotFound);
             }
-            _mapper.Map(model, organize);
-            organize.UpdatedAt = DateTime.Now;
-            await _unitOfWork.Organizers.UpdateOrganizerAsync(organize);
+
+            var organizer = organizers.FirstOrDefault() ?? new Organizer
+            {
+                CreatedAt = DateTime.Now,
+            };
+
+            organizer.OrganizationName = model.OrganizationName;
+            organizer.ContactPhone = model.ContactPhone;
+            organizer.ContactEmail = model.ContactEmail;
+            organizer.SocialLinks = string.IsNullOrEmpty(model.SocialLinks) ? organizer.SocialLinks : model.SocialLinks;
+            organizer.WebsiteUrl = string.IsNullOrEmpty(model.WebsiteUrl) ? organizer.WebsiteUrl : model.WebsiteUrl;
+            organizer.UpdatedAt = DateTime.Now;
+
+            if (organizers.Count == 0)
+            {
+                existingUser.Organizers.Add(organizer);
+            }
+
+            await _unitOfWork.Users.Update(existingUser);
         }
+
 
         public async Task DeleteOrganizerAsync(Guid organizerId)
         {
