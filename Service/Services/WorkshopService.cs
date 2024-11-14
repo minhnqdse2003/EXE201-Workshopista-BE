@@ -65,6 +65,21 @@ namespace Service.Services
             return ApiResponse<IEnumerable<WorkShopResponseModel>>.SuccessResponse(workshopDtos, ResponseMessage.ReadSuccess);
         }
 
+        public async Task<ApiResponse<IEnumerable<WorkShopResponseModel>>> GetAll()
+        {
+             var query = _unitOfWork.Workshops.Get();
+             var workshops = await query
+                .Include(x => x.Organizer)
+                    .ThenInclude(x => x.User)
+                .Include(x => x.TicketRanks)
+                .Include(x => x.WorkshopImages)
+                .ToListAsync();
+
+            var workshopDtos = _mapper.Map<IEnumerable<WorkShopResponseModel>>(workshops);
+
+            return ApiResponse<IEnumerable<WorkShopResponseModel>>.SuccessResponse(workshopDtos, ResponseMessage.ReadSuccess);
+        }
+
         public ApiResponse<WorkShopResponseModel> GetWorkshopById(Guid id)
         {
             var workshop = _unitOfWork.Workshops.GetById(id);

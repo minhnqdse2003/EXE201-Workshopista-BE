@@ -13,6 +13,7 @@ namespace Service.Interfaces
     public interface IWorkshopService
     {
         Task<ApiResponse<IEnumerable<WorkShopResponseModel>>> GetFilter(WorkshopFilterModel filterModel);
+        Task<ApiResponse<IEnumerable<WorkShopResponseModel>>> GetAll();
 
         ApiResponse<WorkShopResponseModel> GetWorkshopById(Guid id);
 

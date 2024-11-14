@@ -21,10 +21,17 @@ namespace EXE201_Workshopista.Controllers
             _workshopService = workshopService;
         }
 
-        [HttpGet]
+        [HttpGet("GetFilter")]
         public async Task<IActionResult> Get([FromQuery]WorkshopFilterModel filterModel)
         {
             var result = await _workshopService.GetFilter(filterModel);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _workshopService.GetAll();
             return Ok(result);
         }
 
