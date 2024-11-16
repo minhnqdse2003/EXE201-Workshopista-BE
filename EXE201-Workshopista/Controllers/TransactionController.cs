@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Net.payOS.Types;
 using Newtonsoft.Json;
+using Repository.Models;
 using Service.Interfaces;
 using Service.Models.Transaction;
 using System.Security.Claims;
@@ -31,6 +32,14 @@ namespace EXE201_Workshopista.Controllers
         {
             var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
             return Ok(await _transactionService.CreatePaymentUrl(requestModel, email));
+        }
+
+        [HttpGet(nameof(Subscription))]
+        [Authorize]
+        public async Task<ActionResult<ICollection<SubscriptionDto>>> GetWorkShopSubcription()
+        {
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            return Ok(await _transactionService.GetSubscription(email));
         }
 
         [HttpPost("Callback")]

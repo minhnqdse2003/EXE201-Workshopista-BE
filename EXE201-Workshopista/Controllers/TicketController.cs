@@ -28,6 +28,11 @@ namespace EXE201_Workshopista.Controllers
             return Ok(await _ticketService.GetUserTicket(email));
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TicketDetailsDto>> GetTicketDetails([FromRoute]string id)
+        {
+            return Ok(await _ticketService.GetTicketDetails(id));
+        }
         [HttpPost("validate")]
         public async Task<IActionResult> VerifiedTicket([FromBody] ValidateQrModel validateQrModel)
         {

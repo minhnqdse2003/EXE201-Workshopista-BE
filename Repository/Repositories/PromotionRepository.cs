@@ -32,5 +32,10 @@ namespace Repository.Repositories
                 .Count();
 
         }
+
+        public IQueryable<Promotion> GetQuery()
+        {
+            return _context.Promotions.AsQueryable();
+        }
     }
 }

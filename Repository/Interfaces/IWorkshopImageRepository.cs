@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Repository.Interfaces
 {
-    public interface ISubscriptionRepository : IGenericRepository<Subscription>
+    public interface IWorkshopImageRepository : IGenericRepository<WorkshopImage>
     {
-
+        IQueryable<WorkshopImage> GetWorkshopImages();
     }
 }

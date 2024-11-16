@@ -29,22 +29,18 @@ namespace EXE201_Workshopista.Controllers
             return Ok(organizers);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetOrganizer(Guid id)
+        [HttpGet("details")]
+        public async Task<ActionResult> GetOrganizer()
         {
-            var organizer = await _organizerService.GetOrganizeByIdAsync(id);
-            if (organizer == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(organizer);
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            return Ok(await _organizerService.GetOrganizeByIdAsync(email));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, UpdateOrganizerModel model)
+        [HttpPut]
+        public async Task<IActionResult> PutUser(UpdateOrganizerModel model)
         {
-            await _organizerService.UpdateOrganizerAsync(model, id);
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            await _organizerService.UpdateOrganizerAsync(model, email);
             return Ok("Update organization successfully!");
         }
 

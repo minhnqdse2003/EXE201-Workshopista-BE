@@ -13,12 +13,15 @@ namespace Service.Interfaces
     public interface IWorkshopService
     {
         Task<ApiResponse<IEnumerable<WorkShopResponseModel>>> GetFilter(WorkshopFilterModel filterModel);
+        Task<ApiResponse<IEnumerable<WorkShopResponseModel>>> GetAll();
 
         ApiResponse<WorkShopResponseModel> GetWorkshopById(Guid id);
 
         Task<ApiResponse<WorkShopResponseModel>> AddWorkshop(WorkShopCreateRequestModel workshopCreateDto,string email);
         Task<ApiResponse<bool>> DeleteWorkshop(string id);
         Task<ApiResponse<WorkShopResponseModel>> UpdateWorkshop(WorkShopUpdateRequestModel workshopUpdateDto,string id);
+        Task<ApiResponse<List<WorkshopImageResponseModel>>> GetWorkShopBanner();
+        Task<ApiResponse<bool>> UpdateWorkshopImageStatus(string imageId);
     }
 
 }

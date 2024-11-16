@@ -25,6 +25,8 @@ namespace Service.Mapping
                 .ForMember(dest => dest.Workshops, opt => opt.Ignore())
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
+            CreateMap<Organizer, OrganizerDetailsDto>();
+
             CreateMap<Organizer, OrganizerResponseModel>().ReverseMap();
             CreateMap<OrganizerUpdateRequestModel, Organizer>()
                 .ForMember(dest => dest.OrganizerId, opt => opt.Ignore())

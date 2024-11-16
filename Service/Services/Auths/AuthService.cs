@@ -73,7 +73,7 @@ namespace Service.Services.Auths
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddMonths(1),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -193,6 +193,7 @@ namespace Service.Services.Auths
             newUser.Role = RoleConst.Organizer;
             newUser.CreatedAt = DateTime.Now;
             newUser.EmailVerified = false;
+            newUser.Status = StatusConst.Active;
 
             var newOtp = OTPGeneration.CreateNewOTPCode();
             var htmlBody = EmailTemplate.VerifyEmailOTP(model.Email, newOtp);
