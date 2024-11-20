@@ -67,13 +67,13 @@ namespace Service.Services
 
         public async Task<ApiResponse<IEnumerable<WorkShopResponseModel>>> GetAll()
         {
-             var query = _unitOfWork.Workshops.Get();
-             var workshops = await query
-                .Include(x => x.Organizer)
-                    .ThenInclude(x => x.User)
-                .Include(x => x.TicketRanks)
-                .Include(x => x.WorkshopImages)
-                .ToListAsync();
+            var query = _unitOfWork.Workshops.Get();
+            var workshops = await query
+               .Include(x => x.Organizer)
+                   .ThenInclude(x => x.User)
+               .Include(x => x.TicketRanks)
+               .Include(x => x.WorkshopImages)
+               .ToListAsync();
 
             var workshopDtos = _mapper.Map<IEnumerable<WorkShopResponseModel>>(workshops);
 
@@ -82,7 +82,15 @@ namespace Service.Services
 
         public ApiResponse<WorkShopResponseModel> GetWorkshopById(Guid id)
         {
-            var workshop = _unitOfWork.Workshops.GetById(id);
+            var workshop = _unitOfWork.Workshops
+                .Get()
+                .Include(x => x.Organizer)
+                    .ThenInclude(o => o.User)
+                .Include(x => x.WorkshopImages)
+                .Include(x => x.TicketRanks)
+                .Include(x => x.Reviews)
+                .FirstOrDefault(x => x.WorkshopId == id);
+
             if (workshop == null)
             {
                 return ApiResponse<WorkShopResponseModel>.ErrorResponse(ResponseMessage.ItemNotFound);

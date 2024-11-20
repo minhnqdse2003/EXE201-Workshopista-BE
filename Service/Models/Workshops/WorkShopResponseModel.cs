@@ -49,6 +49,8 @@ namespace Service.Models.Workshops
         public virtual ICollection<WorkshopImageResponseModel> WorkshopImages { get; set; } = new List<WorkshopImageResponseModel>();
 
         public virtual ICollection<TicketRankModelResponse>? TicketRanks { get; set; }
+
+        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 
     public class OrganizerResponseModel
@@ -111,5 +113,24 @@ namespace Service.Models.Workshops
         public decimal Price { get; set; }
 
         public int Capacity { get; set; }
+    }
+
+    public class ReviewsModelResponse
+    {
+        public Guid ReviewId { get; set; }
+
+        public Guid? WorkshopId { get; set; }
+
+        public Guid? ParticipantId { get; set; }
+
+        public short? Rating { get; set; }
+
+        public string? Comment { get; set; }
+
+        public string? ReviewStatus { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
     }
 }
