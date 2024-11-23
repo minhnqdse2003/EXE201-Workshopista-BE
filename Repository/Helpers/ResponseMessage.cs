@@ -58,7 +58,7 @@ namespace Repository.Helpers
         public const string SubscriptionNotFound = "Subscription not found type should include(" +
             $"{SubscriptionTiers.PremiumPro}" +
             $"{SubscriptionTiers.FreeTier}" +
-            $"{SubscriptionTiers.PremiumAnnual})" +
+            $"{SubscriptionTiers.Premium})" +
             $"{SubscriptionTiers.PremiumBasic})";
 
 

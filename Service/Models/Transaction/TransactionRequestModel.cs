@@ -46,7 +46,7 @@ namespace Service.Models.Transaction
             SubscriptionTiers.FreeTier,
             SubscriptionTiers.PremiumBasic,
             SubscriptionTiers.PremiumPro,
-            SubscriptionTiers.PremiumAnnual,
+            SubscriptionTiers.Premium,
         };
 
         public void Validate()

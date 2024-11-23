@@ -14,14 +14,14 @@ namespace Repository.Consts
         public const string FreeTier = "Free";
         public const string PremiumBasic = "Premium Basic";
         public const string PremiumPro = "Premium Pro";
-        public const string PremiumAnnual = "Premium Annual";
+        public const string Premium = "Premium";
 
         // Tier Minimum Prices (for participants)
         public static class ParticipantPrices
         {
-            public const decimal PremiumBasicMinPrice = 50000.00m; // VND
-            public const decimal PremiumProMinPrice = 150000.00m; // VND
-            public const decimal PremiumAnnualMinPrice = 1200000.00m; // VND
+            public const decimal PremiumBasicMinPrice = 89000.00m; // VND
+            public const decimal PremiumProMinPrice = 189000.00m; // VND
+            public const decimal PremiumMinPrice = 389000.00m; // VND
         }
         public static decimal GetParticipantPrice(string tier)
         {
@@ -29,7 +29,7 @@ namespace Repository.Consts
             {
                 PremiumBasic => ParticipantPrices.PremiumBasicMinPrice,
                 PremiumPro => ParticipantPrices.PremiumProMinPrice,
-                PremiumAnnual => ParticipantPrices.PremiumAnnualMinPrice,
+                Premium => ParticipantPrices.PremiumMinPrice,
                 _ => throw new CustomException("Invalid tier")
             };
         }
@@ -43,8 +43,8 @@ namespace Repository.Consts
             {
                 < ParticipantPrices.PremiumBasicMinPrice => FreeTier,
                 < ParticipantPrices.PremiumProMinPrice => PremiumBasic,
-                <= ParticipantPrices.PremiumAnnualMinPrice => PremiumPro,
-                _ => PremiumAnnual
+                <= ParticipantPrices.PremiumMinPrice => PremiumPro,
+                _ => Premium
             };
         }
 
@@ -57,7 +57,7 @@ namespace Repository.Consts
                 FreeTier => DateTime.UtcNow, // For free tier, you might want to set it to MaxValue or handle it differently
                 PremiumBasic => DateTime.UtcNow.AddMonths(1),
                 PremiumPro => DateTime.UtcNow.AddMonths(1),
-                PremiumAnnual => DateTime.UtcNow.AddYears(1),
+                Premium => DateTime.UtcNow.AddMonths(1),
                 _ => throw new CustomException("Invalid tier")
             };
         }
