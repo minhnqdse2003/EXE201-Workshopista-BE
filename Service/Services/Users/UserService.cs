@@ -51,7 +51,6 @@ namespace Service.Services.Users
 
         public async Task UpdateUserAsync(User user)
         {
-            user.UpdatedAt = DateTime.UtcNow;
             await _unitOfWork.Users.UpdateUserAsync(user);
         }
 

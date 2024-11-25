@@ -47,46 +47,101 @@ namespace Service.Services
             }
         }
 
-        public async Task<ApiResponse<List<TicketDto>>> GetUserTicket(string userName)
+        public async Task<ApiResponse<List<ListTicketDto>>> GetUserTicket(string userName)
         {
             var existingUser = await _unitOfWork.Users.GetUserByEmail(userName);
-            if(existingUser == null)
+            if (existingUser == null)
             {
                 throw new CustomException(ResponseMessage.UserNotFound);
             }
 
-            var orderDetails = await _unitOfWork.OrderDetails.GetQuery()
-               .Include(od => od.Ticket)
-               .Include(od => od.Tickets)
-               .Include(od => od.Workshop)
-               .Include(od => od.Order)
-               .Where(od => od.Order.ParticipantId == existingUser.UserId)
-               .OrderByDescending(od => od.CreatedAt)
-               .ToListAsync();
+            var orderDetails = _unitOfWork.OrderDetails.GetQuery()
+                .Where(od => od.Order.ParticipantId == existingUser.UserId)
+                .Select(od => new
+                {
+                    WorkshopId = od.Workshop.WorkshopId,
+                    WorkshopTitle = od.Workshop.Title,
+                    Tickets = od.Tickets
+                        .Where(t => t.Status != null)
+                        .Select(t => new ListTicketDto
+                        {
+                            TicketId = t.TicketId,
+                            WorkshopId = od.Workshop.WorkshopId,
+                            WorkshopTitle = od.Workshop.Title,
+                            Price = t.Price,
+                            CurrencyCode = t.CurrencyCode,
+                            Status = t.Status,
+                            TicketRank = t.TicketRank
+                        }).ToList(),
+                    SingleTicket = od.Ticket != null && od.Ticket.Status != null
+                        ? new ListTicketDto
+                        {
+                            TicketId = od.Ticket.TicketId,
+                            WorkshopId = od.Workshop.WorkshopId,
+                            WorkshopTitle = od.Workshop.Title,
+                            Price = od.Ticket.Price,
+                            CurrencyCode = od.Ticket.CurrencyCode,
+                            Status = od.Ticket.Status,
+                            TicketRank = od.Ticket.TicketRank
+                        }
+                        : null
+                })
+                .AsEnumerable()
+                .SelectMany(od => od.Tickets.Any() ? od.Tickets : od.SingleTicket != null ? new List<ListTicketDto> { od.SingleTicket } : new List<ListTicketDto>())
+                .OrderByDescending(ticket => ticket.TicketId)
+                .ToList();
 
-            List<Ticket> userTickets = new List<Ticket>(); 
-            foreach(var od in orderDetails)
+            if (!orderDetails.Any())
             {
-                if(od.Tickets.Count > 0)
-                {
-                    foreach(var ticket in od.Tickets)
-                    {
-                        if(ticket.Status != null)
-                            userTickets.AddRange(od.Tickets);
-                    }
-                } else if (od.Ticket != null && od.Ticket.Status != null)
-                {
-                    userTickets.Add(od.Ticket);
-                }
+                return ApiResponse<List<ListTicketDto>>.SuccessResponse(new List<ListTicketDto>(), ResponseMessage.ReadSuccess);
             }
 
-            if (!userTickets.Any())
-            {
-                throw new CustomException("No tickets found for the specified user.");
-            }
-
-            return ApiResponse<List<TicketDto>>.SuccessResponse(_mapper.Map<List<TicketDto>>(userTickets),ResponseMessage.ReadSuccess);
+            return ApiResponse<List<ListTicketDto>>.SuccessResponse(orderDetails, ResponseMessage.ReadSuccess);
         }
+
+        public async Task<ApiResponse<TicketDetailsDto?>> GetTicketDetails(string ticketId)
+        {
+            // Parse the ticketId once for reuse
+            var parsedTicketId = Guid.Parse(ticketId);
+
+            // Fetch the ticket details in a single optimized query
+            var orderDetails = await _unitOfWork.Tickets.GetQuery()
+                .Where(t => t.TicketId == parsedTicketId)
+                .Select(t => new TicketDetailsDto
+                {
+                    WorkshopDetails = new TicketDetailsWorkshopDto
+                    {
+                        Title = t.Workshop.Title ?? "Empty title",
+                        LocationAddress = t.Workshop.LocationAddress,
+                        LocationCity = t.Workshop.LocationCity,
+                        LocationDistrict = t.Workshop.LocationDistrict,
+                        StartTime = t.Workshop.StartTime ?? DateTime.UtcNow,
+                        // Attempt to get the primary image, otherwise fallback to the first available image
+                        WorkshopImage = t.Workshop.WorkshopImages
+                            .Where(w => w.IsPrimary ?? false )
+                            .Select(w => w.ImageUrl)
+                            .FirstOrDefault()
+                            ?? t.Workshop.WorkshopImages
+                                .Select(wi => wi.ImageUrl)
+                                .FirstOrDefault()
+                    },
+                    Price = t.TicketRank.Price,
+                    QrCode = t.QrCode,
+                    RankName = t.TicketRank.RankName,
+                    Status = t.Status
+                })
+                .FirstOrDefaultAsync();
+
+            if (orderDetails == null)
+            {
+                throw new CustomException(ResponseMessage.TicketNotFound);
+            }
+
+            orderDetails.QrCode = GenerateQRCode(parsedTicketId);
+
+            return ApiResponse<TicketDetailsDto?>.SuccessResponse(orderDetails);
+        }
+
 
         public async Task<bool> Verify(string hashData)
         {
@@ -130,12 +185,12 @@ namespace Service.Services
         public async Task<ApiResponse<Ticket>> UpdateTicket(TicketUpdateModel updateModel)
         {
             var existingTicket = _unitOfWork.Tickets.GetById(updateModel.TicketId);
-            if(existingTicket == null)
+            if (existingTicket == null)
             {
                 throw new CustomException(ResponseMessage.TicketNotFound);
             }
 
-            _mapper.Map(updateModel,existingTicket);
+            _mapper.Map(updateModel, existingTicket);
             await _unitOfWork.Tickets.Update(existingTicket);
 
             return ApiResponse<Ticket>.SuccessResponse(existingTicket);

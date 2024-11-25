@@ -50,7 +50,10 @@ namespace Repository.Repositories
 
         public async Task<User?> GetUserByUserNameAsync(string userName)
         {
-            return await _context.Users.Include(x => x.Organizers).FirstOrDefaultAsync(x => x.Email == userName);
+            return await _context.Users
+                .Include(x => x.Subscriptions)
+                .Include(x => x.Organizers)
+                .FirstOrDefaultAsync(x => x.Email == userName);
         }
 
         public async Task<User?> GetUserByRefreshToken(string? token)

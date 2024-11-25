@@ -6,6 +6,7 @@ using Repository.Models;
 using Service.Interfaces;
 using Service.Models.Organizers;
 using Service.Models.Users;
+using Service.Models.Workshops;
 using Service.Services;
 using System.Security.Claims;
 
@@ -29,22 +30,27 @@ namespace EXE201_Workshopista.Controllers
             return Ok(organizers);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetOrganizer(Guid id)
+        [HttpGet("details")]
+        [Authorize]
+        public async Task<ActionResult> GetOrganizer()
         {
-            var organizer = await _organizerService.GetOrganizeByIdAsync(id);
-            if (organizer == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(organizer);
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            return Ok(await _organizerService.GetOrganizeByIdAsync(email));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, UpdateOrganizerModel model)
+        [HttpGet($"{nameof(Workshop)}")]
+        [Authorize]
+        public async Task<ActionResult> GetOrganizerWorkshop([FromQuery] WorkshopFilterModel filters)
         {
-            await _organizerService.UpdateOrganizerAsync(model, id);
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            return Ok(await _organizerService.GetOrganizerWorkshop(email,filters));
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> PutUser(UpdateOrganizerModel model)
+        {
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            await _organizerService.UpdateOrganizerAsync(model, email);
             return Ok("Update organization successfully!");
         }
 
