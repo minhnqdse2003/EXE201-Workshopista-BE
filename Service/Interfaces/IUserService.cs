@@ -27,5 +27,8 @@ namespace Service.Interfaces
 
         Task<UserInformationModel> GetOwnInformation(string token);
 
+        Task<UserListAndCount> GetAllParticipant();
+
+        Task<UserListAndCount> GetAllOrganizer();
     }
 }

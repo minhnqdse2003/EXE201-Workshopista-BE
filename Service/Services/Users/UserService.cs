@@ -65,7 +65,7 @@ namespace Service.Services.Users
             return await _unitOfWork.Users.GetUserByRefreshToken(token);
         }
 
-        
+
 
         public async Task ChangeStatus(Guid userId, string status)
         {
@@ -92,6 +92,26 @@ namespace Service.Services.Users
 
             var response = _mapper.Map<UserInformationModel>(user);
             return response;
+        }
+
+        public async Task<UserListAndCount> GetAllParticipant()
+        {
+            var result = await _unitOfWork.Users.GetListUser();
+            return new UserListAndCount
+            {
+                Users = result,
+                Count = result.Count
+            };
+        }
+
+        public async Task<UserListAndCount> GetAllOrganizer()
+        {
+            var result = await _unitOfWork.Users.GetListOrganizer();
+            return new UserListAndCount
+            {
+                Users = result,
+                Count = result.Count
+            };
         }
     }
 }

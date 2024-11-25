@@ -86,7 +86,7 @@ namespace EXE201_Workshopista.Controllers
             await _userService.DeleteUserAsync(id);
             return NoContent();
         }
-        
+
 
         [HttpPut("{id}/status")]
         public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] string status)
@@ -102,5 +102,20 @@ namespace EXE201_Workshopista.Controllers
             var response = await _userService.GetOwnInformation(token);
             return Ok(response);
         }
+
+        [HttpGet("participants")]
+        public async Task<IActionResult> GetAllParticipants()
+        {
+            var response = await _userService.GetAllParticipant();
+            return Ok(response);
+        }
+
+        [HttpGet("organizers")]
+        public async Task<IActionResult> GetAllOrganizers()
+        {
+            var response = await _userService.GetAllOrganizer();
+            return Ok(response);
+        }
+
     }
 }

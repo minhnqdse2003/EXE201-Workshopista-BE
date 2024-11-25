@@ -1,4 +1,5 @@
-﻿using Repository.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Interfaces;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,22 @@ namespace Repository.Repositories
         }
 
         public IQueryable<Transaction> GetQuery() => _context.Transactions.AsQueryable();
+
+        public async Task<IEnumerable<Transaction>> GetAllTransaction()
+        {
+            return await _context.Transactions.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Transaction>> GetInMonthTransaction()
+        {
+            var month = DateTime.Now.Month;
+            return await _context.Transactions.Where(t => t.CreatedAt.Value.Month == month).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Transaction>> GetInSevenDaysTransaction()
+        {
+            var current = DateTime.Now;
+            return await _context.Transactions.Where(t => current.Subtract(t.CreatedAt.Value).TotalDays <= 7).ToListAsync();
+        }
     }
 }

@@ -99,7 +99,7 @@ namespace Service.Services
             int overlappingPromotions = _unitOfWork.Promotions.CountOverlappingPromotions(promotionType, workshopStartDate, workshopEndDate);
             int numberOfPromotionType = _unitOfWork.Promotions.CountNumberOfPromotionType(existingWorkshop.WorkshopId);
 
-            if(numberOfPromotionType >= 1)
+            if (numberOfPromotionType >= 1)
             {
                 throw new CustomException("The number of promotions for your workshop cannot exceed 1.");
             }
@@ -406,7 +406,7 @@ namespace Service.Services
                         .ThenInclude(od => od.Tickets)
                     .FirstOrDefaultAsync(x => x.OrderId == existingOrder.OrderId);
 
-                foreach(var orderDetail in trackedOrder.OrderDetails)
+                foreach (var orderDetail in trackedOrder.OrderDetails)
                 {
                     var amount = orderDetail.Quantity;
                     orderDetail.Workshop.Capacity -= amount;
@@ -577,6 +577,20 @@ namespace Service.Services
         public Task<ApiResponse<TransactionDto>> Get()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<TransactionStatisticModel> GetTransactionStatistic()
+        {
+            var all = await _unitOfWork.Transactions.GetAllTransaction();
+            var month = await _unitOfWork.Transactions.GetInMonthTransaction();
+            var days = await _unitOfWork.Transactions.GetInSevenDaysTransaction();
+
+            return new TransactionStatisticModel
+            {
+                SevenDaysAmount = days.Count() > 0 ? days.Sum(x => x.Amount).Value : 0,
+                MonthAmount = month.Count() > 0 ? month.Sum(x => x.Amount).Value : 0,
+                TotalAmount = all.Count() > 0 ? all.Sum(x => x.Amount).Value : 0,
+            };
         }
     }
 }
