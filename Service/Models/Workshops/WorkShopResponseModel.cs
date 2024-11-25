@@ -53,6 +53,17 @@ namespace Service.Models.Workshops
         public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 
+    public class WorkShopResponseModelWithPagination : PaginationModel
+    {
+        public List<WorkShopResponseModel> workShops { get; set; }
+    }
+
+    public class PaginationModel
+    {
+        public int? CurrentPage { get; set; }
+        public int? Total { get; set; }
+    }
+
     public class OrganizerResponseModel
     {
         public Guid OrganizerId { get; set; }

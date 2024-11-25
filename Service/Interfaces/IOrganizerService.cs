@@ -2,6 +2,7 @@
 using Service.Models;
 using Service.Models.Organizers;
 using Service.Models.Users;
+using Service.Models.Workshops;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,5 +24,6 @@ namespace Service.Interfaces
         Task ChangeStatus(Guid organizerId, string status);
 
         Task<ApiResponse<Organizer>> CreateOrganizerAsync(OrganizerCreateModel createModel, string email);
+        Task<ApiResponse<WorkShopResponseModelWithPagination>> GetOrganizerWorkshop(string email, WorkshopFilterModel filters);
     }
 }

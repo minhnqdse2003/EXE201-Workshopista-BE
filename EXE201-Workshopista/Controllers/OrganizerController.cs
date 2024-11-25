@@ -6,6 +6,7 @@ using Repository.Models;
 using Service.Interfaces;
 using Service.Models.Organizers;
 using Service.Models.Users;
+using Service.Models.Workshops;
 using Service.Services;
 using System.Security.Claims;
 
@@ -30,10 +31,19 @@ namespace EXE201_Workshopista.Controllers
         }
 
         [HttpGet("details")]
+        [Authorize]
         public async Task<ActionResult> GetOrganizer()
         {
             var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
             return Ok(await _organizerService.GetOrganizeByIdAsync(email));
+        }
+
+        [HttpGet($"{nameof(Workshop)}")]
+        [Authorize]
+        public async Task<ActionResult> GetOrganizerWorkshop([FromQuery] WorkshopFilterModel filters)
+        {
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            return Ok(await _organizerService.GetOrganizerWorkshop(email,filters));
         }
 
         [HttpPut]
