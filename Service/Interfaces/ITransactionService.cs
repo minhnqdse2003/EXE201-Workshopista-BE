@@ -16,7 +16,6 @@ namespace Service.Interfaces
         Task<ApiResponse<string>> PaymentUrlCallbackProcessing(Net.payOS.Types.WebhookType model);
         Task<ApiResponse<TransactionDto>> Get();
         Task<ApiResponse<List<SubscriptionDto>>> GetSubscription(string email);
-        Task<TransactionStatisticModel> GetTransactionStatistic();
         Task<TransactionStatisticModel> GetProfitStatistic();
     }
 }

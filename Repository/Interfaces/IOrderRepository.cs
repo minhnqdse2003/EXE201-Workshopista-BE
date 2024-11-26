@@ -10,6 +10,7 @@ namespace Repository.Interfaces
     public interface IOrderRepository : IGenericRepository<Order>
     {
         IQueryable<Order> GetQuery();
+        Task<IEnumerable<Order>> GetCompletedOrders();
         Task<IEnumerable<Order>> GetCompletedOrderOfOrganizer(Guid organizerId);
     }
 }

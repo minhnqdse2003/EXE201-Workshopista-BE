@@ -21,6 +21,12 @@ namespace Repository.Repositories
             return _context.Orders.AsQueryable();
         }
 
+        public async Task<IEnumerable<Order>> GetCompletedOrders()
+        {
+            var list = await _context.Orders.Where(o => o.PaymentStatus.Equals(PaymentStatus.Completed)).ToListAsync();
+            return list;
+        }
+
         public async Task<IEnumerable<Order>> GetCompletedOrderOfOrganizer(Guid organizerId)
         {
             var workshopIdList = await _context.Workshops.Where(w => w.OrganizerId == organizerId).Select(w => w.WorkshopId).ToListAsync();
