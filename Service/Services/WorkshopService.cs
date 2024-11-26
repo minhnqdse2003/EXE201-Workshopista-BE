@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Repository.Consts;
+using Service.Models.Ticket;
 
 namespace Service.Services
 {
@@ -65,9 +66,32 @@ namespace Service.Services
             return ApiResponse<IEnumerable<WorkShopResponseModel>>.SuccessResponse(workshopDtos, ResponseMessage.ReadSuccess);
         }
 
+        public async Task<ApiResponse<IEnumerable<WorkShopResponseModel>>> GetAll()
+        {
+            var query = _unitOfWork.Workshops.Get();
+            var workshops = await query
+               .Include(x => x.Organizer)
+                   .ThenInclude(x => x.User)
+               .Include(x => x.TicketRanks)
+               .Include(x => x.WorkshopImages)
+               .ToListAsync();
+
+            var workshopDtos = _mapper.Map<IEnumerable<WorkShopResponseModel>>(workshops);
+
+            return ApiResponse<IEnumerable<WorkShopResponseModel>>.SuccessResponse(workshopDtos, ResponseMessage.ReadSuccess);
+        }
+
         public ApiResponse<WorkShopResponseModel> GetWorkshopById(Guid id)
         {
-            var workshop = _unitOfWork.Workshops.GetById(id);
+            var workshop = _unitOfWork.Workshops
+                .Get()
+                .Include(x => x.Organizer)
+                    .ThenInclude(o => o.User)
+                .Include(x => x.WorkshopImages)
+                .Include(x => x.TicketRanks)
+                .Include(x => x.Reviews)
+                .FirstOrDefault(x => x.WorkshopId == id);
+
             if (workshop == null)
             {
                 return ApiResponse<WorkShopResponseModel>.ErrorResponse(ResponseMessage.ItemNotFound);
@@ -315,5 +339,27 @@ namespace Service.Services
             return ApiResponse<WorkShopResponseModel>.SuccessResponse(updatedWorkshopDto, ResponseMessage.UpdateSuccess);
         }
 
+        public async Task<List<Workshop>> GetWorkshopListByOrganizerId(Guid organizerId)
+        {
+            var result = await _unitOfWork.Workshops.GetWorkshopListByOrganizerId(organizerId);
+            return result.ToList();
+        }
+
+        public async Task<TicketStatisticModel> GetTicketStatistic(Guid workshopId)
+        {
+            var list = await _unitOfWork.Tickets.GetBoughtTicketsByWorkshopId(workshopId);
+            var todayList = list.Where(t => t.PaymentTime.Value.CompareTo(DateTime.Now) == 0);
+            var todayCount = todayList.Count();
+            var todayAmount = todayList.Sum(t => t.Price);
+            var allCount = list.Count();
+            var allAmount = list.Sum(t => t.Price);
+            return new TicketStatisticModel
+            {
+                TodayTicket = todayCount,
+                TodayAmount = todayAmount.Value,
+                AllTicket = allCount,
+                AllAmount = allAmount.Value
+            };
+        }
     }
 }

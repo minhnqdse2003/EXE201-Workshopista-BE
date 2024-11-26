@@ -6,6 +6,7 @@ namespace Repository.Models;
 public partial class Order
 {
     public Guid OrderId { get; set; }
+
     public long? LongOrderId { get; set; }
 
     public Guid? ParticipantId { get; set; }

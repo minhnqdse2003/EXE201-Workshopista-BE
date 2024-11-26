@@ -76,6 +76,7 @@ namespace Repository.Repositories
         public Task CreateOrganizerAsync(Organizer organizer)
         {
             throw new NotImplementedException();
-        }
+        } 
+
     }
 }

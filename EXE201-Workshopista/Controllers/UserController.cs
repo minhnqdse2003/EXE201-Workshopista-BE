@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Repository.Helpers;
+using Repository.Interfaces;
 using Repository.Models;
 using Service.Interfaces;
 using Service.Models.Users;
@@ -12,10 +14,12 @@ namespace EXE201_Workshopista.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IUnitOfWork unitOfWork)
         {
             _userService = userService;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: api/Users
@@ -56,9 +60,20 @@ namespace EXE201_Workshopista.Controllers
                 return BadRequest();
             }
 
+            var existingUser = _unitOfWork.Users.GetById(user.UserId);
+
+            if (existingUser == null)
+                throw new CustomException(ResponseMessage.UpdateFail);
+
+            existingUser.Email = user.Email;
+            existingUser.FirstName = user.FirstName;
+            existingUser.LastName = user.LastName;
+            existingUser.PhoneNumber = user.PhoneNumber;
+            existingUser.UpdatedAt = DateTime.UtcNow;
+
             try
             {
-                await _userService.UpdateUserAsync(user);
+                await _userService.UpdateUserAsync(existingUser);
             }
             catch (DbUpdateConcurrencyException)
             {

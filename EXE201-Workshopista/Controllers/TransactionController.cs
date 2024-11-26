@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Net.payOS.Types;
 using Newtonsoft.Json;
+using Repository.Models;
 using Service.Interfaces;
+using Service.Interfaces.ITicketTransaction;
 using Service.Models.Transaction;
 using System.Security.Claims;
 
@@ -33,6 +35,14 @@ namespace EXE201_Workshopista.Controllers
             return Ok(await _transactionService.CreatePaymentUrl(requestModel, email));
         }
 
+        [HttpGet(nameof(Subscription))]
+        [Authorize]
+        public async Task<ActionResult<ICollection<SubscriptionDto>>> GetWorkShopSubcription()
+        {
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            return Ok(await _transactionService.GetSubscription(email));
+        }
+
         [HttpPost("Callback")]
         public async Task<IActionResult> PaymentCallback([FromBody] WebhookType model)
         {
@@ -40,10 +50,17 @@ namespace EXE201_Workshopista.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        [HttpGet("statistic")]
-        public async Task<IActionResult> GetTransactionStatistic()
+        [HttpGet("revenue")]
+        public async Task<IActionResult> GetRevenueStatistic()
         {
             var result = await _transactionService.GetTransactionStatistic();
+            return Ok(result);
+        }
+        
+        [HttpGet("profit")]
+        public async Task<IActionResult> GetProfitStatistic()
+        {
+            var result = await _transactionService.GetProfitStatistic();
             return Ok(result);
         }
     }

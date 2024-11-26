@@ -10,8 +10,8 @@ namespace Repository.Interfaces
     public interface ITransactionRepository : IGenericRepository<Transaction>
     {
         IQueryable<Transaction> GetQuery();
-        Task<IEnumerable<Transaction>> GetAllTransaction();
-        Task<IEnumerable<Transaction>> GetInMonthTransaction();
-        Task<IEnumerable<Transaction>> GetInSevenDaysTransaction();
+        Task<List<decimal>> GetAllTransaction();
+        Task<List<decimal>> GetInMonthTransaction();
+        Task<List<decimal>> GetInSevenDaysTransaction();
     }
 }

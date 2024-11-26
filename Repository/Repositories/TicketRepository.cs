@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
+using Repository.Consts;
 using Repository.Interfaces;
 using Repository.Models;
 using System;
@@ -15,9 +17,17 @@ namespace Repository.Repositories
         {
         }
 
+        public IQueryable<Ticket> GetQuery() => _context.Tickets.AsQueryable();
+
         public async Task<Ticket?> GetTicketAsyncByQrCode(string hashQrContent)
         {
             return await _context.Tickets.FirstOrDefaultAsync(x => x.QrCode == hashQrContent);
+        }
+
+        public async Task<List<Ticket>> GetBoughtTicketsByWorkshopId(Guid workshopId)
+        {
+            var list = await _context.Tickets.Where(t => t.WorkshopId == workshopId && t.Status.Equals(TicketStatus.Confirmed)).ToListAsync();
+            return list;
         }
     }
 }

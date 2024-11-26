@@ -10,5 +10,6 @@ namespace Repository.Interfaces
     public interface IWorkshopRepository : IGenericRepository<Workshop>
     {
         IQueryable<Workshop> Get();
+        Task<IEnumerable<Workshop>> GetWorkshopListByOrganizerId(Guid organizerId);
     }
 }
