@@ -25,6 +25,9 @@ namespace Repository.Interfaces
 
         Task<User?> GetUserByEmail(string email);
 
+        Task<List<User>> GetListUser();
+
+        Task<List<User>> GetListOrganizer();
     }
 
 }

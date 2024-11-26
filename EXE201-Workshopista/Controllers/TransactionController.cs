@@ -6,6 +6,7 @@ using Net.payOS.Types;
 using Newtonsoft.Json;
 using Repository.Models;
 using Service.Interfaces;
+using Service.Interfaces.ITicketTransaction;
 using Service.Models.Transaction;
 using System.Security.Claims;
 
@@ -47,6 +48,20 @@ namespace EXE201_Workshopista.Controllers
         {
             var result = await _transactionService.PaymentUrlCallbackProcessing(model);
             return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet("revenue")]
+        public async Task<IActionResult> GetRevenueStatistic()
+        {
+            var result = await _transactionService.GetTransactionStatistic();
+            return Ok(result);
+        }
+        
+        [HttpGet("profit")]
+        public async Task<IActionResult> GetProfitStatistic()
+        {
+            var result = await _transactionService.GetProfitStatistic();
+            return Ok(result);
         }
     }
 }

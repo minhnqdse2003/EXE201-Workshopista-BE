@@ -118,7 +118,7 @@ namespace Service.Services
                         StartTime = t.Workshop.StartTime ?? DateTime.UtcNow,
                         // Attempt to get the primary image, otherwise fallback to the first available image
                         WorkshopImage = t.Workshop.WorkshopImages
-                            .Where(w => w.IsPrimary ?? false )
+                            .Where(w => w.IsPrimary ?? false)
                             .Select(w => w.ImageUrl)
                             .FirstOrDefault()
                             ?? t.Workshop.WorkshopImages
@@ -195,5 +195,7 @@ namespace Service.Services
 
             return ApiResponse<Ticket>.SuccessResponse(existingTicket);
         }
+
+        
     }
 }

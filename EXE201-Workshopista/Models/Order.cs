@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Repository.Models;
+namespace EXE201_Workshopista.Models;
 
 public partial class Order
 {

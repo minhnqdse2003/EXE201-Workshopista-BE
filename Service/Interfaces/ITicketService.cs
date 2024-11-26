@@ -18,5 +18,6 @@ namespace Service.Interfaces
         Task<ApiResponse<List<ListTicketDto>>> GetUserTicket(string userName);
         Task<ApiResponse<Ticket>> UpdateTicket(TicketUpdateModel updateModel);
         Task<ApiResponse<TicketDetailsDto?>> GetTicketDetails(string ticketId);
+        
     }
 }

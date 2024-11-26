@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Repository.Consts;
+using Service.Models.Ticket;
 
 namespace Service.Services
 {
@@ -338,5 +339,27 @@ namespace Service.Services
             return ApiResponse<WorkShopResponseModel>.SuccessResponse(updatedWorkshopDto, ResponseMessage.UpdateSuccess);
         }
 
+        public async Task<List<Workshop>> GetWorkshopListByOrganizerId(Guid organizerId)
+        {
+            var result = await _unitOfWork.Workshops.GetWorkshopListByOrganizerId(organizerId);
+            return result.ToList();
+        }
+
+        public async Task<TicketStatisticModel> GetTicketStatistic(Guid workshopId)
+        {
+            var list = await _unitOfWork.Tickets.GetBoughtTicketsByWorkshopId(workshopId);
+            var todayList = list.Where(t => t.PaymentTime.Value.CompareTo(DateTime.Now) == 0);
+            var todayCount = todayList.Count();
+            var todayAmount = todayList.Sum(t => t.Price);
+            var allCount = list.Count();
+            var allAmount = list.Sum(t => t.Price);
+            return new TicketStatisticModel
+            {
+                TodayTicket = todayCount,
+                TodayAmount = todayAmount.Value,
+                AllTicket = allCount,
+                AllAmount = allAmount.Value
+            };
+        }
     }
 }

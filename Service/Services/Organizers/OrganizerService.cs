@@ -7,6 +7,7 @@ using Repository.Models;
 using Service.Interfaces;
 using Service.Models;
 using Service.Models.Organizers;
+using Service.Models.Transaction;
 using Service.Models.Users;
 using Service.Models.Workshops;
 using System;
@@ -194,6 +195,21 @@ namespace Service.Services.Organizers
                 CurrentPage = filters.Page,
                 Total = result.Count()
             });
+        }
+
+        public async Task<TransactionStatisticModel> GetRevenueStatisticOfWorkshop(Guid organizerId)
+        {
+            var orderList = await _unitOfWork.Orders.GetCompletedOrderOfOrganizer(organizerId);
+            var allTimes = orderList.Sum(o => o.TotalAmount) * 90 / 100;
+            var month = orderList.Where(o => DateTime.Now.Subtract(o.CreatedAt.Value).TotalDays <= 30).Sum(o => o.TotalAmount) * 90 / 100;
+            var days = orderList.Where(o => DateTime.Now.Subtract(o.CreatedAt.Value).TotalDays <= 7).Sum(o => o.TotalAmount) * 90 / 100;
+
+            return new TransactionStatisticModel
+            {
+                TotalAmount = allTimes.Value,
+                MonthAmount = month.Value,
+                SevenDaysAmount = days.Value,
+            };
         }
     }
 }

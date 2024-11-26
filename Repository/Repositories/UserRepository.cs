@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Repository.Consts;
 using Repository.Interfaces;
 using Repository.Models;
 using System;
@@ -66,5 +67,18 @@ namespace Repository.Repositories
         {
             return await _context.Users.Where(u => u.Email.ToLower().Equals(email.ToLower())).FirstOrDefaultAsync();
         }
+
+        public async Task<List<User>> GetListUser()
+        {
+            var result = await _context.Users.Where(u => u.Role.Equals(RoleConst.Participant)).OrderBy(u => u.LastName).ToListAsync();
+            return result;
+        }
+
+        public async Task<List<User>> GetListOrganizer()
+        {
+            var result = await _context.Users.Where(u => u.Role.Equals(RoleConst.Organizer)).OrderBy(u => u.LastName).ToListAsync();
+            return result;
+        }
+
     }
 }

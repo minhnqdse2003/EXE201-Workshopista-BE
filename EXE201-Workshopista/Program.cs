@@ -18,6 +18,7 @@ using Service.Interfaces.ICategory;
 using Service.Interfaces.IEmailService;
 using Service.Interfaces.IOTP;
 using Service.Interfaces.ITicketRank;
+using Service.Interfaces.ITicketTransaction;
 using Service.Mapping;
 using Service.Models.Firebase;
 using Service.Services;
@@ -53,6 +54,10 @@ namespace EXE201_Workshopista
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
+
+            string clientId = builder.Configuration["PaymentEnvironment:PAYOS_CLIENT_ID"];
+            string apiKey = builder.Configuration["PaymentEnvironment:PAYOS_API_KEY"];
+            string checksumKey = builder.Configuration["PaymentEnvironment:PAYOS_CHECKSUM_KEY"];
 
             builder.Services.AddSingleton<PayOS>(provider =>
             {
@@ -211,11 +216,11 @@ namespace EXE201_Workshopista
             app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
-            using (var scope = app.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<Exe201WorkshopistaContext>();
-                context.Database.Migrate();
-            }
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var context = scope.ServiceProvider.GetRequiredService<Exe201WorkshopistaContext>();
+            //    context.Database.Migrate();
+            //}
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseSerilogRequestLogging();

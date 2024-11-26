@@ -1,4 +1,6 @@
-﻿using Repository.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Consts;
+using Repository.Interfaces;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -17,6 +19,13 @@ namespace Repository.Repositories
         public IQueryable<Order> GetQuery()
         {
             return _context.Orders.AsQueryable();
+        }
+
+        public async Task<IEnumerable<Order>> GetCompletedOrderOfOrganizer(Guid organizerId)
+        {
+            var workshopIdList = await _context.Workshops.Where(w => w.OrganizerId == organizerId).Select(w => w.WorkshopId).ToListAsync();
+            var list = await _context.Orders.Where(o => o.PaymentStatus.Equals(PaymentStatus.Completed)).Include(o => o.OrderDetails).Where(o => workshopIdList.Contains(o.OrderDetails.FirstOrDefault().WorkshopId.Value)).ToListAsync();
+            return list;
         }
     }
 }

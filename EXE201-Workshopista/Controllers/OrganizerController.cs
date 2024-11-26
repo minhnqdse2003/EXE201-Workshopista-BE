@@ -43,7 +43,7 @@ namespace EXE201_Workshopista.Controllers
         public async Task<ActionResult> GetOrganizerWorkshop([FromQuery] WorkshopFilterModel filters)
         {
             var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
-            return Ok(await _organizerService.GetOrganizerWorkshop(email,filters));
+            return Ok(await _organizerService.GetOrganizerWorkshop(email, filters));
         }
 
         [HttpPut]
@@ -56,10 +56,10 @@ namespace EXE201_Workshopista.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> PostOrganizer([FromBody]OrganizerCreateModel request)
+        public async Task<IActionResult> PostOrganizer([FromBody] OrganizerCreateModel request)
         {
             var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
-            return Ok(await _organizerService.CreateOrganizerAsync(request,email));
+            return Ok(await _organizerService.CreateOrganizerAsync(request, email));
         }
 
         //[HttpDelete("{id}")]
@@ -75,13 +75,21 @@ namespace EXE201_Workshopista.Controllers
         //    return NoContent();
         //}
 
-        
+
 
         [HttpPut("{id}/status")]
         public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] string status)
         {
             await _organizerService.ChangeStatus(id, status);
             return Ok("Update status successfully!");
+        }
+
+        [HttpGet]
+        [Route("{organizerId}/revenue")]
+        public async Task<IActionResult> GetWorkshopRevenueStatistic(Guid organizerId)
+        {
+            var result = await _organizerService.GetRevenueStatisticOfWorkshop(organizerId);
+            return Ok(result);
         }
     }
 }

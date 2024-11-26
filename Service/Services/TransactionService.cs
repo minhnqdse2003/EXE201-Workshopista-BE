@@ -1,25 +1,12 @@
 ﻿using Repository.Helpers;
 using Repository.Models;
-using Repository.Repositories;
 using Service.Interfaces;
 using Service.Models;
-using Service.Models.Momo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using ZaloPay.Helper.Crypto;
-using ZaloPay.Helper;
-using Newtonsoft.Json;
 using Service.Models.Transaction;
 using Repository.Interfaces;
 using Repository.Consts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using FirebaseAdmin.Messaging;
 using Net.payOS;
 using AutoMapper;
 
@@ -397,7 +384,6 @@ namespace Service.Services
                 existingOrder.UpdatedAt = DateTime.UtcNow;
                 await _unitOfWork.Orders.Update(existingOrder);
 
-
                 //Loop through all ticket and change it status
                 var ordersQuery = _unitOfWork.Orders.GetQuery();
                 var trackedOrder = await ordersQuery
@@ -595,6 +581,34 @@ namespace Service.Services
                     _mapper.Map<List<SubscriptionDto>>(existingUser.Subscriptions) :
                     new List<SubscriptionDto>()
                 );
+        }
+
+        public async Task<TransactionStatisticModel> GetTransactionStatistic()
+        {
+            var all = await _unitOfWork.Transactions.GetAllTransaction();
+            var month = await _unitOfWork.Transactions.GetInMonthTransaction();
+            var days = await _unitOfWork.Transactions.GetInSevenDaysTransaction();
+
+            return new TransactionStatisticModel
+            {
+                SevenDaysAmount = days.Count() > 0 ? days.Sum() : 0,
+                MonthAmount = month.Count() > 0 ? month.Sum() : 0,
+                TotalAmount = all.Count() > 0 ? all.Sum() : 0,
+            };
+        }
+
+        public async Task<TransactionStatisticModel> GetProfitStatistic()
+        {
+            var all = await _unitOfWork.Transactions.GetAllTransaction();
+            var month = await _unitOfWork.Transactions.GetInMonthTransaction();
+            var days = await _unitOfWork.Transactions.GetInSevenDaysTransaction();
+
+            return new TransactionStatisticModel
+            {
+                SevenDaysAmount = days.Count() > 0 ? days.Sum() * 10 / 100 : 0,
+                MonthAmount = month.Count() > 0 ? month.Sum() * 10 / 100 : 0,
+                TotalAmount = all.Count() > 0 ? all.Sum() * 10 / 100 : 0,
+            };
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Repository.Models;
 using Service.Models;
+using Service.Models.Ticket;
 using Service.Models.Workshops;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace Service.Interfaces
         Task<ApiResponse<WorkShopResponseModel>> UpdateWorkshop(WorkShopUpdateRequestModel workshopUpdateDto,string id);
         Task<ApiResponse<List<WorkshopImageResponseModel>>> GetWorkShopBanner();
         Task<ApiResponse<bool>> UpdateWorkshopImageStatus(string imageId);
+        Task<List<Workshop>> GetWorkshopListByOrganizerId(Guid organizerId);
+        Task<TicketStatisticModel> GetTicketStatistic(Guid workshopId);
     }
 
 }

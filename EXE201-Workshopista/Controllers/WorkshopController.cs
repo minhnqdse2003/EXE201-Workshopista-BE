@@ -22,7 +22,7 @@ namespace EXE201_Workshopista.Controllers
         }
 
         [HttpGet("GetFilter")]
-        public async Task<IActionResult> Get([FromQuery]WorkshopFilterModel filterModel)
+        public async Task<IActionResult> Get([FromQuery] WorkshopFilterModel filterModel)
         {
             var result = await _workshopService.GetFilter(filterModel);
             return Ok(result);
@@ -37,10 +37,10 @@ namespace EXE201_Workshopista.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create([FromForm]WorkShopCreateRequestModel createRequestModel)
+        public async Task<IActionResult> Create([FromForm] WorkShopCreateRequestModel createRequestModel)
         {
             var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
-            var result = await _workshopService.AddWorkshop(createRequestModel,email);
+            var result = await _workshopService.AddWorkshop(createRequestModel, email);
             return Ok(result);
         }
 
@@ -48,7 +48,7 @@ namespace EXE201_Workshopista.Controllers
         [Route("{id}")]
         public IActionResult GetById([FromRoute] string id)
         {
-            return Ok( _workshopService.GetWorkshopById(Guid.Parse(id)));
+            return Ok(_workshopService.GetWorkshopById(Guid.Parse(id)));
         }
 
         [HttpGet]
@@ -72,14 +72,30 @@ namespace EXE201_Workshopista.Controllers
         [Route("{id}")]
         public IActionResult Delete([FromRoute] string id)
         {
-            return Ok( _workshopService.DeleteWorkshop(id));
+            return Ok(_workshopService.DeleteWorkshop(id));
         }
 
         [HttpPut]
         [Route("{id}")]
-        public async Task <IActionResult> Update(WorkShopUpdateRequestModel updateRequestModel, [FromRoute] string id)
+        public async Task<IActionResult> Update(WorkShopUpdateRequestModel updateRequestModel, [FromRoute] string id)
         {
-            return Ok(await _workshopService.UpdateWorkshop(updateRequestModel,id));
+            return Ok(await _workshopService.UpdateWorkshop(updateRequestModel, id));
+        }
+
+        [HttpGet]
+        [Route("list/{organizerId}")]
+        public async Task<IActionResult> GetWorkshopsByOrganizerId(Guid organizerId)
+        {
+            var result = await _workshopService.GetWorkshopListByOrganizerId(organizerId);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("{id}/statistic")]
+        public async Task<IActionResult> GetWorkshopTicketStatistic(Guid id)
+        {
+            var result = await _workshopService.GetTicketStatistic(id);
+            return Ok(result);
         }
     }
 }

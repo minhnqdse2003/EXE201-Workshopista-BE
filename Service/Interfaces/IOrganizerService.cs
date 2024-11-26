@@ -1,6 +1,7 @@
 ﻿using Repository.Models;
 using Service.Models;
 using Service.Models.Organizers;
+using Service.Models.Transaction;
 using Service.Models.Users;
 using Service.Models.Workshops;
 using System;
@@ -25,5 +26,6 @@ namespace Service.Interfaces
 
         Task<ApiResponse<Organizer>> CreateOrganizerAsync(OrganizerCreateModel createModel, string email);
         Task<ApiResponse<WorkShopResponseModelWithPagination>> GetOrganizerWorkshop(string email, WorkshopFilterModel filters);
+        Task<TransactionStatisticModel> GetRevenueStatisticOfWorkshop(Guid organizerId);
     }
 }
