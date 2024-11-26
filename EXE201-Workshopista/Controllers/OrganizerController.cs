@@ -85,10 +85,10 @@ namespace EXE201_Workshopista.Controllers
         }
 
         [HttpGet]
-        [Route("{organizerId}/revenue")]
-        public async Task<IActionResult> GetWorkshopRevenueStatistic(Guid organizerId)
+        [Route("{id}/revenue")]
+        public async Task<IActionResult> GetWorkshopRevenueStatistic(Guid id)
         {
-            var result = await _organizerService.GetRevenueStatisticOfWorkshop(organizerId);
+            var result = await _organizerService.GetRevenueStatisticOfWorkshop(id);
             return Ok(result);
         }
     }

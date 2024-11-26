@@ -201,7 +201,7 @@ namespace Service.Services.Organizers
         {
             var orderList = await _unitOfWork.Orders.GetCompletedOrderOfOrganizer(organizerId);
             var allTimes = orderList.Sum(o => o.TotalAmount) * 90 / 100;
-            var month = orderList.Where(o => DateTime.Now.Subtract(o.CreatedAt.Value).TotalDays <= 30).Sum(o => o.TotalAmount) * 90 / 100;
+            var month = orderList.Where(o => DateTime.Now.Month == o.CreatedAt.Value.Month).Sum(o => o.TotalAmount) * 90 / 100;
             var days = orderList.Where(o => DateTime.Now.Subtract(o.CreatedAt.Value).TotalDays <= 7).Sum(o => o.TotalAmount) * 90 / 100;
 
             return new TransactionStatisticModel

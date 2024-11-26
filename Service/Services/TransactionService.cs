@@ -583,31 +583,27 @@ namespace Service.Services
                 );
         }
 
-        public async Task<TransactionStatisticModel> GetTransactionStatistic()
-        {
-            var all = await _unitOfWork.Transactions.GetAllTransaction();
-            var month = await _unitOfWork.Transactions.GetInMonthTransaction();
-            var days = await _unitOfWork.Transactions.GetInSevenDaysTransaction();
-
-            return new TransactionStatisticModel
-            {
-                SevenDaysAmount = days.Count() > 0 ? days.Sum() : 0,
-                MonthAmount = month.Count() > 0 ? month.Sum() : 0,
-                TotalAmount = all.Count() > 0 ? all.Sum() : 0,
-            };
-        }
-
         public async Task<TransactionStatisticModel> GetProfitStatistic()
         {
-            var all = await _unitOfWork.Transactions.GetAllTransaction();
-            var month = await _unitOfWork.Transactions.GetInMonthTransaction();
-            var days = await _unitOfWork.Transactions.GetInSevenDaysTransaction();
+            var allTransaction = await _unitOfWork.Transactions.GetAllTransaction();
+            var monthTransaction = allTransaction
+                        .Where(a => a.CreatedAt.HasValue &&
+                                    a.CreatedAt.Value.Month == DateTime.Now.Month &&
+                                    a.CreatedAt.Value.Year == DateTime.Now.Year)
+                        .ToList();
+            var daysTransaction = allTransaction.Where(a => a.CreatedAt.HasValue && a.CreatedAt.Value >= DateTime.Now.AddDays(-7)).ToList();
 
+            var allOrders = await _unitOfWork.Orders.GetCompletedOrders();
+            var monthOrders = allOrders.Where(a => a.CreatedAt.HasValue &&
+                                    a.CreatedAt.Value.Month == DateTime.Now.Month &&
+                                    a.CreatedAt.Value.Year == DateTime.Now.Year)
+                        .ToList();
+            var daysOrders = allOrders.Where(a => a.CreatedAt.HasValue && a.CreatedAt.Value >= DateTime.Now.AddDays(-7)).ToList();
             return new TransactionStatisticModel
             {
-                SevenDaysAmount = days.Count() > 0 ? days.Sum() * 10 / 100 : 0,
-                MonthAmount = month.Count() > 0 ? month.Sum() * 10 / 100 : 0,
-                TotalAmount = all.Count() > 0 ? all.Sum() * 10 / 100 : 0,
+                SevenDaysAmount = daysTransaction.Sum(a => a.Amount.Value) + daysOrders.Sum(o => o.TotalAmount.Value) * 1 / 10,
+                MonthAmount = monthTransaction.Sum(a => a.Amount.Value) + monthOrders.Sum(o => o.TotalAmount.Value) * 1 / 10,
+                TotalAmount = allTransaction.Sum(a => a.Amount.Value) + allOrders.Sum(o => o.TotalAmount.Value) * 1 / 10,
             };
         }
     }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Repository.Extensions;
 
 namespace Repository.Models;
 
@@ -61,20 +59,9 @@ public partial class Exe201WorkshopistaContext : DbContext
 
     public virtual DbSet<WorkshopImage> WorkshopImages { get; set; }
 
-    private string GetConnectionString()
-    {
-        IConfiguration configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true)
-                .AddEnvironmentVariables()
-                .Build();
-        return configuration["ConnectionStrings:DBUtilsConnectionString"];
-    }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(GetConnectionString());
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=(local); uid=sa; pwd=12345; database=EXE201-Workshopista; TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -131,20 +118,18 @@ public partial class Exe201WorkshopistaContext : DbContext
             entity.Property(e => e.Slug)
                 .HasMaxLength(255)
                 .HasColumnName("slug");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
-            entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .HasColumnName("status");
         });
 
         modelBuilder.Entity<Commission>(entity =>
         {
-
             entity.HasKey(e => e.CommissionId).HasName("PK__Commissi__D19D7CC90A4035D4");
-
 
             entity.ToTable("Commission");
 
@@ -413,6 +398,8 @@ public partial class Exe201WorkshopistaContext : DbContext
         modelBuilder.Entity<Otp>(entity =>
         {
             entity.ToTable("OTP");
+
+            entity.HasIndex(e => e.CreatedBy, "IX_OTP_CreatedBy");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -944,7 +931,6 @@ public partial class Exe201WorkshopistaContext : DbContext
                 .HasConstraintName("FK__WorkshopI__works__10566F31");
         });
 
-        ModelBuilderExtensions.SeedUsers(modelBuilder);
         OnModelCreatingPartial(modelBuilder);
     }
 

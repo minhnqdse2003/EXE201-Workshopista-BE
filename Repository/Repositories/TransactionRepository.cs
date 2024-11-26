@@ -17,22 +17,9 @@ namespace Repository.Repositories
 
         public IQueryable<Transaction> GetQuery() => _context.Transactions.AsQueryable();
 
-        public async Task<List<decimal>> GetAllTransaction()
+        public async Task<List<Transaction>> GetAllTransaction()
         {
-            return await _context.Transactions.Select(t => t.Amount.Value).ToListAsync();
-        }
-
-        public async Task<List<decimal>> GetInMonthTransaction()
-        {
-            var month = DateTime.Now.Month;
-            return await _context.Transactions.Where(t => t.CreatedAt.Value.Month == month).Select(t => t.Amount.Value).ToListAsync();
-        }
-
-        public async Task<List<decimal>> GetInSevenDaysTransaction()
-        {
-            var current = DateTime.Now;
-            var cutoffDate = current.AddDays(-7);
-            return await _context.Transactions.Where(t => t.CreatedAt >= cutoffDate).Select(t => t.Amount.Value).ToListAsync();
+            return await _context.Transactions.Where(t => t.PaymentMethodId != null).ToListAsync();
         }
     }
 }
