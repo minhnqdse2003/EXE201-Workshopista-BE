@@ -18,5 +18,7 @@ namespace Service.Interfaces
         Task<ApiResponse<List<SubscriptionDto>>> GetSubscription(string email);
         Task<TransactionStatisticModel> GetProfitStatistic();
         Task<ApiResponse<List<PromotionDto>>> GetPromotions(string email,Guid workshopId);
+        Task<TransactionStatisticModel> GetRevenueStatistic();
+        Task<TransactionCountStatistic> GetCountStatistic();
     }
 }
