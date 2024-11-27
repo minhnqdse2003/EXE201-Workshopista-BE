@@ -43,6 +43,14 @@ namespace EXE201_Workshopista.Controllers
             return Ok(await _transactionService.GetSubscription(email));
         }
 
+        [HttpGet("{id}/"+nameof(Promotion))]
+        [Authorize]
+        public async Task<ActionResult<ICollection<SubscriptionDto>>> GetWorkShopPromotion([FromRoute] string id)
+        {
+            var email = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value.ToString();
+            return Ok(await _transactionService.GetPromotions(email,Guid.Parse(id)));
+        }
+
         [HttpPost("Callback")]
         public async Task<IActionResult> PaymentCallback([FromBody] WebhookType model)
         {

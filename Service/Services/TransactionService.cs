@@ -607,6 +607,29 @@ namespace Service.Services
             };
         }
 
+        public async Task<ApiResponse<List<PromotionDto>>> GetPromotions(string email, Guid workshopId)
+        {
+            var workshopPromotions = await _unitOfWork.Promotions.GetQuery()
+                .Where(x => x.WorkshopId == workshopId)
+                .Select(x => new PromotionDto
+                {
+                    PromotionId = x.PromotionId,
+                    OrganizerId = x.OrganizerId,
+                    WorkshopId = x.WorkshopId,
+                    PromotionType = x.PromotionType,
+                    StartDate = x.StartDate,
+                    EndDate = x.EndDate,
+                    Price = x.Price,
+                    CurrencyCode = x.CurrencyCode,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt
+                })
+                .ToListAsync();
+
+            return ApiResponse<List<PromotionDto>>.SuccessResponse(workshopPromotions);
+        }
+
+
         public async Task<TransactionStatisticModel> GetRevenueStatistic()
         {
             var allTransaction = await _unitOfWork.Transactions.GetAllTransaction();
