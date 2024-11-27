@@ -606,5 +606,53 @@ namespace Service.Services
                 TotalAmount = allTransaction.Sum(a => a.Amount.Value) + allOrders.Sum(o => o.TotalAmount.Value) * 1 / 10,
             };
         }
+
+        public async Task<TransactionStatisticModel> GetRevenueStatistic()
+        {
+            var allTransaction = await _unitOfWork.Transactions.GetAllTransaction();
+            var monthTransaction = allTransaction
+                        .Where(a => a.CreatedAt.HasValue &&
+                                    a.CreatedAt.Value.Month == DateTime.Now.Month &&
+                                    a.CreatedAt.Value.Year == DateTime.Now.Year)
+                        .ToList();
+            var daysTransaction = allTransaction.Where(a => a.CreatedAt.HasValue && a.CreatedAt.Value >= DateTime.Now.AddDays(-7)).ToList();
+
+            var allOrders = await _unitOfWork.Orders.GetCompletedOrders();
+            var monthOrders = allOrders.Where(a => a.CreatedAt.HasValue &&
+                                    a.CreatedAt.Value.Month == DateTime.Now.Month &&
+                                    a.CreatedAt.Value.Year == DateTime.Now.Year)
+                        .ToList();
+            var daysOrders = allOrders.Where(a => a.CreatedAt.HasValue && a.CreatedAt.Value >= DateTime.Now.AddDays(-7)).ToList();
+            return new TransactionStatisticModel
+            {
+                SevenDaysAmount = daysTransaction.Sum(a => a.Amount.Value) + daysOrders.Sum(o => o.TotalAmount.Value),
+                MonthAmount = monthTransaction.Sum(a => a.Amount.Value) + monthOrders.Sum(o => o.TotalAmount.Value),
+                TotalAmount = allTransaction.Sum(a => a.Amount.Value) + allOrders.Sum(o => o.TotalAmount.Value),
+            };
+        }
+
+        public async Task<TransactionCountStatistic> GetCountStatistic()
+        {
+            var allTransaction = await _unitOfWork.Transactions.GetAllTransaction();
+            var monthTransaction = allTransaction
+                        .Where(a => a.CreatedAt.HasValue &&
+                                    a.CreatedAt.Value.Month == DateTime.Now.Month &&
+                                    a.CreatedAt.Value.Year == DateTime.Now.Year)
+                        .ToList();
+            var daysTransaction = allTransaction.Where(a => a.CreatedAt.HasValue && a.CreatedAt.Value >= DateTime.Now.AddDays(-7)).ToList();
+
+            var allOrders = await _unitOfWork.Orders.GetCompletedOrders();
+            var monthOrders = allOrders.Where(a => a.CreatedAt.HasValue &&
+                                    a.CreatedAt.Value.Month == DateTime.Now.Month &&
+                                    a.CreatedAt.Value.Year == DateTime.Now.Year)
+                        .ToList();
+            var daysOrders = allOrders.Where(a => a.CreatedAt.HasValue && a.CreatedAt.Value >= DateTime.Now.AddDays(-7)).ToList();
+            return new TransactionCountStatistic
+            {
+                weekCount = daysTransaction.Count() + daysOrders.Count(),
+                monthCount = monthTransaction.Count() + monthOrders.Count(),
+                allCount = allTransaction.Count() + allOrders.Count(),
+            };
+        }
     }
 }

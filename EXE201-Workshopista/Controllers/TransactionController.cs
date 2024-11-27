@@ -49,11 +49,25 @@ namespace EXE201_Workshopista.Controllers
             var result = await _transactionService.PaymentUrlCallbackProcessing(model);
             return result.Success ? Ok(result) : BadRequest(result);
         }
-        
+
         [HttpGet("profit")]
         public async Task<IActionResult> GetProfitStatistic()
         {
             var result = await _transactionService.GetProfitStatistic();
+            return Ok(result);
+        }
+
+        [HttpGet("revenue")]
+        public async Task<IActionResult> GetRevenueStatistic()
+        {
+            var result = await _transactionService.GetRevenueStatistic();
+            return Ok(result);
+        }
+
+        [HttpGet("transaction-amount")]
+        public async Task<IActionResult> GetCountStatistic()
+        {
+            var result = await _transactionService.GetCountStatistic();
             return Ok(result);
         }
     }
