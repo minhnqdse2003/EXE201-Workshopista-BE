@@ -136,7 +136,7 @@ namespace Service.Services
             workshop.Category = category;
             workshop.Organizer = organizer;
             workshop.TicketRanks = ticketRank;
-            workshop.Status = StatusConst.InActive;
+            workshop.Status = StatusConst.Active;
             workshop.StartTime = DateTimeOffset.FromUnixTimeSeconds(workshopCreateDto.StartTime).UtcDateTime;
             workshop.EndTime = DateTimeOffset.FromUnixTimeSeconds(workshopCreateDto.EndTime).UtcDateTime;
             workshop.Capacity = ticketRank.Sum(x => x.Capacity);
